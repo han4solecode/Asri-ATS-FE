@@ -296,14 +296,15 @@ function RegisterPage(props) {
                 name="sex"
                 value={formValues.sex}
                 onChange={handleInputChange}
+                sx={{ color: "#374151" }}
               >
                 <FormControlLabel
-                  value="male"
+                  value="Male"
                   control={<Radio />}
                   label="Male"
                 />
                 <FormControlLabel
-                  value="female"
+                  value="Female"
                   control={<Radio />}
                   label="Female"
                 />
