@@ -14,7 +14,7 @@ import {
 import { Visibility, VisibilityOff } from "@mui/icons-material";
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Link } from "react-router-dom";
 import { registerApplicant, reset } from "../slices/authSlice";
 
 function RegisterPage(props) {
@@ -311,7 +311,7 @@ function RegisterPage(props) {
               <FormHelperText>{errors.sex}</FormHelperText>
             </FormControl>
           </div>
-          <div className="flex items-center justify-center">
+          <div className="flex flex-col gap-2 items-center justify-center">
             <Button
               variant="contained"
               sx={{ width: "80%", backgroundColor: "#1f2937" }}
@@ -319,6 +319,12 @@ function RegisterPage(props) {
             >
               {isLoading ? "Creating Your Account..." : "Register"}
             </Button>
+            <span className="text-sm text-gray-700">
+              Already Have an Account?{" "}
+              <Link to="/login" className="text-blue-700 hover:underline">
+                Log In
+              </Link>
+            </span>
           </div>
         </form>
       </div>
