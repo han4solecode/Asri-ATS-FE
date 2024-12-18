@@ -2,7 +2,7 @@ import React from 'react';
 import { useQuery } from '@tanstack/react-query';
 import { CircularProgress, Card, CardContent, Typography, Button, Grid } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import JobPostService from '../services/jobPost.service';
 
 // Material UI Icons
 import WorkIcon from '@mui/icons-material/Work';
@@ -13,8 +13,8 @@ import ScheduleIcon from '@mui/icons-material/Schedule';
 import DescriptionIcon from '@mui/icons-material/Description';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 
-const fetchJobPostDetails = async (jobPostId) => {
-    const response = await axios.get(`https://localhost:7080/api/JobPost/search-job/${jobPostId}`);
+const fetchJobPostDetails = async (JobPostId) => {
+    const response = await JobPostService.details(JobPostId);
     return response.data;
 };
 
@@ -27,6 +27,7 @@ const JobPostDetailPage = () => {
         queryFn: () => fetchJobPostDetails(jobPostId),
         enabled: !!jobPostId, // Fetch only if jobPostId is provided
     });
+    console.log(data)
 
     if (isLoading) {
         return <div className="flex justify-center py-10"><CircularProgress /></div>;
@@ -52,7 +53,7 @@ const JobPostDetailPage = () => {
             <Card className="shadow-md max-w-3xl mx-auto">
                 <CardContent>
                     <Typography variant="h4" className="font-bold mb-4 text-center">
-                        <WorkIcon fontSize="large" className="mr-2 m-4" />
+                        <WorkIcon fontSize="large" className="m-4" />
                         {jobTitle}
                     </Typography>
 
@@ -72,7 +73,7 @@ const JobPostDetailPage = () => {
                         <Grid item xs={12} md={6}>
                             <Typography variant="body1" className="flex items-center mb-2">
                                 <AttachMoneyIcon className="mr-2" color="primary" />
-                                {minSalary.toLocaleString()} - {maxSalary.toLocaleString()}
+                                {minSalary} - {maxSalary}
                             </Typography>
                         </Grid>
                         <Grid item xs={12} md={6}>
