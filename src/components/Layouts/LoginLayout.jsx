@@ -13,7 +13,7 @@ function LoginLayout(props) {
         </div>
       </nav>
       <div className="container mx-auto max-w-7xl py-3">
-        <div className="flex flex-col">
+        <div className="flex flex-col items-center justify-center mx-2 md:mx-0">
           <Outlet></Outlet>
         </div>
       </div>
