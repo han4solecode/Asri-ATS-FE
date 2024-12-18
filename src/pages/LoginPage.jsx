@@ -79,7 +79,7 @@ import {
     };
   
     return (
-      <div className="sm:w-3/4 md:w-3/4 mt-10 mb-10">
+      <div className="sm:w-6/12 md:w-6/12 mt-10 mb-10" >
         <div className="border rounded shadow-lg p-2">
           <div className="w-full mb-5">
             <span className="text-3xl font-semibold text-gray-700">
@@ -90,7 +90,7 @@ import {
             <div className="text-lg mb-3 underline text-gray-700">
               Credentials
             </div>
-            <div className="flex flex-col gap-2 md:flex-row mb-4">
+            <div className="flex flex-col gap-2 mb-4">
               <TextField
                 label="Username"
                 name="username"
@@ -100,6 +100,7 @@ import {
                 onChange={handleInputChange}
                 error={errors.username}
                 helperText={errors.username}
+                sx={{ mb: 4, mt:1 }}
               ></TextField>
               <TextField
                 label="Password"
