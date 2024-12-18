@@ -2,7 +2,11 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { Provider } from "react-redux";
 import { store } from "./store";
 
+// Layouts
 import LoginLayout from "./components/Layouts/LoginLayout";
+
+// Pages
+import RegisterPage from "./pages/RegisterPage";
 
 const router = createBrowserRouter([
   {
@@ -14,7 +18,7 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/register",
-        element: "Registration Page",
+        element: <RegisterPage></RegisterPage>,
       },
     ],
   },
