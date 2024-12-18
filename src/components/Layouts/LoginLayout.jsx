@@ -1,33 +1,19 @@
 import { Outlet, Link } from "react-router-dom";
+import Navbar from "../Fragments/Navbar";
+import Footer from "../Fragments/Footer";
 
 function LoginLayout(props) {
   const {} = props;
 
   return (
     <div className="flex flex-col min-h-screen justify-between">
-      <nav className="bg-gray-800 p-3">
-        <div className="mx-auto max-w-7xl flex justify-between items-center">
-          <h1 className="text-3xl text-white">
-            <Link to="/">LOGO</Link>
-          </h1>
-        </div>
-      </nav>
+      <Navbar></Navbar>
       <div className="container mx-auto max-w-7xl py-3">
         <div className="flex flex-col items-center justify-center mx-2 md:mx-0">
           <Outlet></Outlet>
         </div>
       </div>
-      <footer className="bg-gray-800 p-3 text-white mt-auto">
-        <div className="mx-auto max-w-7xl flex justify-between sm:flex-col md:flex-row sm:items-start md:items-center">
-          <div className="flex sm:flex-col md:flex-row sm:items-start md:gap-4 sm:gap-2 underline">
-            {/* change to <Link/> later */}
-            <a href="">Security and Privacy</a>
-            <a href="">Terms and Condition</a>
-            <a href="">Contact</a>
-          </div>
-          <div className="text-gray-400 sm:mt-2 md:mt-0">Copyright Text</div>
-        </div>
-      </footer>
+      <Footer></Footer>
     </div>
   );
 }

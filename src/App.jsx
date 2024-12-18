@@ -11,6 +11,7 @@ import MainLayout from "./components/Layouts/MainLayout";
 import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
+import JobPostDetailPage from "./pages/JobPostDetailPage";
 
 export const queryClient = new QueryClient();
 
@@ -25,6 +26,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <HomePage></HomePage>,
+      },
+      {
+        path: "/jobpost/:jobPostId",
+        element: <JobPostDetailPage></JobPostDetailPage>,
       },
     ],
   },
