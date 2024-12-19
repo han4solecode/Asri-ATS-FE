@@ -12,6 +12,7 @@ import RegisterPage from "./pages/RegisterPage";
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import JobPostDetailPage from "./pages/JobPostDetailPage";
+import ProfilePage from "./pages/ProfilePage";
 
 export const queryClient = new QueryClient();
 
@@ -31,6 +32,10 @@ const router = createBrowserRouter([
         path: "/jobpost/:jobPostId",
         element: <JobPostDetailPage></JobPostDetailPage>,
       },
+      {
+        path: "/profile",
+        element: <ProfilePage></ProfilePage>,
+      }
     ],
   },
   {
@@ -43,7 +48,7 @@ const router = createBrowserRouter([
       {
         path: "/login",
         element: <LoginPage></LoginPage>,
-      }
+      },
     ],
   },
 ]);

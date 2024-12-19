@@ -24,7 +24,7 @@ const Navbar = () => {
         "HR Manager",
         "Department Manager",
         "Employee Supervisor",
-        "Employee",
+        "Applicant",
       ],
     },
     {
