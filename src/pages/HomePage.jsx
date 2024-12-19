@@ -21,8 +21,7 @@ import JobPostService from '../services/jobPost.service';
 
 // Fetch job posts with filters and pagination
 const fetchJobPosts = async ({ page, pageSize, searchQuery, jobTitle, location, companyName, employmentType, sortField, sortOrder }) => {
-    const { data } = await JobPostService.search({
-      params: {
+    const { data } = await JobPostService.search( {
         PageNumber: page,
         PageSize: pageSize,
         Keywords: searchQuery,
@@ -32,10 +31,9 @@ const fetchJobPosts = async ({ page, pageSize, searchQuery, jobTitle, location, 
         EmploymentType: employmentType,
         SortBy: sortField,
         SortOrder: sortOrder,
-      },
     });
     return data;
-  };  
+};  
 
 const HomePage = () => {
   const [page, setPage] = useState(1);
