@@ -13,6 +13,7 @@ import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import JobPostDetailPage from "./pages/JobPostDetailPage";
 import ProfilePage from "./pages/ProfilePage";
+import EditProfilePage from "./pages/EditProfilePage";
 
 export const queryClient = new QueryClient();
 
@@ -35,7 +36,7 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <ProfilePage></ProfilePage>,
-      }
+      },
     ],
   },
   {
@@ -49,6 +50,10 @@ const router = createBrowserRouter([
         path: "/login",
         element: <LoginPage></LoginPage>,
       },
+      {
+        path: "/edit/profile",
+        element: <EditProfilePage></EditProfilePage>,
+      }
     ],
   },
 ]);

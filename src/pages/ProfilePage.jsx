@@ -2,8 +2,10 @@ import { Button,  CircularProgress, Divider, Typography } from '@mui/material';
 import UserService from '../services/userService';
 import { useQuery } from '@tanstack/react-query';
 import PersonIcon from '@mui/icons-material/Person';
+import { useNavigate } from 'react-router-dom';
 
 const ProfilePage = () => {
+  const navigate = useNavigate();
   const fetchUserProfile = async () => {
     const response = await UserService.details();
     return response.data;
@@ -49,7 +51,7 @@ const ProfilePage = () => {
           {roles[0]}
         </Typography>
         <div className="mt-4">
-          <Button variant="contained" color="primary" size="small">
+          <Button onClick={()=> navigate("/edit/profile")} variant="contained" color="primary" size="small">
             Edit Profile
           </Button>
         </div>

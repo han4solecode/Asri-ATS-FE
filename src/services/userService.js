@@ -5,9 +5,15 @@ const details = async () => {
   return res;
 };
 
+const updateProfile = async (userData) => {
+  const res = await AxiosInstance.api.put(`/api/User/update-user`, userData);
+  return res;
+};
+
 
 const UserService = {
   details,
+  updateProfile
 };
 
 export default UserService;
