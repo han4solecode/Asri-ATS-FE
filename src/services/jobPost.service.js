@@ -5,8 +5,8 @@ const search = async (params) => {
   return res;
 };
 
-const details = async (jobPostId) => {
-  const res = await AxiosInstance.api.get(`/api/JobPost/search-job/${jobPostId}`);
+const details = async (JobPostId) => {
+  const res = await AxiosInstance.api.get(`/api/JobPost/search-job/${JobPostId}`);
   return res;
 };
 

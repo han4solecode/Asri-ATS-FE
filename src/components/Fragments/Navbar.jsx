@@ -1,18 +1,34 @@
-import React from "react";
+import React, { useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../slices/authSlice";
-import { AppBar, Toolbar, Button, Typography, Avatar } from "@mui/material";
+import {
+  AppBar,
+  Toolbar,
+  Button,
+  Typography,
+  Avatar,
+  Box,
+  IconButton,
+  Drawer,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Divider,
+} from "@mui/material";
+import MenuIcon from "@mui/icons-material/Menu";
 
 const Navbar = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user: currentUser } = useSelector((state) => state.auth);
 
-  // Menu items definition
+  const [drawerOpen, setDrawerOpen] = useState(false);
+
   const menuItems = [
     {
-      label: "Homepage",
+      label: "Job Search",
       path: "/",
       visibleForAll: true,
     },
@@ -22,143 +38,321 @@ const Navbar = () => {
       visibleForRoles: [
         "Administrator",
         "HR Manager",
-        "Department Manager",
-        "Employee Supervisor",
+        "Recruiter",
         "Applicant",
       ],
     },
-    {
-      label: "Register Company",
-      path: "/register-company",
-      visibleForAll: true,
-    },
   ];
 
-  // Check if the menu item should be visible
   const isMenuVisible = (item) => {
-    if (item.visibleForAll) return true; // Always visible
-    if (!currentUser) return false; // Hide for unauthenticated users
+    if (item.visibleForAll) return true;
+    if (!currentUser) return false;
     if (item.visibleForRoles && currentUser?.roles) {
       return item.visibleForRoles.some((role) => currentUser.roles.includes(role));
     }
     return false;
   };
 
-  // Handle logout
   const handleLogout = () => {
     dispatch(logout());
     navigate("/");
   };
 
-  return (
-    <AppBar
-      position="static"
-      sx={{
-        backgroundColor: "#1f2937", // Tailwind's bg-gray-800 equivalent
-        padding: "0.5rem 1rem",
-      }}
-    >
-      <Toolbar
+  return  (
+    <>
+      {/* AppBar */}
+      <AppBar
+        position="static"
         sx={{
-          display: "flex",
-          justifyContent: "space-between",
+          backgroundColor: "#1f2937",
+          padding: "0.5rem 1rem",
         }}
       >
-        {/* Logo/Title */}
-        <Typography
-          variant="h6"
+        <Toolbar
           sx={{
-            fontWeight: "bold",
-            color: "#ffffff",
-            cursor: "pointer",
-            "&:hover": { color: "#e5e7eb" }, // Tailwind's text-gray-300
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
           }}
-          onClick={() => navigate("/")}
         >
-          Logo
-        </Typography>
-
-        {/* Navigation Links */}
-        <div style={{ display: "flex", gap: "1rem" }}>
-          {menuItems.filter(isMenuVisible).map((item, index) => (
-            <Button
-              key={index}
-              component={Link}
-              to={item.path}
+          {/* Logo and Menu Items */}
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              gap: "2rem",
+            }}
+          >
+            {/* Logo */}
+            <Typography
+              variant="h6"
               sx={{
+                fontWeight: "bold",
                 color: "#ffffff",
-                "&:hover": {
-                  backgroundColor: "#374151", // Tailwind's bg-gray-700
-                },
+                cursor: "pointer",
+                "&:hover": { color: "#e5e7eb" },
+              }}
+              onClick={() => navigate("/")}
+            >
+              Logo
+            </Typography>
+
+            {/* Menu Items (Visible on larger screens) */}
+            <Box
+              sx={{
+                display: { xs: "none", md: "flex" },
+                gap: "1rem",
               }}
             >
-              {item.label}
-            </Button>
-          ))}
-        </div>
+              {menuItems.filter(isMenuVisible).map((item, index) => (
+                <Button
+                  key={index}
+                  component={Link}
+                  to={item.path}
+                  sx={{
+                    color: "#ffffff",
+                    "&:hover": {
+                      backgroundColor: "#374151",
+                    },
+                  }}
+                >
+                  {item.label}
+                </Button>
+              ))}
+            </Box>
+          </Box>
 
-        {/* Authentication Buttons */}
-        <div style={{ display: "flex", alignItems: "center", gap: "1rem" }}>
-          {!currentUser ? (
-            <>
-              {/* Login Button */}
-              <Button
-                onClick={() => navigate("/login")}
-                sx={{
-                  backgroundColor: "#374151", // Tailwind's bg-gray-700
-                  color: "#ffffff",
-                  "&:hover": {
-                    backgroundColor: "#4b5563", // Slightly darker gray
-                  },
-                }}
-              >
-                Login
-              </Button>
-
-              {/* Register Button */}
-              <Button
-                onClick={() => navigate("/register")}
-                sx={{
-                  backgroundColor: "#374151",
-                  color: "#ffffff",
-                  "&:hover": {
-                    backgroundColor: "#4b5563",
-                  },
-                }}
-              >
-                Register
-              </Button>
-            </>
-          ) : (
-            <>
-              {/* Profile Button */}
-              <Button
-                onClick={() => navigate("/profile")}
-                sx={{
-                  color: "#ffffff",
-                  "&:hover": {
+          {/* Authentication Buttons (Desktop) */}
+          <Box
+            sx={{
+              display: { xs: "none", md: "flex" },
+              alignItems: "center",
+              gap: "1rem",
+            }}
+          >
+            {!currentUser ? (
+              <>
+                <Button
+                  onClick={() => navigate("/register-company")}
+                  sx={{
+                    backgroundColor: "#10b981",
+                    color: "#ffffff",
+                    fontWeight: "bold",
+                    "&:hover": {
+                      backgroundColor: "#059669",
+                    },
+                  }}
+                >
+                  Register Company
+                </Button>
+                <Button
+                  onClick={() => navigate("/login")}
+                  sx={{
                     backgroundColor: "#374151",
-                  },
-                }}
-              >
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                  <Avatar
-                    src="https://plus.unsplash.com/premium_photo-1671656349322-41de944d259b?fm=jpg&q=60&w=3000&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MXx8cG9ydHJhaXR8ZW58MHx8MHx8fDA%3D"
-                    alt="Profile"
-                    sx={{ width: 32, height: 32 }}
-                  />
-                  <div style={{ textAlign: "left" }}>
-                    <Typography variant="body2">Welcome,</Typography>
-                    <Typography variant="body1" fontWeight="bold">
-                      {currentUser.user?.fname} {currentUser.user?.lname}
-                    </Typography>
-                  </div>
-                </div>
-              </Button>
+                    color: "#ffffff",
+                    "&:hover": {
+                      backgroundColor: "#4b5563",
+                    },
+                  }}
+                >
+                  Login
+                </Button>
+                <Button
+                  onClick={() => navigate("/register")}
+                  sx={{
+                    backgroundColor: "#374151",
+                    color: "#ffffff",
+                    "&:hover": {
+                      backgroundColor: "#4b5563",
+                    },
+                  }}
+                >
+                  Register
+                </Button>
+              </>
+            ) : (
+              <>
+                <Button
+                  onClick={() => navigate("/profile")}
+                  sx={{
+                    color: "#ffffff",
+                    "&:hover": {
+                      backgroundColor: "#374151",
+                    },
+                  }}
+                >
+                  <Box
+                    sx={{
+                      display: "flex",
+                      alignItems: "center",
+                      gap: "0.5rem",
+                    }}
+                  >
+                    <Avatar
+                      src="https://via.placeholder.com/32"
+                      alt="Profile"
+                      sx={{ width: 32, height: 32 }}
+                    />
+                    <Box sx={{ textAlign: "left" }}>
+                      <Typography variant="body2">Welcome,</Typography>
+                      <Typography variant="body1" fontWeight="bold">
+                        {currentUser.user?.fname} {currentUser.user?.lname}
+                      </Typography>
+                    </Box>
+                  </Box>
+                </Button>
+                <Button
+                  onClick={handleLogout}
+                  sx={{
+                    backgroundColor: "#374151",
+                    color: "#ffffff",
+                    "&:hover": {
+                      backgroundColor: "#4b5563",
+                    },
+                  }}
+                >
+                  Logout
+                </Button>
+              </>
+            )}
+          </Box>
 
-              {/* Logout Button */}
+          {/* Hamburger Menu for small screens */}
+          <IconButton
+            edge="start"
+            color="inherit"
+            aria-label="menu"
+            sx={{ display: { xs: "block", md: "none" } }}
+            onClick={() => setDrawerOpen(true)}
+          >
+            <MenuIcon />
+          </IconButton>
+        </Toolbar>
+      </AppBar>
+
+      {/* Drawer for mobile navigation */}
+      <Drawer
+        anchor="left"
+        open={drawerOpen}
+        onClose={() => setDrawerOpen(false)}
+        sx={{
+          "& .MuiDrawer-paper": {
+            backgroundColor: "#1f2937",
+            color: "#ffffff",
+            width: "250px",
+          },
+        }}
+      >
+        <Box
+          sx={{
+            display: "flex",
+            flexDirection: "column",
+            height: "100%",
+          }}
+        >
+          {/* Logo/Title */}
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: "bold",
+              padding: "1rem",
+              textAlign: "center",
+              cursor: "pointer",
+            }}
+            onClick={() => {
+              setDrawerOpen(false);
+              navigate("/");
+            }}
+          >
+            Logo
+          </Typography>
+          <Divider sx={{ backgroundColor: "#374151" }} />
+
+          {/* Navigation Links */}
+          <List>
+            {menuItems.filter(isMenuVisible).map((item, index) => (
+              <ListItem key={index} disablePadding>
+                <ListItemButton
+                  onClick={() => {
+                    setDrawerOpen(false);
+                    navigate(item.path);
+                  }}
+                  sx={{
+                    "&:hover": {
+                      backgroundColor: "#374151",
+                    },
+                  }}
+                >
+                  <ListItemText primary={item.label} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+
+          <Divider sx={{ backgroundColor: "#374151" }} />
+
+          {/* Authentication Buttons */}
+          <Box sx={{ padding: "1rem" }}>
+            {!currentUser ? (
+              <>
+                <Button
+                  fullWidth
+                  onClick={() => {
+                    setDrawerOpen(false);
+                    navigate("/register-company");
+                  }}
+                  sx={{
+                    backgroundColor: "#10b981",
+                    color: "#ffffff",
+                    marginBottom: "0.5rem",
+                    "&:hover": {
+                      backgroundColor: "#059669",
+                    },
+                  }}
+                >
+                  Register Company
+                </Button>
+                <Button
+                  fullWidth
+                  onClick={() => {
+                    setDrawerOpen(false);
+                    navigate("/login");
+                  }}
+                  sx={{
+                    backgroundColor: "#374151",
+                    color: "#ffffff",
+                    marginBottom: "0.5rem",
+                    "&:hover": {
+                      backgroundColor: "#4b5563",
+                    },
+                  }}
+                >
+                  Login
+                </Button>
+                <Button
+                  fullWidth
+                  onClick={() => {
+                    setDrawerOpen(false);
+                    navigate("/register");
+                  }}
+                  sx={{
+                    backgroundColor: "#374151",
+                    color: "#ffffff",
+                    "&:hover": {
+                      backgroundColor: "#4b5563",
+                    },
+                  }}
+                >
+                  Register
+                </Button>
+              </>
+            ) : (
               <Button
-                onClick={handleLogout}
+                fullWidth
+                onClick={() => {
+                  setDrawerOpen(false);
+                  handleLogout();
+                }}
                 sx={{
                   backgroundColor: "#374151",
                   color: "#ffffff",
@@ -169,11 +363,11 @@ const Navbar = () => {
               >
                 Logout
               </Button>
-            </>
-          )}
-        </div>
-      </Toolbar>
-    </AppBar>
+            )}
+          </Box>
+        </Box>
+      </Drawer>
+    </>
   );
 };
 
