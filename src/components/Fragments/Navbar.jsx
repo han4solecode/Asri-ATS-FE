@@ -48,7 +48,9 @@ const Navbar = () => {
     if (item.visibleForAll) return true;
     if (!currentUser) return false;
     if (item.visibleForRoles && currentUser?.roles) {
-      return item.visibleForRoles.some((role) => currentUser.roles.includes(role));
+      return item.visibleForRoles.some((role) =>
+        currentUser.roles.includes(role)
+      );
     }
     return false;
   };
@@ -58,7 +60,7 @@ const Navbar = () => {
     navigate("/");
   };
 
-  return  (
+  return (
     <>
       {/* AppBar */}
       <AppBar
@@ -196,7 +198,7 @@ const Navbar = () => {
                     <Box sx={{ textAlign: "left" }}>
                       <Typography variant="body2">Welcome,</Typography>
                       <Typography variant="body1" fontWeight="bold">
-                        {currentUser.user?.fname} {currentUser.user?.lname}
+                        {currentUser.username}
                       </Typography>
                     </Box>
                   </Box>
