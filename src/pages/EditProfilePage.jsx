@@ -152,10 +152,10 @@ function EditProfilePage(props) {
         }
 
         if (formValid) {
-            // create new applicant account
-            let newApplicant = { ...formValues };
+            // edit applicant account
+            let editedApplicant = { ...formValues };
             setLoading(true);
-            await UserService.updateProfile(newApplicant);
+            await UserService.updateProfile(editedApplicant);
             alert("Your profile has been updated!");
             navigate("/profile");
         }
