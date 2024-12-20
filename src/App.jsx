@@ -14,6 +14,8 @@ import HomePage from "./pages/HomePage";
 import JobPostDetailPage from "./pages/JobPostDetailPage";
 import ProfilePage from "./pages/ProfilePage";
 import EditProfilePage from "./pages/EditProfilePage";
+import UploadDocumentForm from "./pages/UploadDocumentForm";
+import UploadDocumentPage from "./pages/UploadDocumentPage";
 
 export const queryClient = new QueryClient();
 
@@ -36,6 +38,14 @@ const router = createBrowserRouter([
       {
         path: "/profile",
         element: <ProfilePage></ProfilePage>,
+      },
+      {
+        path: "/document",
+        element: <UploadDocumentPage></UploadDocumentPage>,
+      },
+      {
+        path: "/document/new",
+        element: <UploadDocumentForm></UploadDocumentForm>,
       },
     ],
   },

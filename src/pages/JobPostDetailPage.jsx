@@ -101,7 +101,7 @@ const JobPostDetailPage = () => {
                     </Typography>
                 </CardContent>
 
-                <div className="p-4 text-right">
+                <div className="p-4 text-left">
                     <Button variant="contained" color="secondary" onClick={() => navigate(-1)}>
                         Back
                     </Button>

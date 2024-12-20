@@ -42,6 +42,13 @@ const Navbar = () => {
         "Applicant",
       ],
     },
+    {
+      label: "Document",
+      path: "/document",
+      visibleForRoles: [
+        "Applicant",
+      ],
+    },
   ];
 
   const isMenuVisible = (item) => {

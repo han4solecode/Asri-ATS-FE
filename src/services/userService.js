@@ -10,10 +10,21 @@ const updateProfile = async (userData) => {
   return res;
 };
 
+const uploadDocument = async (formData) => {
+  const res = await AxiosInstance.apiNew.post("/api/User/upload-document", { formData });
+  return res;
+};
+
+const deleteDocument = async (id) => {
+  const res = await AxiosInstance.api.delete(`/api/User/delete-document/${id}`);
+  return res;
+};
 
 const UserService = {
   details,
-  updateProfile
+  updateProfile,
+  uploadDocument,
+  deleteDocument,
 };
 
 export default UserService;
