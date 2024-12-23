@@ -45,9 +45,7 @@ const Navbar = () => {
     {
       label: "Document",
       path: "/document",
-      visibleForRoles: [
-        "Applicant",
-      ],
+      visibleForRoles: ["Applicant"],
     },
   ];
 
@@ -64,7 +62,7 @@ const Navbar = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate("/");
+    navigate("");
   };
 
   return (
