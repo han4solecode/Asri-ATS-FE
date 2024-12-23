@@ -9,6 +9,7 @@ import MainLayout from "./components/Layouts/MainLayout";
 
 // Pages
 import RegisterPage from "./pages/RegisterPage";
+import RegisterCompanyPage from "./pages/RegisterCompanyPage";
 import LoginPage from "./pages/LoginPage";
 import HomePage from "./pages/HomePage";
 import JobPostDetailPage from "./pages/JobPostDetailPage";
@@ -41,10 +42,6 @@ const router = createBrowserRouter([
   {
     element: <MainLayout allowedRoles={["Applicant"]}></MainLayout>,
     children: [
-      // {
-      //   path: "/jobpost/:jobPostId",
-      //   element: <JobPostDetailPage></JobPostDetailPage>,
-      // },
       {
         path: "/document",
         element: <UploadDocumentPage></UploadDocumentPage>,
@@ -68,6 +65,10 @@ const router = createBrowserRouter([
         element: <LoginPage></LoginPage>,
       },
       {
+        path: "/register-company",
+        element: <RegisterCompanyPage></RegisterCompanyPage>,
+      },
+      {
         path: "/unauthorized",
         element: "You are unauthorized to access this page",
       },
@@ -75,8 +76,8 @@ const router = createBrowserRouter([
     errorElement: "Page not found",
   },
   {
-    element: <MainLayout></MainLayout>,
     path: "",
+    element: <MainLayout></MainLayout>,
     children: [
       {
         path: "/",
