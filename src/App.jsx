@@ -20,24 +20,30 @@ import UploadDocumentPage from "./pages/UploadDocumentPage";
 export const queryClient = new QueryClient();
 
 const router = createBrowserRouter([
-  // {
-  //   path: "/",
-  //   element: "Landing Page",
-  // },
   {
-    element: <MainLayout></MainLayout>,
+    element: (
+      <MainLayout
+        allowedRoles={["Applicant", "Recruiter", "HR Manager", "Administrator"]}
+      ></MainLayout>
+    ),
     children: [
-      {
-        path: "/",
-        element: <HomePage></HomePage>,
-      },
-      {
-        path: "/jobpost/:jobPostId",
-        element: <JobPostDetailPage></JobPostDetailPage>,
-      },
       {
         path: "/profile",
         element: <ProfilePage></ProfilePage>,
+      },
+      {
+        path: "/edit/profile",
+        element: <EditProfilePage></EditProfilePage>,
+      },
+    ],
+    errorElement: "Page not found",
+  },
+  {
+    element: <MainLayout allowedRoles={["Applicant"]}></MainLayout>,
+    children: [
+      {
+        path: "/jobpost/:jobPostId",
+        element: <JobPostDetailPage></JobPostDetailPage>,
       },
       {
         path: "/document",
@@ -48,6 +54,7 @@ const router = createBrowserRouter([
         element: <UploadDocumentForm></UploadDocumentForm>,
       },
     ],
+    errorElement: "Page not found",
   },
   {
     element: <LoginLayout></LoginLayout>,
@@ -61,10 +68,22 @@ const router = createBrowserRouter([
         element: <LoginPage></LoginPage>,
       },
       {
-        path: "/edit/profile",
-        element: <EditProfilePage></EditProfilePage>,
-      }
+        path: "/unauthorized",
+        element: "You are unauthorized to access this page",
+      },
     ],
+    errorElement: "Page not found",
+  },
+  {
+    element: <MainLayout></MainLayout>,
+    path: "",
+    children: [
+      {
+        path: "/",
+        element: <HomePage></HomePage>,
+      },
+    ],
+    errorElement: "Page not found",
   },
 ]);
 
@@ -72,7 +91,7 @@ function App() {
   return (
     <Provider store={store}>
       <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router}></RouterProvider>
+        <RouterProvider router={router}></RouterProvider>
       </QueryClientProvider>
     </Provider>
   );
