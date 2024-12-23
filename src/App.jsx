@@ -41,10 +41,10 @@ const router = createBrowserRouter([
   {
     element: <MainLayout allowedRoles={["Applicant"]}></MainLayout>,
     children: [
-      {
-        path: "/jobpost/:jobPostId",
-        element: <JobPostDetailPage></JobPostDetailPage>,
-      },
+      // {
+      //   path: "/jobpost/:jobPostId",
+      //   element: <JobPostDetailPage></JobPostDetailPage>,
+      // },
       {
         path: "/document",
         element: <UploadDocumentPage></UploadDocumentPage>,
@@ -81,6 +81,10 @@ const router = createBrowserRouter([
       {
         path: "/",
         element: <HomePage></HomePage>,
+      },
+      {
+        path: "/jobpost/:jobPostId",
+        element: <JobPostDetailPage></JobPostDetailPage>,
       },
     ],
     errorElement: "Page not found",
