@@ -17,6 +17,9 @@ import ProfilePage from "./pages/ProfilePage";
 import EditProfilePage from "./pages/EditProfilePage";
 import UploadDocumentForm from "./pages/UploadDocumentForm";
 import UploadDocumentPage from "./pages/UploadDocumentPage";
+import RecruiterRequestPage from "./pages/RecruiterRequestPage";
+import RecruiterRequestDetailPage from "./pages/RecruiterRequestDetailPage";
+import RecruiterRegistrationPage from "./pages/RecruiterRegistrationPage";
 
 export const queryClient = new QueryClient();
 
@@ -35,6 +38,20 @@ const router = createBrowserRouter([
       {
         path: "/edit/profile",
         element: <EditProfilePage></EditProfilePage>,
+      },
+    ],
+    errorElement: "Page not found",
+  },
+  {
+    element: <MainLayout allowedRoles={["HR Manager"]}></MainLayout>,
+    children: [
+      {
+        path: "/recruiter-request",
+        element: <RecruiterRequestPage></RecruiterRequestPage>,
+      },
+      {
+        path: "/recruiter-request/:id",
+        element: <RecruiterRequestDetailPage></RecruiterRequestDetailPage>,
       },
     ],
     errorElement: "Page not found",
@@ -67,6 +84,10 @@ const router = createBrowserRouter([
       {
         path: "/register-company",
         element: <RegisterCompanyPage></RegisterCompanyPage>,
+      },
+      {
+        path: "/register-company/recruiter-request/new",
+        element: <RecruiterRegistrationPage></RecruiterRegistrationPage>,
       },
       {
         path: "/unauthorized",
