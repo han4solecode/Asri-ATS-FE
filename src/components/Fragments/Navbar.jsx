@@ -67,7 +67,9 @@ const Navbar = () => {
 
   const handleLogout = () => {
     dispatch(logout());
-    navigate("");
+    setTimeout(() => {
+      navigate("/");
+    }, 100);
   };
 
   return (
