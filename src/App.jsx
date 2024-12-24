@@ -20,6 +20,7 @@ import UploadDocumentPage from "./pages/UploadDocumentPage";
 import RecruiterRequestPage from "./pages/RecruiterRequestPage";
 import RecruiterRequestDetailPage from "./pages/RecruiterRequestDetailPage";
 import RecruiterRegistrationPage from "./pages/RecruiterRegistrationPage";
+import CompanyRegistrationRequestsPage from "./pages/CompanyRegistrationRequestsPage";
 
 export const queryClient = new QueryClient();
 
@@ -47,7 +48,9 @@ const router = createBrowserRouter([
     children: [
       {
         path: "/requests/company-registration",
-        element: "Company Registration Request List Page",
+        element: (
+          <CompanyRegistrationRequestsPage></CompanyRegistrationRequestsPage>
+        ),
       },
     ],
   },
