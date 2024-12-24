@@ -52,6 +52,10 @@ const router = createBrowserRouter([
           <CompanyRegistrationRequestsPage></CompanyRegistrationRequestsPage>
         ),
       },
+      {
+        path: "/requests/company-registration/review/:id",
+        element: "Company Registration Request Review",
+      },
     ],
   },
   {
