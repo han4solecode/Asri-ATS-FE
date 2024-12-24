@@ -13,6 +13,11 @@ const reviewRegisterCompanyRequest = async (reviewData) => {
   return res;
 };
 
+const getAllRegisterCompanyRequests = async () => {
+  const res = await AxiosInstance.api.get("/api/company/requests");
+  return res;
+};
+
 const getCompany = async (params) => {
   const res = await AxiosInstance.api.get("/api/Company/company", { params });
   return res;
@@ -20,6 +25,8 @@ const getCompany = async (params) => {
 
 const CompanyService = {
   registerCompanyRequest,
+  reviewRegisterCompanyRequest,
+  getAllRegisterCompanyRequests,
   getCompany,
 };
 
