@@ -1,6 +1,6 @@
 import React from 'react';
 import { useQuery } from '@tanstack/react-query';
-import { CircularProgress, Card, CardContent, Typography, Button, Grid } from '@mui/material';
+import { CircularProgress, Card, CardContent, Typography, Button, Grid, Box, Container } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import JobPostService from '../services/jobPost.service';
 
@@ -13,8 +13,8 @@ import ScheduleIcon from '@mui/icons-material/Schedule';
 import DescriptionIcon from '@mui/icons-material/Description';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 
-const fetchJobPostDetails = async (JobPostId) => {
-    const response = await JobPostService.details(JobPostId);
+const fetchJobPostDetails = async (jobPostId) => {
+    const response = await JobPostService.details(jobPostId);
     return response.data;
 };
 
@@ -27,7 +27,6 @@ const JobPostDetailPage = () => {
         queryFn: () => fetchJobPostDetails(jobPostId),
         enabled: !!jobPostId, // Fetch only if jobPostId is provided
     });
-    console.log(data)
 
     if (isLoading) {
         return <div className="flex justify-center py-10"><CircularProgress /></div>;
@@ -49,64 +48,74 @@ const JobPostDetailPage = () => {
     } = data;
 
     return (
-        <div className="p-6">
-            <Card className="shadow-md max-w-3xl mx-auto">
-                <CardContent>
-                    <Typography variant="h4" className="font-bold mb-4 text-center">
-                        <WorkIcon fontSize="large" className="m-4" />
-                        {jobTitle}
-                    </Typography>
+        <div>
+            {/* Job Post Details Card */}
+            <Container sx={{ marginTop: 4, marginBottom: 6 }}>
+                <Card sx={{ boxShadow: 4 }}>
+                    <CardContent sx={{ padding: 4 }}>
+                        {/* Job Title */}
+                        <Typography variant="h4" fontWeight="bold" align="center" gutterBottom>
+                            {jobTitle}
+                        </Typography>
 
-                    <Grid container spacing={2} className="mb-4">
-                        <Grid item xs={12} md={6}>
-                            <Typography variant="body1" className="flex items-center mb-2">
-                                <BusinessIcon className="mr-2" color="primary" />
-                                {companyName}
-                            </Typography>
+                        {/* Job Information */}
+                        <Grid container spacing={3} sx={{ marginTop: 2, marginBottom: 3 }}>
+                            <Grid item xs={12} md={6}>
+                                <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <BusinessIcon color="primary" sx={{ marginRight: 1 }} />
+                                    <strong>Company:</strong> {companyName}
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <LocationOnIcon color="primary" sx={{ marginRight: 1 }} />
+                                    <strong>Location:</strong> {location}
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <AttachMoneyIcon color="primary" sx={{ marginRight: 1 }} />
+                                    <strong>Salary:</strong> {minSalary} - {maxSalary}
+                                </Typography>
+                            </Grid>
+                            <Grid item xs={12} md={6}>
+                                <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center' }}>
+                                    <ScheduleIcon color="primary" sx={{ marginRight: 1 }} />
+                                    <strong>Employment Type:</strong> {employmentType}
+                                </Typography>
+                            </Grid>
                         </Grid>
-                        <Grid item xs={12} md={6}>
-                            <Typography variant="body1" className="flex items-center mb-2">
-                                <LocationOnIcon className="mr-2" color="primary" />
-                                {location}
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <Typography variant="body1" className="flex items-center mb-2">
-                                <AttachMoneyIcon className="mr-2" color="primary" />
-                                {minSalary} - {maxSalary}
-                            </Typography>
-                        </Grid>
-                        <Grid item xs={12} md={6}>
-                            <Typography variant="body1" className="flex items-center mb-2">
-                                <ScheduleIcon className="mr-2" color="primary" />
-                                {employmentType}
-                            </Typography>
-                        </Grid>
-                    </Grid>
 
-                    <Typography variant="h6" className="font-bold flex items-center mb-2">
-                        <DescriptionIcon className="mr-2" color="action" />
-                        Description:
-                    </Typography>
-                    <Typography variant="body2" className="text-gray-700 mb-4">
-                        {description}
-                    </Typography>
+                        {/* Job Description */}
+                        <Typography variant="h6" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
+                            <DescriptionIcon color="action" sx={{ marginRight: 1 }} />
+                            Description:
+                        </Typography>
+                        <Typography variant="body2" sx={{ marginBottom: 3, lineHeight: 1.8 }}>
+                            {description}
+                        </Typography>
 
-                    <Typography variant="h6" className="font-bold flex items-center mb-2">
-                        <AssignmentTurnedInIcon className="mr-2" color="action" />
-                        Requirements:
-                    </Typography>
-                    <Typography variant="body2" className="text-gray-700">
-                        {requirement}
-                    </Typography>
-                </CardContent>
+                        {/* Job Requirements */}
+                        <Typography variant="h6" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
+                            <AssignmentTurnedInIcon color="action" sx={{ marginRight: 1 }} />
+                            Requirements:
+                        </Typography>
+                        <Typography variant="body2" sx={{ lineHeight: 1.8 }}>
+                            {requirement}
+                        </Typography>
+                    </CardContent>
 
-                <div className="p-4 text-left">
-                    <Button variant="contained" color="secondary" onClick={() => navigate(-1)}>
-                        Back
-                    </Button>
-                </div>
-            </Card>
+                    {/* Action Buttons */}
+                    <Box sx={{ display: 'flex', justifyContent: 'space-between', padding: 3 }}>
+                        <Button variant="contained" color="secondary" onClick={() => navigate(-1)}>
+                            Back
+                        </Button>
+                        <Button variant="contained" color="primary">
+                            Apply
+                        </Button>
+                    </Box>
+                </Card>
+            </Container>
         </div>
     );
 };
