@@ -43,6 +43,11 @@ const Navbar = () => {
       ],
     },
     {
+      label: "Company Registration Request",
+      path: "/requests/company-registration",
+      visibleForRoles: ["Administrator"],
+    },
+    {
       label: "Recruiter Request",
       path: "/recruiter-request",
       visibleForRoles: ["HR Manager"],
