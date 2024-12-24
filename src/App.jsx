@@ -43,6 +43,15 @@ const router = createBrowserRouter([
     errorElement: "Page not found",
   },
   {
+    element: <MainLayout allowedRoles={["Administrator"]}></MainLayout>,
+    children: [
+      {
+        path: "/requests/company-registration",
+        element: "Company Registration Request List Page",
+      },
+    ],
+  },
+  {
     element: <MainLayout allowedRoles={["HR Manager"]}></MainLayout>,
     children: [
       {
