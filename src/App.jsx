@@ -21,6 +21,7 @@ import RecruiterRequestPage from "./pages/RecruiterRequestPage";
 import RecruiterRequestDetailPage from "./pages/RecruiterRequestDetailPage";
 import RecruiterRegistrationPage from "./pages/RecruiterRegistrationPage";
 import CompanyRegistrationRequestsPage from "./pages/CompanyRegistrationRequestsPage";
+import CompanyRegistrationRequestReviewPage from "./pages/CompanyRegistrationRequestReviewPage";
 
 export const queryClient = new QueryClient();
 
@@ -54,7 +55,9 @@ const router = createBrowserRouter([
       },
       {
         path: "/requests/company-registration/review/:id",
-        element: "Company Registration Request Review",
+        element: (
+          <CompanyRegistrationRequestReviewPage></CompanyRegistrationRequestReviewPage>
+        ),
       },
     ],
   },
