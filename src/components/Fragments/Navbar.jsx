@@ -48,6 +48,11 @@ const Navbar = () => {
       visibleForRoles: ["HR Manager"],
     },
     {
+      label: "Job Post Request",
+      path: "/job-post-request",
+      visibleForRoles: ["Recruiter","HR Manager"],
+    },
+    {
       label: "Document",
       path: "/document",
       visibleForRoles: ["Applicant"],

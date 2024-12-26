@@ -20,6 +20,9 @@ import UploadDocumentPage from "./pages/UploadDocumentPage";
 import RecruiterRequestPage from "./pages/RecruiterRequestPage";
 import RecruiterRequestDetailPage from "./pages/RecruiterRequestDetailPage";
 import RecruiterRegistrationPage from "./pages/RecruiterRegistrationPage";
+import JobPostRequestFormPage from "./pages/JobPostRequestFormPage";
+import JobPostRequestPage from "./pages/JobPostRequestPage";
+import JobPostRequestDetailPage from "./pages/JobPostRequestDetail";
 
 export const queryClient = new QueryClient();
 
@@ -52,6 +55,34 @@ const router = createBrowserRouter([
       {
         path: "/recruiter-request/:id",
         element: <RecruiterRequestDetailPage></RecruiterRequestDetailPage>,
+      },
+    ],
+    errorElement: "Page not found",
+  },
+  {
+    element: <MainLayout allowedRoles={["HR Manager","Recruiter"]}></MainLayout>,
+    children: [
+      {
+        path: "/job-post-request",
+        element: <JobPostRequestPage></JobPostRequestPage>,
+      },
+      {
+        path: "/job-post-request/:id",
+        element: <JobPostRequestDetailPage></JobPostRequestDetailPage>,
+      },
+    ],
+    errorElement: "Page not found",
+  },
+  {
+    element: (
+      <MainLayout
+        allowedRoles={["Recruiter"]}
+      ></MainLayout>
+    ),
+    children: [
+      {
+        path: "/job-post-request/new",
+        element: <JobPostRequestFormPage></JobPostRequestFormPage>,
       },
     ],
     errorElement: "Page not found",
