@@ -20,6 +20,8 @@ import UploadDocumentPage from "./pages/UploadDocumentPage";
 import RecruiterRequestPage from "./pages/RecruiterRequestPage";
 import RecruiterRequestDetailPage from "./pages/RecruiterRequestDetailPage";
 import RecruiterRegistrationPage from "./pages/RecruiterRegistrationPage";
+import CompanyRegistrationRequestsPage from "./pages/CompanyRegistrationRequestsPage";
+import CompanyRegistrationRequestReviewPage from "./pages/CompanyRegistrationRequestReviewPage";
 import JobPostRequestFormPage from "./pages/JobPostRequestFormPage";
 import JobPostRequestPage from "./pages/JobPostRequestPage";
 import JobPostRequestDetailPage from "./pages/JobPostRequestDetail";
@@ -44,6 +46,23 @@ const router = createBrowserRouter([
       },
     ],
     errorElement: "Page not found",
+  },
+  {
+    element: <MainLayout allowedRoles={["Administrator"]}></MainLayout>,
+    children: [
+      {
+        path: "/requests/company-registration",
+        element: (
+          <CompanyRegistrationRequestsPage></CompanyRegistrationRequestsPage>
+        ),
+      },
+      {
+        path: "/requests/company-registration/review/:id",
+        element: (
+          <CompanyRegistrationRequestReviewPage></CompanyRegistrationRequestReviewPage>
+        ),
+      },
+    ],
   },
   {
     element: <MainLayout allowedRoles={["HR Manager"]}></MainLayout>,

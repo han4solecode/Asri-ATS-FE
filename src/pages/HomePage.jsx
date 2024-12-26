@@ -15,6 +15,11 @@ import {
     Skeleton,
     Grid,
 } from '@mui/material';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import BusinessIcon from '@mui/icons-material/Business';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import WorkIcon from '@mui/icons-material/Work';
+import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import "../App.css"
 import { Link } from 'react-router-dom';
 import JobPostService from '../services/jobPost.service';
@@ -92,107 +97,114 @@ const HomePage = () => {
       <h2 className="text-2xl font-bold mb-4">Job Portal</h2>
 
       {/* Filters Section */}
-      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6">
-        <TextField
-          label="Search Jobs"
-          variant="outlined"
-          value={searchQuery}
-          onChange={handleSearchChange}
-          fullWidth
-        />
-        <TextField
-          label="Job Title"
-          variant="outlined"
-          value={jobTitle}
-          onChange={(e) => setJobTitle(e.target.value)}
-          fullWidth
-        />
-        <TextField
-          label="Location"
-          variant="outlined"
-          value={location}
-          onChange={(e) => setLocation(e.target.value)}
-          fullWidth
-        />
-        <TextField
-          label="Company"
-          variant="outlined"
-          value={companyName}
-          onChange={(e) => setCompanyName(e.target.value)}
-          fullWidth
-        />
-        <FormControl>
-          <InputLabel id="employment-type-label">Employment Type</InputLabel>
-          <Select
-            labelId="employment-type-label"
-            value={employmentType}
-            onChange={(e) => setEmploymentType(e.target.value)}
-          >
-            <MenuItem value="">All Types</MenuItem>
-            <MenuItem value="Permanent">Permanent</MenuItem>
-            <MenuItem value="Intern">Intern</MenuItem>
-            <MenuItem value="Contract">Contract</MenuItem>
-          </Select>
-        </FormControl>
-        <FormControl>
-          <InputLabel id="page-size-label">Items per Page</InputLabel>
-          <Select
-            labelId="page-size-label"
-            value={pageSize}
-            onChange={handlePageSizeChange}
-          >
-            {pageSizes.map((size) => (
-              <MenuItem key={size} value={size}>
-                {size}
-              </MenuItem>
-            ))}
-          </Select>
-        </FormControl>
-      </div>
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 items-center">
+            <TextField
+                label="Search Jobs"
+                variant="outlined"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                fullWidth
+                sx={{
+                    fontWeight: 'bold',
+                    backgroundColor: '#f7f9fc',
+                    borderRadius: 2,
+                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                    '& .MuiInputBase-root': {
+                        fontSize: '1.2rem',
+                    },
+                }}
+            />
+            <TextField
+                label="Job Title"
+                variant="outlined"
+                value={jobTitle}
+                onChange={(e) => setJobTitle(e.target.value)}
+                fullWidth
+                sx={{ fontSize: '0.9rem' }}
+            />
+            <TextField
+                label="Location"
+                variant="outlined"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                fullWidth
+                sx={{ fontSize: '0.9rem' }}
+            />
+            <TextField
+                label="Company"
+                variant="outlined"
+                value={companyName}
+                onChange={(e) => setCompanyName(e.target.value)}
+                fullWidth
+                sx={{ fontSize: '0.9rem' }}
+            />
+            <FormControl>
+                <InputLabel id="employment-type-label">Employment Type</InputLabel>
+                <Select
+                    labelId="employment-type-label"
+                    value={employmentType}
+                    onChange={(e) => setEmploymentType(e.target.value)}
+                    sx={{ fontSize: '0.9rem' }}
+                >
+                    <MenuItem value="">All Types</MenuItem>
+                    <MenuItem value="Permanent">Permanent</MenuItem>
+                    <MenuItem value="Intern">Intern</MenuItem>
+                    <MenuItem value="Contract">Contract</MenuItem>
+                </Select>
+            </FormControl>
+            <FormControl>
+                <InputLabel id="page-size-label">Items per Page</InputLabel>
+                <Select
+                    labelId="page-size-label"
+                    value={pageSize}
+                    onChange={handlePageSizeChange}
+                    sx={{ fontSize: '0.9rem' }}
+                >
+                    {pageSizes.map((size) => (
+                        <MenuItem key={size} value={size}>
+                            {size}
+                        </MenuItem>
+                    ))}
+                </Select>
+            </FormControl>
+        </div>
 
-      {/* Job Post Cards */}
-      <Grid container spacing={3}>
-        {isLoading
-          ? Array.from({ length: pageSize }).map((_, index) => (
-              <Grid item xs={12} sm={6} md={4} key={index}>
-                <Card>
-                  <CardContent>
-                    <Skeleton variant="rectangular" height={20} width="60%" />
-                    <Skeleton variant="rectangular" height={20} width="40%" />
-                    <Skeleton variant="rectangular" height={20} width="80%" />
-                    <Skeleton variant="rectangular" height={20} width="50%" />
-                  </CardContent>
-                </Card>
-              </Grid>
-            ))
-          : data?.data?.length
-          ? data.data.map((job) => (
-              <Grid item xs={12} sm={6} md={4} key={job.jobPostId}>
-                <Card>
-                  <CardContent>
-                    <Typography variant="h6" className="font-bold mb-2">{job.jobTitle}</Typography>
-                    <Typography variant="body1" className="mb-1">Company: {job.companyName}</Typography>
-                    <Typography variant="body2" className="text-gray-600 mb-1">Location: {job.location}</Typography>
-                    <Typography variant="body2" className="text-gray-600 mb-1">
-                      Salary: {job.minSalary.toLocaleString()} - {job.maxSalary.toLocaleString()}
-                    </Typography>
-                    <Typography variant="body2" className="text-gray-600">Type: {job.employmentType}</Typography>
-                    <Typography variant="body2" className="text-gray-600">
-                      Posted Date: {new Date(job.createdDate).toDateString()}
-                    </Typography>
-                  </CardContent>
-                  <div className="p-2 text-right">
-                    <Button variant="contained" color="primary" component={Link} to={`/jobpost/${job.jobPostId}`}>
-                      Apply Now
-                    </Button>
-                  </div>
-                </Card>
-              </Grid>
-            ))
-          : (
-              <Typography variant="h6" align="center">No job posts found.</Typography>
-            )}
-      </Grid>
+       {/* Job Post Cards */}
+       <Grid container spacing={3}>
+                {data?.data?.length
+                    ? data.data.map((job) => (
+                        <Grid item xs={12} sm={6} md={4} key={job.jobPostId}>
+                            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column', justifyContent: 'space-between' }}>
+                                <CardContent>
+                                    <Typography variant="h6" className="font-bold mb-2">{job.jobTitle}</Typography>
+                                    <Typography variant="body2" className="mb-1">
+                                        <BusinessIcon fontSize="small" /> {job.companyName}
+                                    </Typography>
+                                    <Typography variant="body2" className="mb-1">
+                                        <LocationOnIcon fontSize="small" /> {job.location}
+                                    </Typography>
+                                    <Typography variant="body2" className="mb-1">
+                                        <AttachMoneyIcon fontSize="small" /> {job.minSalary.toLocaleString()} - {job.maxSalary.toLocaleString()}
+                                    </Typography>
+                                    <Typography variant="body2" className="mb-1">
+                                        <WorkIcon fontSize="small" /> {job.employmentType}
+                                    </Typography>
+                                    <Typography variant="body2">
+                                        <CalendarTodayIcon fontSize="small" /> {new Date(job.createdDate).toDateString()}
+                                    </Typography>
+                                </CardContent>
+                                <div className="p-2 text-right">
+                                    <Button variant="contained" color="primary" component={Link} to={`/jobpost/${job.jobPostId}`}>
+                                        Apply Now
+                                    </Button>
+                                </div>
+                            </Card>
+                        </Grid>
+                    ))
+                    : (
+                        <Typography variant="h6" align="center">No job posts found.</Typography>
+                    )}
+            </Grid>
 
       {/* Pagination */}
       <ReactPaginate

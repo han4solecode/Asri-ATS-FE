@@ -290,12 +290,24 @@ function RegisterCompanyPage(props) {
             >
               {isLoading ? "Submiting Registration Request..." : "Register"}
             </Button>
-            <span className="text-sm text-gray-700">
-              Already Have an Account?{" "}
-              <Link to="/login" className="text-blue-700 hover:underline">
-                Log In
-              </Link>
-            </span>
+            <div className="text-center">
+              <span className="text-sm text-gray-700">
+                Already Have an Account?{" "}
+                <Link to="/login" className="text-blue-700 hover:underline">
+                  Log In
+                </Link>
+              </span>{" "}
+              |{" "}
+              <span className="text-sm text-gray-700">
+                Register as a Recruiter Instead?{" "}
+                <Link
+                  to="/register-company/recruiter-request/new"
+                  className="text-blue-700 hover:underline"
+                >
+                  Go Here
+                </Link>
+              </span>
+            </div>
           </div>
         </form>
       </div>

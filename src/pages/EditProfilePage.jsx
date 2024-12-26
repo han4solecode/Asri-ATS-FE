@@ -29,7 +29,16 @@ function EditProfilePage(props) {
     queryFn: () => fetchUserProfile(),
   });
 
-  const { email, phoneNumber, firstName, lastName, address, dob, sex } = data;
+  const {
+    userName,
+    email,
+    phoneNumber,
+    firstName,
+    lastName,
+    address,
+    dob,
+    sex,
+  } = data;
 
   const initialvalues = {
     firstName: firstName,
@@ -134,7 +143,7 @@ function EditProfilePage(props) {
 
       if (formValid) {
         // edit applicant account
-        let editedApplicant = { ...formValues };
+        let editedApplicant = { ...formValues, userName: userName };
         setLoading(true);
         await UserService.updateProfile(editedApplicant);
         alert("Your profile has been updated!");
