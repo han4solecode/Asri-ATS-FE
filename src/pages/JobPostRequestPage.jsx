@@ -81,16 +81,42 @@ const JobPostRequestPage = () => {
       }}
     >
       <Typography
-        variant="h6"
-        textAlign="center"
-        sx={{
-          fontWeight: "bold",
-          marginBottom: "1.5rem",
-          fontSize: { xs: "1.25rem", sm: "1.5rem" }, // Responsive font size
-        }}
-      >
-        Job Posts Requests
-      </Typography>
+      variant="h6"
+      sx={{
+        fontWeight: "bold",
+        fontSize: { xs: "1.25rem", sm: "1.5rem" },
+        textAlign:'center'
+      }}
+    >
+      Job Post Requests
+    </Typography>
+      <Box
+    sx={{
+      display: "flex",
+      justifyContent: "end", // Membuat tombol di kanan
+      alignItems: "center",
+      marginBottom: "1.5rem",
+    }}
+  >
+    
+    <Button
+      variant="contained"
+      sx={{
+        backgroundColor: "black",
+        color: "white",
+        fontWeight: "bold",
+        textTransform: "none",
+        padding: { xs: "0.5rem 1rem", sm: "0.75rem 1.5rem" },
+        "&:hover": {
+          backgroundColor: "#424242",
+        },
+      }}
+      className="rounded-lg shadow-md"
+      onClick={() => navigate('/job-post-request/new')}
+    >
+      Add New Job Post Request
+    </Button>
+  </Box>
 
       {loading ? (
         <Box
