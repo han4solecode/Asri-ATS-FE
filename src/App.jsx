@@ -26,6 +26,9 @@ import JobPostRequestFormPage from "./pages/JobPostRequestFormPage";
 import JobPostRequestPage from "./pages/JobPostRequestPage";
 import JobPostRequestDetailPage from "./pages/JobPostRequestDetail";
 import EditJobPostRequestPage from "./pages/EditJobPostRequestPage";
+import SubmitApplicationJob from "./pages/SubmitApplicationJobPage";
+import ApplicationJobPage from "./pages/ApplicationJobPage";
+import ApplicationDetailPage from "./pages/ApplicationDetailPage";
 
 export const queryClient = new QueryClient();
 
@@ -122,6 +125,24 @@ const router = createBrowserRouter([
         path: "/document/new",
         element: <UploadDocumentForm></UploadDocumentForm>,
       },
+      {
+        path: "/jobpost/application/:jobPostId",
+        element: <SubmitApplicationJob></SubmitApplicationJob>,
+      }
+    ],
+    errorElement: "Page not found",
+  },
+  {
+    element: <MainLayout allowedRoles={["HR Manager","Recruiter","Applicant"]}></MainLayout>,
+    children: [
+      {
+        path: "/application-job",
+        element: <ApplicationJobPage></ApplicationJobPage>,
+      },
+      {
+        path: "/application-job/:processId",
+        element: <ApplicationDetailPage></ApplicationDetailPage>,
+      }
     ],
     errorElement: "Page not found",
   },

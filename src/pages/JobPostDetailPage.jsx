@@ -5,7 +5,6 @@ import { useParams, useNavigate } from 'react-router-dom';
 import JobPostService from '../services/jobPost.service';
 
 // Material UI Icons
-import WorkIcon from '@mui/icons-material/Work';
 import BusinessIcon from '@mui/icons-material/Business';
 import LocationOnIcon from '@mui/icons-material/LocationOn';
 import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
@@ -110,7 +109,11 @@ const JobPostDetailPage = () => {
                         <Button variant="contained" color="secondary" onClick={() => navigate(-1)}>
                             Back
                         </Button>
-                        <Button variant="contained" color="primary">
+                        <Button
+                            variant="contained"
+                            color="primary"
+                            onClick={() => navigate(`/jobpost/application/${jobPostId}`)} // Navigate to application form
+                        >
                             Apply
                         </Button>
                     </Box>
