@@ -25,6 +25,7 @@ import CompanyRegistrationRequestReviewPage from "./pages/CompanyRegistrationReq
 import JobPostRequestFormPage from "./pages/JobPostRequestFormPage";
 import JobPostRequestPage from "./pages/JobPostRequestPage";
 import JobPostRequestDetailPage from "./pages/JobPostRequestDetail";
+import EditJobPostRequestPage from "./pages/EditJobPostRequestPage";
 
 export const queryClient = new QueryClient();
 
@@ -102,6 +103,10 @@ const router = createBrowserRouter([
       {
         path: "/job-post-request/new",
         element: <JobPostRequestFormPage></JobPostRequestFormPage>,
+      },
+      {
+        path: "/edit/job-post-request/:id",
+        element: <EditJobPostRequestPage></EditJobPostRequestPage>,
       },
     ],
     errorElement: "Page not found",

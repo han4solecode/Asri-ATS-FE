@@ -23,7 +23,12 @@ const details = async (processId) => {
 const reviewJobPostRequest = async (userData) => {
   const res = await AxiosInstance.api.post("/api/JobPostRequest/review", userData);
   return res;
-}
+};
+
+const updateJobPostRequest = async (userData) => {
+  const res = await AxiosInstance.api.put("/api/JobPostRequest/update", userData);
+  return res;
+};
 
 
 
@@ -32,7 +37,8 @@ const JobPostRequestService = {
   jobPostRequestToBeReviewed,
   jobPostRequestList,
   details,
-  reviewJobPostRequest
+  reviewJobPostRequest,
+  updateJobPostRequest
 };
 
 export default JobPostRequestService;

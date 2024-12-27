@@ -34,7 +34,7 @@ const JobPostRequestDetailPage = () => {
   const [errors, setErrors] = useState(null);
   const { user: currentUser } = useSelector((state) => state.auth);
 
-  // Fetch recruiter request details
+  // Fetch job post request details
   useEffect(() => {
     const fetchRequestDetails = async () => {
       try {
@@ -379,12 +379,13 @@ const JobPostRequestDetailPage = () => {
                   borderColor: "#1976d2",
                 },
               }}
-              onClick={() => setOpenReviewModal(true)} // Open the review modal
+              onClick={() =>{
+                requestDetails.requiredRole === "Recruiter" ? navigate(`/edit/job-post-request/${requestDetails.processId}`) : setOpenReviewModal(true)
+              }} // Open the review modal
             >
-              Review
+              {requestDetails.requiredRole === "Recruiter" ? "Edit Job Post Request" : "Review"}
             </Button> : ''
           }
-
         </Box>
       )}
     </Box>
