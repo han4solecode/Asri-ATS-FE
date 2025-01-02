@@ -9,12 +9,13 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
   FormControl,
   InputLabel,
   Box } from "@mui/material";
-import { useParams } from "react-router-dom"; // For accessing processId if used in routing
+import { useParams, useNavigate } from "react-router-dom"; // For accessing processId if used in routing
 import { useSelector } from "react-redux";
 import ApplicationJobService from "../services/applicationJob.service";
 
 const ApplicationDetailPage = () => {
   const { processId } = useParams(); // Assumes `processId` is passed via route params
+  const navigate = useNavigate(); 
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -67,7 +68,7 @@ const ApplicationDetailPage = () => {
   };
 
   const handleEditApplication = () => {
-    alert("Redirect to Edit Application form.");
+    navigate(`/application-job/${processId}/edit`);
   };
 
   if (loading) {
@@ -114,6 +115,10 @@ const ApplicationDetailPage = () => {
             <TableRow>
               <TableCell className="font-bold">Address</TableCell>
               <TableCell>{details.address}</TableCell>
+            </TableRow>
+            <TableRow>
+              <TableCell className="font-bold">Job Title</TableCell>
+              <TableCell>{details.jobPostName}</TableCell>
             </TableRow>
           </TableBody>
         </Table>
@@ -218,7 +223,7 @@ const ApplicationDetailPage = () => {
       <Box className="flex justify-end space-x-4">
       {/* Applicant Actions */}
       {currentUser.roles.includes("Applicant") && details.requiredRole === "Applicant" && (
-        <Button variant="contained" color="primary" onClick={handleEditApplication}>
+        <Button variant="contained" color="warning" onClick={handleEditApplication}>
           Edit Application
         </Button>
       )}

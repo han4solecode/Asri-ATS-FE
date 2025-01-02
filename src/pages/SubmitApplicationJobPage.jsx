@@ -2,7 +2,6 @@ import React, { useState, useEffect } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import {
   TextField,
-  TextareaAutosize,
   Button,
   Select,
   MenuItem,
@@ -12,12 +11,14 @@ import {
   Typography,
   Box,
   CircularProgress,
+  IconButton,
 } from "@mui/material";
+import DeleteIcon from "@mui/icons-material/Delete";
 import AxiosInstance from "../services/api";
 import ApplicationJobService from "../services/applicationJob.service";
 
 const SubmitApplicationJob = () => {
-  const {jobPostId} = useParams();
+  const { jobPostId } = useParams();
   const [formData, setFormData] = useState({
     workExperience: "",
     education: "",
@@ -25,7 +26,8 @@ const SubmitApplicationJob = () => {
     supportingDocumentsId: "",
   });
 
-  const [files, setFiles] = useState([]);
+  const [filesButton1, setFilesButton1] = useState([]);
+  const [filesButton2, setFilesButton2] = useState([]);
   const [documentOptions, setDocumentOptions] = useState([]);
   const [errors, setErrors] = useState({});
   const [loading, setLoading] = useState(false);
@@ -33,7 +35,6 @@ const SubmitApplicationJob = () => {
 
   const navigate = useNavigate();
 
-  // Fetch existing documents
   useEffect(() => {
     const fetchDocuments = async () => {
       try {
@@ -55,18 +56,19 @@ const SubmitApplicationJob = () => {
     fetchDocuments();
   }, []);
 
-  // Handle form field changes
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
-  // Handle file uploads
-  const handleFileChange = (e) => {
-    setFiles([...e.target.files]);
+  const handleFileChange = (e, setFiles) => {
+    setFiles((prevFiles) => [...prevFiles, ...e.target.files]);
   };
 
-  // Validate the form
+  const handleRemoveFile = (index, setFiles) => {
+    setFiles((prevFiles) => prevFiles.filter((_, i) => i !== index));
+  };
+
   const validateForm = () => {
     const newErrors = {};
     if (!formData.workExperience) newErrors.workExperience = "Work experience is required";
@@ -75,7 +77,6 @@ const SubmitApplicationJob = () => {
     return newErrors;
   };
 
-  // Handle form submission
   const handleSubmit = async (e) => {
     e.preventDefault();
     setErrors({});
@@ -96,7 +97,7 @@ const SubmitApplicationJob = () => {
       applicationData.append("supportingDocumentsId", formData.supportingDocumentsId);
     }
 
-    files.forEach((file) => {
+    [...filesButton1, ...filesButton2].forEach((file) => {
       applicationData.append("SupportingDocuments", file);
     });
 
@@ -107,7 +108,7 @@ const SubmitApplicationJob = () => {
         applicationData
       );
       alert(response.data.message);
-      navigate("/jobpost/:jobPostId"); // Redirect to a specific page after submission
+      navigate(`/jobpost/${jobPostId}`); // Redirect to the job post page
     } catch (error) {
       alert(error.response?.data?.message || "An error occurred");
     } finally {
@@ -116,13 +117,27 @@ const SubmitApplicationJob = () => {
   };
 
   return (
-    <Box sx={{ maxWidth: "800px", margin: "auto", padding: 4 }}>
-      <Typography variant="h4" fontWeight="bold" gutterBottom>
+    <Box
+      sx={{
+        maxWidth: "800px",
+        margin: "auto",
+        padding: { xs: 2, sm: 4 },
+        backgroundColor: "#f9f9f9",
+        borderRadius: "8px",
+        boxShadow: "0px 4px 10px rgba(0, 0, 0, 0.1)",
+      }}
+    >
+      <Typography
+        variant="h4"
+        fontWeight="bold"
+        gutterBottom
+        textAlign="center"
+        color="primary"
+      >
         Submit Job Application
       </Typography>
       <form onSubmit={handleSubmit}>
         <Grid container spacing={3}>
-          {/* Work Experience */}
           <Grid item xs={12}>
             <TextField
               label="Work Experience"
@@ -137,7 +152,6 @@ const SubmitApplicationJob = () => {
             />
           </Grid>
 
-          {/* Education */}
           <Grid item xs={12}>
             <TextField
               label="Education"
@@ -150,7 +164,6 @@ const SubmitApplicationJob = () => {
             />
           </Grid>
 
-          {/* Skills */}
           <Grid item xs={12}>
             <TextField
               label="Skills"
@@ -165,11 +178,10 @@ const SubmitApplicationJob = () => {
             />
           </Grid>
 
-          {/* Use Existing Document Dropdown */}
           <Grid item xs={12}>
             <FormControl fullWidth>
               <InputLabel id="supportingDocumentsId-label">
-                {loadingDocuments ? "Loading Documents..." : "Use Existing Document"}
+                {loadingDocuments ? "Loading Documents..." : "Use Existing Resume (Optional)"}
               </InputLabel>
               <Select
                 labelId="supportingDocumentsId-label"
@@ -183,51 +195,88 @@ const SubmitApplicationJob = () => {
                 </MenuItem>
                 {documentOptions.map((doc) => (
                   <MenuItem key={doc.documentId} value={doc.documentId}>
-                    {doc.documentName} 
+                    {doc.documentName}
                   </MenuItem>
                 ))}
               </Select>
             </FormControl>
           </Grid>
 
-          {/* Upload New Files */}
-          <Grid item xs={12}>
-            <Button variant="contained" component="label" fullWidth>
-              Upload Supporting Documents
+          <Grid item xs={12} sm={6}>
+            <Button backgroundColor="#1f2937" variant="contained" component="label" fullWidth >
+              Upload New Resume (Optional)
               <input
                 type="file"
                 multiple
                 hidden
-                onChange={handleFileChange}
+                onChange={(e) => handleFileChange(e, setFilesButton1)}
               />
             </Button>
           </Grid>
 
-          {/* Show Uploaded Files */}
-          {files.length > 0 && (
-            <Grid item xs={12}>
-              <Typography variant="subtitle1" gutterBottom>
-                Uploaded Documents:
-              </Typography>
-              <ul>
-                {files.map((file, index) => (
-                  <li key={index}>{file.name}</li>
-                ))}
-              </ul>
-            </Grid>
-          )}
+          <Grid item xs={12} sm={6}>
+            <Button variant="contained" component="label" fullWidth>
+              Upload Additional Documents (Optional)
+              <input
+                type="file"
+                multiple
+                hidden
+                onChange={(e) => handleFileChange(e, setFilesButton2)}
+              />
+            </Button>
+          </Grid>
 
-          {/* Submit Button */}
           <Grid item xs={12}>
+            {filesButton1.map((file, index) => (
+              <Box
+                key={index}
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                mb={1}
+              >
+                <Typography>{file.name}</Typography>
+                <IconButton
+                  edge="end"
+                  color="secondary"
+                  onClick={() => handleRemoveFile(index, setFilesButton1)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
+            ))}
+            {filesButton2.map((file, index) => (
+              <Box
+                key={index}
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                mb={1}
+              >
+                <Typography>{file.name}</Typography>
+                <IconButton
+                  edge="end"
+                  color="secondary"
+                  onClick={() => handleRemoveFile(index, setFilesButton2)}
+                >
+                  <DeleteIcon />
+                </IconButton>
+              </Box>
+            ))}
+          </Grid>
+
+          <Grid item xs={12}>
+            <div className="flex flex-col gap-2 items-center justify-center">
             <Button
               type="submit"
               variant="contained"
-              color="primary"
               fullWidth
               disabled={loading}
+              sx={{ py: 1.5 , width: "80%", backgroundColor: "#1f2937" }}
             >
               {loading ? <CircularProgress size={24} color="inherit" /> : "Submit Application"}
             </Button>
+            </div>
           </Grid>
         </Grid>
       </form>

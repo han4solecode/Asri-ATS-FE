@@ -29,6 +29,7 @@ import EditJobPostRequestPage from "./pages/EditJobPostRequestPage";
 import SubmitApplicationJob from "./pages/SubmitApplicationJobPage";
 import ApplicationJobPage from "./pages/ApplicationJobPage";
 import ApplicationDetailPage from "./pages/ApplicationDetailPage";
+import EditApplicationJobPage from "./pages/EditApplicationJobPage";
 
 export const queryClient = new QueryClient();
 
@@ -128,6 +129,10 @@ const router = createBrowserRouter([
       {
         path: "/jobpost/application/:jobPostId",
         element: <SubmitApplicationJob></SubmitApplicationJob>,
+      },
+      {
+        path: "/application-job/:processId/edit",
+        element: <EditApplicationJobPage></EditApplicationJobPage>,
       }
     ],
     errorElement: "Page not found",
