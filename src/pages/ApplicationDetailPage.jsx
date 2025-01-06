@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Button, CircularProgress, Dialog,
+import {
+  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Button, CircularProgress, Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -8,14 +9,16 @@ import { Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper
   Select,
   FormControl,
   InputLabel,
-  Box } from "@mui/material";
+  Box
+} from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"; // For accessing processId if used in routing
 import { useSelector } from "react-redux";
 import ApplicationJobService from "../services/applicationJob.service";
+import InterviewScheduleService from "../services/interviewScheduleService";
 
 const ApplicationDetailPage = () => {
   const { processId } = useParams(); // Assumes `processId` is passed via route params
-  const navigate = useNavigate(); 
+  const navigate = useNavigate();
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -23,7 +26,100 @@ const ApplicationDetailPage = () => {
   const [action, setAction] = useState(""); // Selected action
   const [comment, setComment] = useState(""); // Comment field
   const [submitting, setSubmitting] = useState(false); // Submitting state
+  const [modalMenu, setModalMenu] = useState("");
   const { user: currentUser } = useSelector((state) => state.auth);
+  const [formValues, setFormValues] = useState({
+    action:"Interview Scheduled",
+    interviewTime: "",
+    interviewType: "",
+    interviewers: "",
+    interviewerEmails: "",
+    location: "",
+    comment: ""
+  });
+  const [errorForm, setErrorForm] = useState(null);
+  // Validate inputs
+  const validate = () => {
+    let validationErrors = {};
+  
+    if (!formValues.interviewTime.trim()) {
+      validationErrors.interviewTime = "Interview Time is required.";
+    }
+  
+    if (!formValues.interviewType.trim()) {
+      validationErrors.interviewType = "Interview Type is required.";
+    }
+  
+    if (!formValues.interviewers.trim()) {
+      validationErrors.interviewers = "Interviewers are required.";
+    }
+  
+    if (!formValues.interviewerEmails.trim()) {
+      validationErrors.interviewerEmails = "Interviewer emails are required.";
+    }
+  
+    if (!formValues.location.trim()) {
+      validationErrors.location = "Location is required.";
+    } else if (formValues.location.length > 200) {
+      validationErrors.location = "Location cannot exceed 200 characters.";
+    }
+  
+    if (!formValues.comment.trim()) {
+      validationErrors.comment = "Comment is required.";
+    }
+  
+    setErrorForm(validationErrors);
+    return validationErrors;
+  };
+  
+  const handleInputChangeSetInterviewSchedule = (e) => {
+    const { name, value } = e.target;
+    setFormValues({ ...formValues, [name]: value });
+  };
+
+  // Handle form submission
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    const listErrors = validate(formValues);
+    let formValid = true;
+
+    for (let propName in listErrors) {
+      if (listErrors[propName].length > 0) {
+        formValid = false;
+      }
+    }
+
+    if(!formValid){
+      return
+    }
+
+    setSubmitting(true);
+    try {
+      formValues.interviewerEmails = formValues.interviewerEmails.split(",");
+      formValues.interviewers = formValues.interviewers.split(",");
+      formValues.applicationJobId = details.applicationJobId
+      const response = await InterviewScheduleService.setInterviewScheduleTime(formValues);
+      if (response.data.status === "Success") {
+        alert("Interview Schedule Time created successful!");
+        setFormValues({
+          interviewTime: "",
+          interviewType: "",
+          interviewers: "",
+          interviewerEmails: "",
+          location: "",
+          comment: ""
+        });
+      } else {
+        alert("Interview Schedule Time created failed!");
+      }
+    } catch (error) {
+      console.error("Error during registration:", error);
+      alert("An error occurred during interview schedule time creation.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
 
   useEffect(() => {
     const fetchDetails = async () => {
@@ -61,10 +157,6 @@ const ApplicationDetailPage = () => {
     } finally {
       setSubmitting(false);
     }
-  };
-
-  const handleScheduleInterview = () => {
-    alert("Schedule interview functionality coming soon!");
   };
 
   const handleEditApplication = () => {
@@ -221,70 +313,220 @@ const ApplicationDetailPage = () => {
 
       {/* Role-Based Buttons */}
       <Box className="flex justify-end space-x-4">
-      {/* Applicant Actions */}
-      {currentUser.roles.includes("Applicant") && details.requiredRole === "Applicant" && (
-        <Button variant="contained" color="warning" onClick={handleEditApplication}>
-          Edit Application
-        </Button>
-      )}
+        {/* Applicant Actions */}
+        {currentUser.roles.includes("Applicant") && details.requiredRole === "Applicant" && (
+          <Button variant="contained" color="warning" onClick={handleEditApplication}>
+            Edit Application
+          </Button>
+        )}
 
-      {/* Recruiter Actions */}
-      {currentUser.roles.includes("Recruiter") && details.requiredRole === "Recruiter" && (
-        <Button variant="contained" color="primary" onClick={() => setOpenModal(true)}>
-          Review Application
-        </Button>
-      )}
+        {/* Recruiter Actions */}
+        {currentUser.roles.includes("Recruiter") && details.requiredRole === "Recruiter" && (
+          <Button variant="contained" color="primary" onClick={() => {
+            setOpenModal(true)
+            setModalMenu("Review Application")
+          }}>
+            Review Application
+          </Button>
+        )}
 
-      {/* HR Manager Actions */}
-      {currentUser.roles.includes("HR Manager") && details.requiredRole === "HR Manager" && (
-        <Button variant="contained" color="secondary" onClick={handleScheduleInterview}>
-          Schedule Interview
-        </Button>
-      )}
-    </Box>
+        {/* HR Manager Actions */}
+        {currentUser.roles.includes("HR Manager") && details.requiredRole === "HR Manager" && (
+          <Button variant="contained" color="secondary" onClick={() => {
+            setOpenModal(true)
+            setModalMenu("Schedule Interview")
+          }
+          }>
+            Schedule Interview
+          </Button>
+        )}
+      </Box>
 
       {/* Review Modal */}
-      <Dialog open={openModal} onClose={() => setOpenModal(false)} fullWidth maxWidth="sm">
-        <DialogTitle>Review Application</DialogTitle>
-        <DialogContent>
-          <FormControl fullWidth className="mt-4">
-            <InputLabel>Action</InputLabel>
-            <Select
-              value={action}
-              onChange={(e) => setAction(e.target.value)}
-              required
+      {/* Button shows Schedule Interview */}
+      {modalMenu === "Schedule Interview" &&
+        <Dialog open={openModal} onClose={() => setOpenModal(false)} fullWidth maxWidth="sm">
+          <DialogTitle>Set Interview Schedule</DialogTitle>
+          <DialogContent>
+            <FormControl fullWidth variant="outlined" sx={{ mt: 2 }}>
+              <InputLabel>Action</InputLabel>
+              <Select
+                value={formValues.action}
+                name="action"
+                onChange={handleInputChangeSetInterviewSchedule}
+                required
+                label="Action"
+              >
+                <MenuItem value="Interview Scheduled">Interview Scheduled</MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              label="Interview Time"
+              type="date"
+              rows={4}
+              name="interviewTime"
+              value={formValues.interviewTime}
+              onChange={handleInputChangeSetInterviewSchedule}
+              error={errorForm?.interviewTime}
+              helperText={errorForm?.interviewTime}
+              fullWidth
+              className="mt-4"
+              sx={{ marginTop: 2 }}
+              InputLabelProps={{
+                shrink: true, // Memastikan label selalu berada di atas
+              }}
+            />
+            <TextField
+              label="Interview Type"
+              rows={4}
+              name="interviewType"
+              value={formValues.interviewType}
+              onChange={handleInputChangeSetInterviewSchedule}
+              error={errorForm?.interviewType}
+              helperText={errorForm?.interviewType}
+              fullWidth
+              className="mt-4"
+              sx={{ marginTop: 2 }}
+              InputLabelProps={{
+                shrink: true, // Memastikan label selalu berada di atas
+              }}
+            />
+            <TextField
+              label="Interviewers"
+              multiline
+              rows={4}
+              name="interviewers"
+              value={formValues.interviewers}
+              onChange={handleInputChangeSetInterviewSchedule}
+              error={errorForm?.interviewers}
+              helperText={errorForm?.interviewers}
+              fullWidth
+              className="mt-4"
+              sx={{ marginTop: 2 }}
+              InputLabelProps={{
+                shrink: true, // Memastikan label selalu berada di atas
+              }}
+            />
+            <TextField
+              label="Interviewer Emails"
+              multiline
+              rows={4}
+              name="interviewerEmails"
+              value={formValues.interviewerEmails}
+              onChange={handleInputChangeSetInterviewSchedule}
+              error={errorForm?.interviewerEmails}
+              helperText={errorForm?.interviewerEmails}
+              fullWidth
+              className="mt-4"
+              sx={{ marginTop: 2 }}
+              InputLabelProps={{
+                shrink: true, // Memastikan label selalu berada di atas
+              }}
+            />
+            <TextField
+              label="Location"
+              rows={4}
+              name="location"
+              value={formValues.location}
+              onChange={handleInputChangeSetInterviewSchedule}
+              error={errorForm?.location}
+              helperText={errorForm?.location}
+              fullWidth
+              className="mt-4"
+              sx={{ marginTop: 2 }}
+              InputLabelProps={{
+                shrink: true, // Memastikan label selalu berada di atas
+              }}
+            />
+            <TextField
+              label="Comment"
+              multiline
+              rows={4}
+              name="comment"
+              value={formValues.comment}
+              onChange={handleInputChangeSetInterviewSchedule}
+              error={errorForm?.comment}
+              helperText={errorForm?.comment}
+              fullWidth
+              className="mt-4"
+              sx={{ marginTop: 2 }}
+              InputLabelProps={{
+                shrink: true, // Memastikan label selalu berada di atas
+              }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => {
+              setOpenModal(false)
+              setFormValues({
+                action:"Interview Scheduled",
+                interviewTime: "",
+                interviewType: "",
+                interviewers: "",
+                interviewerEmails: "",
+                location: "",
+                comments: ""
+              })
+              setErrorForm(null)
+            }}  
+            color="secondary">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              variant="contained"
+              color="primary"
+              disabled={submitting}
             >
-              <MenuItem value="Shortlisted">Shortlisted</MenuItem>
-              <MenuItem value="Rejected">Rejected</MenuItem>
-              <MenuItem value="Request Additional Information">
-                Request Additional Information
-              </MenuItem>
-            </Select>
-          </FormControl>
-          <TextField
-            label="Comments"
-            multiline
-            rows={4}
-            value={comment}
-            onChange={(e) => setComment(e.target.value)}
-            fullWidth
-            className="mt-4"
-          />
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setOpenModal(false)} color="secondary">
-            Cancel
-          </Button>
-          <Button
-            onClick={handleReviewSubmit}
-            variant="contained"
-            color="primary"
-            disabled={submitting || !action || !comment}
-          >
-            {submitting ? "Submitting..." : "Submit Review"}
-          </Button>
-        </DialogActions>
-      </Dialog>
+              {submitting ? "Submitting..." : "Submit Set Schedule Time"}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      }
+
+      {/* Button shows Review Application */}
+      {modalMenu === "Review Application" &&
+        <Dialog open={openModal} onClose={() => setOpenModal(false)} fullWidth maxWidth="sm">
+          <DialogTitle>Review Application</DialogTitle>
+          <DialogContent>
+            <FormControl fullWidth className="mt-4">
+              <InputLabel>Action</InputLabel>
+              <Select
+                value={action}
+                onChange={(e) => setAction(e.target.value)}
+                required
+              >
+                <MenuItem value="Shortlisted">Shortlisted</MenuItem>
+                <MenuItem value="Rejected">Rejected</MenuItem>
+                <MenuItem value="Request Additional Information">
+                  Request Additional Information
+                </MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              label="Comments"
+              multiline
+              rows={4}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              fullWidth
+              className="mt-4"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenModal(false)} color="secondary">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleReviewSubmit}
+              variant="contained"
+              color="primary"
+              disabled={submitting || !action || !comment}
+            >
+              {submitting ? "Submitting..." : "Submit Review"}
+            </Button>
+          </DialogActions>
+        </Dialog>}
     </div>
   );
 };

@@ -73,11 +73,13 @@ const JobPostRequestPage = () => {
 
   return (
     <Box
-      className="max-w-5xl mx-auto bg-white rounded-lg shadow-md"
+      // className="mx-auto bg-white rounded-lg shadow-md"
       sx={{
         margin: "2rem auto", // Adds consistent spacing with navbar
         padding: { xs: "1rem", sm: "1.5rem", md: "2rem" }, // Responsive padding
         boxSizing: "border-box",
+        width: "100%",
+        maxWidth: { xs: "100%", lg: "90%" }
       }}
     >
       <Typography
@@ -117,7 +119,6 @@ const JobPostRequestPage = () => {
       Add New Job Post Request
     </Button>
   </Box>
-
       {loading ? (
         <Box
           sx={{
