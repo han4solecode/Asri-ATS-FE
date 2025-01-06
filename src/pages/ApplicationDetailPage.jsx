@@ -29,7 +29,7 @@ const ApplicationDetailPage = () => {
   const [modalMenu, setModalMenu] = useState("");
   const { user: currentUser } = useSelector((state) => state.auth);
   const [formValues, setFormValues] = useState({
-    action:"Interview Scheduled",
+    action:"Submit",
     interviewTime: "",
     interviewType: "",
     interviewers: "",
@@ -357,7 +357,7 @@ const ApplicationDetailPage = () => {
                 required
                 label="Action"
               >
-                <MenuItem value="Interview Scheduled">Interview Scheduled</MenuItem>
+                <MenuItem value="Submit">Submit</MenuItem>
               </Select>
             </FormControl>
             <TextField
