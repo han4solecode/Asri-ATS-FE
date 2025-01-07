@@ -29,7 +29,7 @@ const ApplicationDetailPage = () => {
   const [modalMenu, setModalMenu] = useState("");
   const { user: currentUser } = useSelector((state) => state.auth);
   const [formValues, setFormValues] = useState({
-    action:"Submit",
+    action: "Submit",
     interviewTime: "",
     interviewType: "",
     interviewers: "",
@@ -41,37 +41,37 @@ const ApplicationDetailPage = () => {
   // Validate inputs
   const validate = () => {
     let validationErrors = {};
-  
+
     if (!formValues.interviewTime.trim()) {
       validationErrors.interviewTime = "Interview Time is required.";
     }
-  
+
     if (!formValues.interviewType.trim()) {
       validationErrors.interviewType = "Interview Type is required.";
     }
-  
+
     if (!formValues.interviewers.trim()) {
       validationErrors.interviewers = "Interviewers are required.";
     }
-  
+
     if (!formValues.interviewerEmails.trim()) {
       validationErrors.interviewerEmails = "Interviewer emails are required.";
     }
-  
+
     if (!formValues.location.trim()) {
       validationErrors.location = "Location is required.";
     } else if (formValues.location.length > 200) {
       validationErrors.location = "Location cannot exceed 200 characters.";
     }
-  
+
     if (!formValues.comment.trim()) {
       validationErrors.comment = "Comment is required.";
     }
-  
+
     setErrorForm(validationErrors);
     return validationErrors;
   };
-  
+
   const handleInputChangeSetInterviewSchedule = (e) => {
     const { name, value } = e.target;
     setFormValues({ ...formValues, [name]: value });
@@ -90,7 +90,7 @@ const ApplicationDetailPage = () => {
       }
     }
 
-    if(!formValid){
+    if (!formValid) {
       return
     }
 
@@ -145,7 +145,14 @@ const ApplicationDetailPage = () => {
         comment: comment,
       };
 
-      const response = await ApplicationJobService.reviewApplication(reviewRequest);
+      let response;
+
+      if (modalMenu === "Confirm Interview Schedule") {
+        response = await InterviewScheduleService.confirmInterviewScheduleTime(reviewRequest);
+      } else if (modalMenu === "Review Application") {
+        response = await ApplicationJobService.reviewApplication(reviewRequest);
+      }
+
       if (response.data.status === "Success") {
         alert("Review submitted successfully.");
         setOpenModal(false);
@@ -315,9 +322,16 @@ const ApplicationDetailPage = () => {
       <Box className="flex justify-end space-x-4">
         {/* Applicant Actions */}
         {currentUser.roles.includes("Applicant") && details.requiredRole === "Applicant" && (
-          <Button variant="contained" color="warning" onClick={handleEditApplication}>
-            Edit Application
-          </Button>
+          details.currentStep === "Applicant Reviews Interview Schedule" ?
+            <Button variant="contained" color="warning" onClick={() => {
+              setOpenModal(true)
+              setModalMenu("Confirm Interview Schedule")
+            }}>
+              Interview Confirmation Schedule
+            </Button> :
+            <Button variant="contained" color="warning" onClick={handleEditApplication}>
+              Edit Application
+            </Button>
         )}
 
         {/* Recruiter Actions */}
@@ -459,7 +473,7 @@ const ApplicationDetailPage = () => {
             <Button onClick={() => {
               setOpenModal(false)
               setFormValues({
-                action:"Interview Scheduled",
+                action: "Interview Scheduled",
                 interviewTime: "",
                 interviewType: "",
                 interviewers: "",
@@ -468,8 +482,8 @@ const ApplicationDetailPage = () => {
                 comments: ""
               })
               setErrorForm(null)
-            }}  
-            color="secondary">
+            }}
+              color="secondary">
               Cancel
             </Button>
             <Button
@@ -500,6 +514,50 @@ const ApplicationDetailPage = () => {
                 <MenuItem value="Rejected">Rejected</MenuItem>
                 <MenuItem value="Request Additional Information">
                   Request Additional Information
+                </MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              label="Comments"
+              multiline
+              rows={4}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              fullWidth
+              className="mt-4"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenModal(false)} color="secondary">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleReviewSubmit}
+              variant="contained"
+              color="primary"
+              disabled={submitting || !action || !comment}
+            >
+              {submitting ? "Submitting..." : "Submit Review"}
+            </Button>
+          </DialogActions>
+        </Dialog>}
+
+
+      {/* Button shows Confirm Interview Schedule*/}
+      {modalMenu === "Confirm Interview Schedule" &&
+        <Dialog open={openModal} onClose={() => setOpenModal(false)} fullWidth maxWidth="sm">
+          <DialogTitle>Interview Schedule Confirmation</DialogTitle>
+          <DialogContent>
+            <FormControl fullWidth className="mt-4">
+              <InputLabel>Action</InputLabel>
+              <Select
+                value={action}
+                onChange={(e) => setAction(e.target.value)}
+                required
+              >
+                <MenuItem value="Confirm">Confirm</MenuItem>
+                <MenuItem value="Request Reschedule">
+                  Request Reschedule
                 </MenuItem>
               </Select>
             </FormControl>
