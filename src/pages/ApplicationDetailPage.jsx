@@ -408,7 +408,7 @@ const ApplicationDetailPage = () => {
             </FormControl>
             <TextField
               label="Interview Time"
-              type="date"
+              type="datetime-local"
               rows={4}
               name="interviewTime"
               value={formValues.interviewTime}
