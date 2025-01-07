@@ -10,9 +10,15 @@ const confirmInterviewScheduleTime = async (userData) => {
     return res;
 }
 
+const markInterviewAsComplete = async (userData) => {
+    const res = await AxiosInstance.api.post("/api/InterviewingSchedule/mark-complete", userData);
+    return res;
+}
+
 const InterviewScheduleService = {
     setInterviewScheduleTime,
-    confirmInterviewScheduleTime
+    confirmInterviewScheduleTime,
+    markInterviewAsComplete
 };
 
 export default InterviewScheduleService;

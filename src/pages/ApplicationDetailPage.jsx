@@ -25,6 +25,7 @@ const ApplicationDetailPage = () => {
   const [openModal, setOpenModal] = useState(false); // Modal state
   const [action, setAction] = useState(""); // Selected action
   const [comment, setComment] = useState(""); // Comment field
+  const [interviewerCommments, setInterviewerComments] = useState(""); // Interviewer Comments field
   const [submitting, setSubmitting] = useState(false); // Submitting state
   const [modalMenu, setModalMenu] = useState("");
   const { user: currentUser } = useSelector((state) => state.auth);
@@ -116,6 +117,31 @@ const ApplicationDetailPage = () => {
     } catch (error) {
       console.error("Error during registration:", error);
       alert("An error occurred during interview schedule time creation.");
+    } finally {
+      setSubmitting(false);
+    }
+  };
+
+  const submitCompleteInterview = async () => {
+    setSubmitting(true);
+    try {
+      const interviewCompleteRequest = {
+        processId: processId,
+        interviewerCommments: interviewerCommments,
+        comment: comment,
+      };
+
+      interviewCompleteRequest.interviewerCommments = interviewerCommments.split(",");
+      const response = await InterviewScheduleService.markInterviewAsComplete(interviewCompleteRequest);
+
+      if (response.data.status === "Success") {
+        alert("Review submitted successfully.");
+        setOpenModal(false);
+      } else {
+        alert(response.data.message);
+      }
+    } catch (err) {
+      alert("Failed to submit review. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -346,13 +372,19 @@ const ApplicationDetailPage = () => {
 
         {/* HR Manager Actions */}
         {currentUser.roles.includes("HR Manager") && details.requiredRole === "HR Manager" && (
-          <Button variant="contained" color="secondary" onClick={() => {
-            setOpenModal(true)
-            setModalMenu("Schedule Interview")
-          }
-          }>
-            Schedule Interview
-          </Button>
+          details.currentStep === "Interview Process" ?
+            <Button variant="contained" color="secondary" onClick={() => {
+              setOpenModal(true)
+              setModalMenu("Mark Interview Complete")
+            }}>
+              Mark Interview As Complete
+            </Button> :
+            <Button variant="contained" color="secondary" onClick={() => {
+              setOpenModal(true)
+              setModalMenu("Schedule Interview")
+            }}>
+              Schedule Interview
+            </Button>
         )}
       </Box>
 
@@ -473,7 +505,7 @@ const ApplicationDetailPage = () => {
             <Button onClick={() => {
               setOpenModal(false)
               setFormValues({
-                action: "Interview Scheduled",
+                action: "Submit",
                 interviewTime: "",
                 interviewType: "",
                 interviewers: "",
@@ -580,6 +612,46 @@ const ApplicationDetailPage = () => {
               variant="contained"
               color="primary"
               disabled={submitting || !action || !comment}
+            >
+              {submitting ? "Submitting..." : "Submit Review"}
+            </Button>
+          </DialogActions>
+        </Dialog>}
+
+
+      {/* Button shows Mark Interview Complete*/}
+      {modalMenu === "Mark Interview Complete" &&
+        <Dialog open={openModal} onClose={() => setOpenModal(false)} fullWidth maxWidth="sm">
+          <DialogTitle>Mark Interview As Complete</DialogTitle>
+          <DialogContent>
+            <TextField
+              label="Interviewer Comments"
+              multiline
+              rows={4}
+              value={interviewerCommments}
+              onChange={(e) => setInterviewerComments(e.target.value)}
+              fullWidth
+              className="mt-4"
+            />
+            <TextField
+              label="Comments"
+              multiline
+              rows={4}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              fullWidth
+              className="mt-4"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenModal(false)} color="secondary">
+              Cancel
+            </Button>
+            <Button
+              onClick={submitCompleteInterview}
+              variant="contained"
+              color="primary"
+              disabled={submitting || !interviewerCommments || !comment}
             >
               {submitting ? "Submitting..." : "Submit Review"}
             </Button>
