@@ -1,6 +1,16 @@
 import React, { useState, useEffect } from "react";
 import {
-  Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Typography, Button, CircularProgress, Dialog,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Paper,
+  Typography,
+  Button,
+  CircularProgress,
+  Dialog,
   DialogTitle,
   DialogContent,
   DialogActions,
@@ -9,7 +19,7 @@ import {
   Select,
   FormControl,
   InputLabel,
-  Box
+  Box,
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"; // For accessing processId if used in routing
 import { useSelector } from "react-redux";
@@ -36,7 +46,7 @@ const ApplicationDetailPage = () => {
     interviewers: "",
     interviewerEmails: "",
     location: "",
-    comment: ""
+    comment: "",
   });
   const [errorForm, setErrorForm] = useState(null);
   // Validate inputs
@@ -92,15 +102,17 @@ const ApplicationDetailPage = () => {
     }
 
     if (!formValid) {
-      return
+      return;
     }
 
     setSubmitting(true);
     try {
       formValues.interviewerEmails = formValues.interviewerEmails.split(",");
       formValues.interviewers = formValues.interviewers.split(",");
-      formValues.applicationJobId = details.applicationJobId
-      const response = await InterviewScheduleService.setInterviewScheduleTime(formValues);
+      formValues.applicationJobId = details.applicationJobId;
+      const response = await InterviewScheduleService.setInterviewScheduleTime(
+        formValues
+      );
       if (response.data.status === "Success") {
         alert("Interview Schedule Time created successful!");
         setFormValues({
@@ -109,7 +121,7 @@ const ApplicationDetailPage = () => {
           interviewers: "",
           interviewerEmails: "",
           location: "",
-          comment: ""
+          comment: "",
         });
       } else {
         alert("Interview Schedule Time created failed!");
@@ -131,8 +143,11 @@ const ApplicationDetailPage = () => {
         comment: comment,
       };
 
-      interviewCompleteRequest.interviewerCommments = interviewerCommments.split(",");
-      const response = await InterviewScheduleService.markInterviewAsComplete(interviewCompleteRequest);
+      interviewCompleteRequest.interviewerCommments =
+        interviewerCommments.split(",");
+      const response = await InterviewScheduleService.markInterviewAsComplete(
+        interviewCompleteRequest
+      );
 
       if (response.data.status === "Success") {
         alert("Review submitted successfully.");
@@ -150,7 +165,9 @@ const ApplicationDetailPage = () => {
   useEffect(() => {
     const fetchDetails = async () => {
       try {
-        const response = await ApplicationJobService.getApplicationDetails(processId);
+        const response = await ApplicationJobService.getApplicationDetails(
+          processId
+        );
         setDetails(response.data);
         setLoading(false);
       } catch (err) {
@@ -174,9 +191,15 @@ const ApplicationDetailPage = () => {
       let response;
 
       if (modalMenu === "Confirm Interview Schedule") {
-        response = await InterviewScheduleService.confirmInterviewScheduleTime(reviewRequest);
+        response = await InterviewScheduleService.confirmInterviewScheduleTime(
+          reviewRequest
+        );
       } else if (modalMenu === "Review Application") {
         response = await ApplicationJobService.reviewApplication(reviewRequest);
+      } else {
+        response = await InterviewScheduleService.reviewInterviewResult(
+          reviewRequest
+        );
       }
 
       if (response.data.status === "Success") {
@@ -289,7 +312,9 @@ const ApplicationDetailPage = () => {
           <TableBody>
             {details.workflowActions.map((action, index) => (
               <TableRow key={index}>
-                <TableCell>{new Date(action.actionDate).toLocaleString()}</TableCell>
+                <TableCell>
+                  {new Date(action.actionDate).toLocaleString()}
+                </TableCell>
                 <TableCell>{action.actionBy}</TableCell>
                 <TableCell>{action.action}</TableCell>
                 <TableCell>{action.comments}</TableCell>
@@ -327,7 +352,9 @@ const ApplicationDetailPage = () => {
                     View Document
                   </a>
                 </TableCell>
-                <TableCell>{new Date(doc.uploadedDate).toLocaleString()}</TableCell>
+                <TableCell>
+                  {new Date(doc.uploadedDate).toLocaleString()}
+                </TableCell>
                 <TableCell>
                   <Button
                     variant="contained"
@@ -347,51 +374,92 @@ const ApplicationDetailPage = () => {
       {/* Role-Based Buttons */}
       <Box className="flex justify-end space-x-4">
         {/* Applicant Actions */}
-        {currentUser.roles.includes("Applicant") && details.requiredRole === "Applicant" && (
-          details.currentStep === "Applicant Reviews Interview Schedule" ?
-            <Button variant="contained" color="warning" onClick={() => {
-              setOpenModal(true)
-              setModalMenu("Confirm Interview Schedule")
-            }}>
+        {currentUser.roles.includes("Applicant") &&
+          details.requiredRole === "Applicant" &&
+          (details.currentStep === "Applicant Reviews Interview Schedule" ? (
+            <Button
+              variant="contained"
+              color="warning"
+              onClick={() => {
+                setOpenModal(true);
+                setModalMenu("Confirm Interview Schedule");
+              }}
+            >
               Interview Confirmation Schedule
-            </Button> :
-            <Button variant="contained" color="warning" onClick={handleEditApplication}>
+            </Button>
+          ) : (
+            <Button
+              variant="contained"
+              color="warning"
+              onClick={handleEditApplication}
+            >
               Edit Application
             </Button>
-        )}
+          ))}
 
         {/* Recruiter Actions */}
-        {currentUser.roles.includes("Recruiter") && details.requiredRole === "Recruiter" && (
-          <Button variant="contained" color="primary" onClick={() => {
-            setOpenModal(true)
-            setModalMenu("Review Application")
-          }}>
-            Review Application
-          </Button>
-        )}
+        {currentUser.roles.includes("Recruiter") &&
+          details.requiredRole === "Recruiter" && (
+            <Button
+              variant="contained"
+              color="primary"
+              onClick={() => {
+                setOpenModal(true);
+                setModalMenu("Review Application");
+              }}
+            >
+              Review Application
+            </Button>
+          )}
 
         {/* HR Manager Actions */}
-        {currentUser.roles.includes("HR Manager") && details.requiredRole === "HR Manager" && (
-          details.currentStep === "Interview Process" ?
-            <Button variant="contained" color="secondary" onClick={() => {
-              setOpenModal(true)
-              setModalMenu("Mark Interview Complete")
-            }}>
+        {currentUser.roles.includes("HR Manager") &&
+          details.requiredRole === "HR Manager" &&
+          (details.currentStep === "Interview Process" ? (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => {
+                setOpenModal(true);
+                setModalMenu("Mark Interview Complete");
+              }}
+            >
               Mark Interview As Complete
-            </Button> :
-            <Button variant="contained" color="secondary" onClick={() => {
-              setOpenModal(true)
-              setModalMenu("Schedule Interview")
-            }}>
+            </Button>
+          ) : details.currentStep === "HR Manager Set Interview Schedule" ? (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => {
+                setOpenModal(true);
+                setModalMenu("Schedule Interview");
+              }}
+            >
               Schedule Interview
             </Button>
-        )}
+          ) : (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => {
+                setOpenModal(true);
+                setModalMenu("Review Interview Result");
+              }}
+            >
+              Review Interview Result
+            </Button>
+          ))}
       </Box>
 
       {/* Review Modal */}
       {/* Button shows Schedule Interview */}
-      {modalMenu === "Schedule Interview" &&
-        <Dialog open={openModal} onClose={() => setOpenModal(false)} fullWidth maxWidth="sm">
+      {modalMenu === "Schedule Interview" && (
+        <Dialog
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          fullWidth
+          maxWidth="sm"
+        >
           <DialogTitle>Set Interview Schedule</DialogTitle>
           <DialogContent>
             <FormControl fullWidth variant="outlined" sx={{ mt: 2 }}>
@@ -502,20 +570,22 @@ const ApplicationDetailPage = () => {
             />
           </DialogContent>
           <DialogActions>
-            <Button onClick={() => {
-              setOpenModal(false)
-              setFormValues({
-                action: "Submit",
-                interviewTime: "",
-                interviewType: "",
-                interviewers: "",
-                interviewerEmails: "",
-                location: "",
-                comments: ""
-              })
-              setErrorForm(null)
-            }}
-              color="secondary">
+            <Button
+              onClick={() => {
+                setOpenModal(false);
+                setFormValues({
+                  action: "Submit",
+                  interviewTime: "",
+                  interviewType: "",
+                  interviewers: "",
+                  interviewerEmails: "",
+                  location: "",
+                  comments: "",
+                });
+                setErrorForm(null);
+              }}
+              color="secondary"
+            >
               Cancel
             </Button>
             <Button
@@ -528,11 +598,16 @@ const ApplicationDetailPage = () => {
             </Button>
           </DialogActions>
         </Dialog>
-      }
+      )}
 
       {/* Button shows Review Application */}
-      {modalMenu === "Review Application" &&
-        <Dialog open={openModal} onClose={() => setOpenModal(false)} fullWidth maxWidth="sm">
+      {modalMenu === "Review Application" && (
+        <Dialog
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          fullWidth
+          maxWidth="sm"
+        >
           <DialogTitle>Review Application</DialogTitle>
           <DialogContent>
             <FormControl fullWidth className="mt-4">
@@ -572,12 +647,17 @@ const ApplicationDetailPage = () => {
               {submitting ? "Submitting..." : "Submit Review"}
             </Button>
           </DialogActions>
-        </Dialog>}
-
+        </Dialog>
+      )}
 
       {/* Button shows Confirm Interview Schedule*/}
-      {modalMenu === "Confirm Interview Schedule" &&
-        <Dialog open={openModal} onClose={() => setOpenModal(false)} fullWidth maxWidth="sm">
+      {modalMenu === "Confirm Interview Schedule" && (
+        <Dialog
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          fullWidth
+          maxWidth="sm"
+        >
           <DialogTitle>Interview Schedule Confirmation</DialogTitle>
           <DialogContent>
             <FormControl fullWidth className="mt-4">
@@ -588,9 +668,7 @@ const ApplicationDetailPage = () => {
                 required
               >
                 <MenuItem value="Confirm">Confirm</MenuItem>
-                <MenuItem value="Modification">
-                  Request Reschedule
-                </MenuItem>
+                <MenuItem value="Modification">Request Reschedule</MenuItem>
               </Select>
             </FormControl>
             <TextField
@@ -616,12 +694,17 @@ const ApplicationDetailPage = () => {
               {submitting ? "Submitting..." : "Submit Review"}
             </Button>
           </DialogActions>
-        </Dialog>}
-
+        </Dialog>
+      )}
 
       {/* Button shows Mark Interview Complete*/}
-      {modalMenu === "Mark Interview Complete" &&
-        <Dialog open={openModal} onClose={() => setOpenModal(false)} fullWidth maxWidth="sm">
+      {modalMenu === "Mark Interview Complete" && (
+        <Dialog
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          fullWidth
+          maxWidth="sm"
+        >
           <DialogTitle>Mark Interview As Complete</DialogTitle>
           <DialogContent>
             <TextField
@@ -656,7 +739,55 @@ const ApplicationDetailPage = () => {
               {submitting ? "Submitting..." : "Submit Review"}
             </Button>
           </DialogActions>
-        </Dialog>}
+        </Dialog>
+      )}
+
+      {/* Review Interview Result Modal */}
+      {modalMenu === "Review Interview Result" && (
+        <Dialog
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogTitle>Review Interview Result</DialogTitle>
+          <DialogContent>
+            <FormControl fullWidth className="mt-4">
+              <InputLabel>Action</InputLabel>
+              <Select
+                value={action}
+                onChange={(e) => setAction(e.target.value)}
+                required
+              >
+                <MenuItem value="Offer">Offer</MenuItem>
+                <MenuItem value="Rejected">Reject</MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              label="Comments"
+              multiline
+              rows={4}
+              value={comment}
+              onChange={(e) => setComment(e.target.value)}
+              fullWidth
+              className="mt-4"
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button onClick={() => setOpenModal(false)} color="secondary">
+              Cancel
+            </Button>
+            <Button
+              onClick={handleReviewSubmit}
+              variant="contained"
+              color="primary"
+              disabled={submitting || !action || !comment}
+            >
+              {submitting ? "Submitting..." : "Submit Review"}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
     </div>
   );
 };
