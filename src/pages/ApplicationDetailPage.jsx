@@ -588,7 +588,7 @@ const ApplicationDetailPage = () => {
                 required
               >
                 <MenuItem value="Confirm">Confirm</MenuItem>
-                <MenuItem value="Request Reschedule">
+                <MenuItem value="Modification">
                   Request Reschedule
                 </MenuItem>
               </Select>
