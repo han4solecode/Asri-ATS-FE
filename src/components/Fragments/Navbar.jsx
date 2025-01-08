@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useNavigate, Link } from "react-router-dom";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useSelector, useDispatch } from "react-redux";
 import { logout } from "../../slices/authSlice";
 import {
@@ -16,6 +16,8 @@ import {
   ListItemButton,
   ListItemText,
   Divider,
+  useMediaQuery,
+  useTheme,
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 
@@ -24,14 +26,21 @@ const Navbar = () => {
   const navigate = useNavigate();
   const { user: currentUser } = useSelector((state) => state.auth);
 
-  const [drawerOpen, setDrawerOpen] = useState(false);
+  const theme = useTheme();
+  const isMediumOrLarger = useMediaQuery(theme.breakpoints.up("md"));
+  const [drawerOpen, setDrawerOpen] = useState(isMediumOrLarger);
 
+    // Adjust the drawer state when the screen size changes
+    React.useEffect(() => {
+      setDrawerOpen(isMediumOrLarger);
+    }, [isMediumOrLarger]);
+  
+    const handleDrawerToggle = () => {
+      setDrawerOpen((prev) => !prev);
+    };
+  
   const menuItems = [
-    {
-      label: "Job Search",
-      path: "/",
-      visibleForAll: true,
-    },
+    { label: "Job Search", path: "/", visibleForAll: true },
     {
       label: "Profile",
       path: "/profile",
@@ -55,18 +64,14 @@ const Navbar = () => {
     {
       label: "Job Post Request",
       path: "/job-post-request",
-      visibleForRoles: ["Recruiter","HR Manager"],
+      visibleForRoles: ["Recruiter", "HR Manager"],
     },
     {
       label: "Application",
       path: "/application-job",
-      visibleForRoles: ["Recruiter","HR Manager","Applicant"],
+      visibleForRoles: ["Recruiter", "HR Manager", "Applicant"],
     },
-    {
-      label: "Document",
-      path: "/document",
-      visibleForRoles: ["Applicant"],
-    },
+    { label: "Document", path: "/document", visibleForRoles: ["Applicant"] },
   ];
 
   const isMenuVisible = (item) => {
@@ -105,14 +110,7 @@ const Navbar = () => {
           }}
         >
           {/* Logo and Menu Items */}
-          <Box
-            sx={{
-              display: "flex",
-              alignItems: "center",
-              gap: "2rem",
-            }}
-          >
-            {/* Logo */}
+          <Box sx={{ display: "flex", alignItems: "center", gap: "2rem" }}>
             <Typography
               variant="h6"
               sx={{
@@ -121,34 +119,10 @@ const Navbar = () => {
                 cursor: "pointer",
                 "&:hover": { color: "#e5e7eb" },
               }}
-              onClick={() => navigate("/")}
+              onClick={handleDrawerToggle}
             >
               Logo
             </Typography>
-
-            {/* Menu Items (Visible on larger screens) */}
-            <Box
-              sx={{
-                display: { xs: "none", md: "flex" },
-                gap: "1rem",
-              }}
-            >
-              {menuItems.filter(isMenuVisible).map((item, index) => (
-                <Button
-                  key={index}
-                  component={Link}
-                  to={item.path}
-                  sx={{
-                    color: "#ffffff",
-                    "&:hover": {
-                      backgroundColor: "#374151",
-                    },
-                  }}
-                >
-                  {item.label}
-                </Button>
-              ))}
-            </Box>
           </Box>
 
           {/* Authentication Buttons (Desktop) */}
@@ -210,13 +184,7 @@ const Navbar = () => {
                     },
                   }}
                 >
-                  <Box
-                    sx={{
-                      display: "flex",
-                      alignItems: "center",
-                      gap: "0.5rem",
-                    }}
-                  >
+                  <Box sx={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
                     <Avatar
                       src="https://via.placeholder.com/32"
                       alt="Profile"
@@ -252,18 +220,19 @@ const Navbar = () => {
             color="inherit"
             aria-label="menu"
             sx={{ display: { xs: "block", md: "none" } }}
-            onClick={() => setDrawerOpen(true)}
+            onClick={handleDrawerToggle}
           >
             <MenuIcon />
           </IconButton>
         </Toolbar>
       </AppBar>
 
-      {/* Drawer for mobile navigation */}
+      {/* Drawer for navigation */}
       <Drawer
         anchor="left"
         open={drawerOpen}
-        onClose={() => setDrawerOpen(false)}
+        onClose={() => !isMediumOrLarger && setDrawerOpen(false)}
+        variant={isMediumOrLarger ? "persistent" : "temporary"}
         sx={{
           "& .MuiDrawer-paper": {
             backgroundColor: "#1f2937",
@@ -272,14 +241,7 @@ const Navbar = () => {
           },
         }}
       >
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: "column",
-            height: "100%",
-          }}
-        >
-          {/* Logo/Title */}
+        <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
           <Typography
             variant="h6"
             sx={{
@@ -288,23 +250,19 @@ const Navbar = () => {
               textAlign: "center",
               cursor: "pointer",
             }}
-            onClick={() => {
-              setDrawerOpen(false);
-              navigate("/");
-            }}
+            onClick={() => setDrawerOpen(false)}
           >
             Logo
           </Typography>
           <Divider sx={{ backgroundColor: "#374151" }} />
 
-          {/* Navigation Links */}
           <List>
             {menuItems.filter(isMenuVisible).map((item, index) => (
               <ListItem key={index} disablePadding>
                 <ListItemButton
                   onClick={() => {
-                    setDrawerOpen(false);
                     navigate(item.path);
+                    if (!isMediumOrLarger) setDrawerOpen(false);
                   }}
                   sx={{
                     "&:hover": {
@@ -319,16 +277,14 @@ const Navbar = () => {
           </List>
 
           <Divider sx={{ backgroundColor: "#374151" }} />
-
-          {/* Authentication Buttons */}
           <Box sx={{ padding: "1rem" }}>
             {!currentUser ? (
               <>
                 <Button
                   fullWidth
                   onClick={() => {
-                    setDrawerOpen(false);
                     navigate("/register-company");
+                    if (!isMediumOrLarger) setDrawerOpen(false);
                   }}
                   sx={{
                     backgroundColor: "#10b981",
@@ -344,8 +300,8 @@ const Navbar = () => {
                 <Button
                   fullWidth
                   onClick={() => {
-                    setDrawerOpen(false);
                     navigate("/login");
+                    if (!isMediumOrLarger) setDrawerOpen(false);
                   }}
                   sx={{
                     backgroundColor: "#374151",
@@ -361,8 +317,8 @@ const Navbar = () => {
                 <Button
                   fullWidth
                   onClick={() => {
-                    setDrawerOpen(false);
                     navigate("/register");
+                    if (!isMediumOrLarger) setDrawerOpen(false);
                   }}
                   sx={{
                     backgroundColor: "#374151",
@@ -379,8 +335,8 @@ const Navbar = () => {
               <Button
                 fullWidth
                 onClick={() => {
-                  setDrawerOpen(false);
                   handleLogout();
+                  if (!isMediumOrLarger) setDrawerOpen(false);
                 }}
                 sx={{
                   backgroundColor: "#374151",
