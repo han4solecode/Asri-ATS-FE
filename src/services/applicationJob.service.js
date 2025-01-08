@@ -5,8 +5,8 @@ const getDocument = async (params) => {
     return res;
 };
 
-const getStatus = async (params) => {
-  const res = await AxiosInstance.api.get("/api/ApplicationJob/job-application",params)
+const getStatus = async ({ pageNumber, pageSize }) => {
+  const res = await AxiosInstance.api.get("/api/ApplicationJob/job-application", { params: { PageNumber: pageNumber, PageSize: pageSize } })
   return res;
 }
 

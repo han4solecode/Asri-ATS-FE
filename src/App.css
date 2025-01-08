@@ -27,3 +27,27 @@
   background-color: #007bff;
   color: white;
 }
+
+.pagination {
+  display: flex;
+  list-style: none;
+  gap: 0.5rem;
+  justify-content: center;
+}
+
+.pagination-page {
+  padding: 0.5rem 1rem;
+  border: 1px solid #ccc;
+  cursor: pointer;
+}
+
+.pagination-active-link {
+  background-color: #007bff;
+  color: white;
+}
+
+.pagination-disabled {
+  color: #ccc;
+  pointer-events: none;
+}
+
