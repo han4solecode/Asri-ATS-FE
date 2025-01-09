@@ -520,6 +520,7 @@ const ApplicationDetailPage = () => {
               InputLabelProps={{
                 shrink: true, // Memastikan label selalu berada di atas
               }}
+              placeholder="Example: John Doe,Jane Doe (separate names with commas)"
             />
             <TextField
               label="Interviewer Emails"
@@ -536,6 +537,7 @@ const ApplicationDetailPage = () => {
               InputLabelProps={{
                 shrink: true, // Memastikan label selalu berada di atas
               }}
+              placeholder="Example: JohnDoe@mail.com,JaneDoe@mail.com (separate emails with commas)"
             />
             <TextField
               label="Location"
@@ -715,6 +717,7 @@ const ApplicationDetailPage = () => {
               onChange={(e) => setInterviewerComments(e.target.value)}
               fullWidth
               className="mt-4"
+              placeholder="Example: good candidate,I approve (separate comments with commas)"
             />
             <TextField
               label="Comments"
