@@ -127,7 +127,7 @@ const RecruiterRequestDetailPage = () => {
           <strong>Sex:</strong> {requestDetails.sex}
         </Typography>
         <Typography>
-          <strong>Company ID:</strong> {requestDetails.companyId}
+          <strong>Company Name:</strong> {requestDetails.companyName}
         </Typography>
       </Box>
 
