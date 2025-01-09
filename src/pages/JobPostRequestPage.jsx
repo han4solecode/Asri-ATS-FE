@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import {
   Table,
   TableBody,
@@ -11,43 +11,134 @@ import {
   Typography,
   CircularProgress,
   Box,
+  MenuItem,
+  Select,
+  InputLabel,
+  FormControl,
+  TextField,
 } from "@mui/material";
+import PropTypes from 'prop-types';
+import Tabs from '@mui/material/Tabs';
+import Tab from '@mui/material/Tab';
 import { useNavigate } from "react-router-dom";
 import JobPostRequestService from "../services/jobPostRequestService";
 import { useSelector } from "react-redux";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import ReactPaginate from "react-paginate";
+
+function CustomTabPanel(props) {
+  const { children, value, index, ...other } = props;
+
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${index}`}
+      aria-labelledby={`simple-tab-${index}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ paddingTop: 3, paddingBottom: 3 }}>{children}</Box>}
+    </div>
+  );
+}
+
+CustomTabPanel.propTypes = {
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
+};
+
+function a11yProps(index) {
+  return {
+    id: `simple-tab-${index}`,
+    'aria-controls': `simple-tabpanel-${index}`,
+  };
+}
+
+
 
 const JobPostRequestPage = () => {
-  const [requests, setRequests] = useState([]);
-  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { user: currentUser } = useSelector((state) => state.auth);
+  const [value, setValue] = useState(0);
+  const [page, setPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const pageSizes = [5, 10, 15, 20];
+  const [jobTitle, setJobTitle] = useState('');
+  const [location, setLocation] = useState('');
+  const [jobPostRequestStatus, setJobPostRequestStatus] = useState('')
+  const [employmentType, setEmploymentType] = useState('');
+  const [searchQuery, setSearchQuery] = useState('');
 
-  // Fetch job posts requests
-  useEffect(() => {
-    const fetchRequests = async () => {
-      try {
-        setLoading(true);
-        let response;
-        if (currentUser.roles.includes("Recruiter")) {
-          response = await JobPostRequestService.jobPostRequestList();
-        }
-        else if (currentUser.roles.includes("HR Manager")) {
-          response = await JobPostRequestService.jobPostRequestToBeReviewed();
-        }
-        setRequests(response.data); // Assumes API returns the list of requests
-        setLoading(false);
-      } catch (error) {
-        console.log(error)
-        setLoading(false);
+  const { data, isLoading, isError } = useQuery({
+    queryKey: ['jobPostRequests', page, pageSize, jobTitle, location, employmentType, value, jobPostRequestStatus, searchQuery],
+    queryFn: () => fetchJobRequestPosts({ page, pageSize, jobTitle, location, employmentType, value, jobPostRequestStatus, searchQuery }),
+    keepPreviousData: true,
+    placeholderData: keepPreviousData,
+  });
+
+  // Fetch job posts with filters and pagination
+  const fetchJobRequestPosts = async ({ page, pageSize, jobTitle, location, employmentType, value, jobPostRequestStatus, searchQuery }) => {
+    let response;
+    if (currentUser.roles.includes("Recruiter")) {
+      response = await JobPostRequestService.jobPostRequestList({
+        PageNumber: page,
+        PageSize: pageSize,
+        JobTitle: jobTitle,
+        Location: location,
+        EmploymentType: employmentType,
+        jobPostRequestStatus: jobPostRequestStatus,
+        keywords: searchQuery
+      });
+    } else if (currentUser.roles.includes("HR Manager")) {
+      if (value === 0) {
+        response = await JobPostRequestService.jobPostRequestToBeReviewed({
+          PageNumber: page,
+          PageSize: pageSize,
+          JobTitle: jobTitle,
+          Location: location,
+          EmploymentType: employmentType,
+          jobPostRequestStatus: jobPostRequestStatus,
+          keywords: searchQuery
+        });
+      } else if (value === 1) {
+        response = await JobPostRequestService.historyJobPostRequest({
+          PageNumber: page,
+          PageSize: pageSize,
+          JobTitle: jobTitle,
+          Location: location,
+          EmploymentType: employmentType,
+          jobPostRequestStatus: jobPostRequestStatus,
+          keywords: searchQuery
+        });
       }
-    };
+    }
+    return response.data;
+  };
 
-    fetchRequests();
-  }, [currentUser]);
+  const handleSearchChange = (event) => {
+    setSearchQuery(event.target.value);
+    setPage(1);
+  };
 
-  // Handle View Details button click
-  const handleViewDetails = (id) => {
-    navigate(`/recruiter-requests/${id}`); // Redirect to the details page
+  const handleChange = (event, newValue) => {
+    setValue(newValue);
+    setPage(1);
+    setPageSize(5);
+    setJobTitle('');
+    setLocation('');
+    setJobPostRequestStatus('')
+    setEmploymentType('');
+    setSearchQuery('');
+  };
+
+  const handlePageClick = ({ selected }) => {
+    setPage(selected + 1);
+  };
+
+  const handlePageSizeChange = (event) => {
+    setPageSize(Number(event.target.value));
+    setPage(1);
   };
 
   const getOrdinalSuffix = (day) => {
@@ -71,7 +162,9 @@ const JobPostRequestPage = () => {
     return `${month} ${day}${ordinal}, ${year}   ${hour}:${minute}`;
   };
 
-  return (
+  if (isError) return <div className="text-center py-10">Error loading data.</div>;
+
+  if (currentUser.roles.includes("HR Manager")) return (
     <Box
       // className="mx-auto bg-white rounded-lg shadow-md"
       sx={{
@@ -83,43 +176,44 @@ const JobPostRequestPage = () => {
       }}
     >
       <Typography
-      variant="h6"
-      sx={{
-        fontWeight: "bold",
-        fontSize: { xs: "1.25rem", sm: "1.5rem" },
-        textAlign:'center'
-      }}
-    >
-      Job Post Requests
-    </Typography>
+        variant="h6"
+        sx={{
+          fontWeight: "bold",
+          fontSize: { xs: "1.25rem", sm: "1.5rem" },
+          textAlign: 'center'
+        }}
+      >
+        Job Post Requests
+      </Typography>
       <Box
-    sx={{
-      display: "flex",
-      justifyContent: "end", // Membuat tombol di kanan
-      alignItems: "center",
-      marginBottom: "1.5rem",
-    }}
-  >
-    
-    <Button
-      variant="contained"
-      sx={{
-        backgroundColor: "black",
-        color: "white",
-        fontWeight: "bold",
-        textTransform: "none",
-        padding: { xs: "0.5rem 1rem", sm: "0.75rem 1.5rem" },
-        "&:hover": {
-          backgroundColor: "#424242",
-        },
-      }}
-      className="rounded-lg shadow-md"
-      onClick={() => navigate('/job-post-request/new')}
-    >
-      Add New Job Post Request
-    </Button>
-  </Box>
-      {loading ? (
+        sx={{
+          display: "flex",
+          justifyContent: "end", // Membuat tombol di kanan
+          alignItems: "center",
+          marginBottom: "1.5rem",
+        }}
+      >
+        {currentUser.roles.includes("Recruiter") &&
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "black",
+              color: "white",
+              fontWeight: "bold",
+              textTransform: "none",
+              padding: { xs: "0.5rem 1rem", sm: "0.75rem 1.5rem" },
+              "&:hover": {
+                backgroundColor: "#424242",
+              },
+            }}
+            className="rounded-lg shadow-md"
+            onClick={() => navigate('/job-post-request/new')}
+          >
+            Add New Job Post Request
+          </Button>}
+
+      </Box>
+      {isLoading ? (
         <Box
           sx={{
             display: "flex",
@@ -130,103 +224,653 @@ const JobPostRequestPage = () => {
         >
           <CircularProgress />
         </Box>
-      ) : requests.length === 0 ? (
-        <Typography
-          variant="body1"
-          textAlign="center"
-          sx={{
-            color: "gray",
-            fontSize: { xs: "1rem", sm: "1.25rem" },
-          }}
-        >
-          No unreviewed requests found.
-        </Typography>
       ) : (
         <TableContainer
           component={Paper}
           sx={{
+            border: "1px solid rgba(0, 0, 0, 0.12)",
             borderRadius: "8px",
             overflowX: "auto", // Makes table scrollable on small screens
           }}
         >
-          <Table sx={{ minWidth: 650 }}>
-            <TableHead sx={{ backgroundColor: "#1976d2" }}>
-              <TableRow>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Process Id</TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                  Request Date
-                </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                  Requester
-                </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                  Job Title
-                </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                  Location
-                </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                  Min Salary
-                </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                  Max Salary
-                </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                  Employment Type
-                </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                  Status
-                </TableCell>
-                <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                  Actions
-                </TableCell>
-              </TableRow>
-            </TableHead>
-            <TableBody>
-              {requests.map((request) => (
-                <TableRow
-                  key={request.processId}
+          <Box sx={{ width: '100%' }}>
+            {/* select tab section */}
+            <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+              <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+                <Tab label="Job Post Request" {...a11yProps(0)} />
+                <Tab label="History" {...a11yProps(1)} />
+              </Tabs>
+            </Box>
+            {/* tab Job Post Request to be reviewed selected section */}
+            <CustomTabPanel value={value} index={0}>
+              {/* Filters Section */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 items-center">
+                <TextField
+                  label="Search Jobs"
+                  variant="outlined"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  fullWidth
                   sx={{
-                    "&:hover": { backgroundColor: "#f5f5f5" },
+                    fontWeight: 'bold',
+                    backgroundColor: '#f7f9fc',
+                    borderRadius: 2,
+                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                    '& .MuiInputBase-root': {
+                      fontSize: '1.2rem',
+                    },
+                  }}
+                />
+                <TextField
+                  label="Job Title"
+                  variant="outlined"
+                  value={jobTitle}
+                  onChange={(e) => setJobTitle(e.target.value)}
+                  fullWidth
+                  sx={{ fontSize: '0.9rem' }}
+                />
+                <TextField
+                  label="Location"
+                  variant="outlined"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  fullWidth
+                  sx={{ fontSize: '0.9rem' }}
+                />
+                <FormControl variant="outlined">
+                  <InputLabel id="employment-type-label">Employment Type</InputLabel>
+                  <Select
+                    label="Employment Types"
+                    labelId="employment-type-label"
+                    value={employmentType}
+                    onChange={(e) => setEmploymentType(e.target.value)}
+                    sx={{ fontSize: '0.9rem' }}
+                  >
+                    <MenuItem value="">All Types</MenuItem>
+                    <MenuItem value="Permanent">Permanent</MenuItem>
+                    <MenuItem value="Intern">Intern</MenuItem>
+                    <MenuItem value="Contract">Contract</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl variant="outlined">
+                  <InputLabel id="page-size-label">Items per Page</InputLabel>
+                  <Select
+                    label="Items per Pages"
+                    labelId="page-size-label"
+                    value={pageSize}
+                    onChange={handlePageSizeChange}
+                    sx={{ fontSize: '0.9rem' }}
+                  >
+                    {pageSizes.map((size) => (
+                      <MenuItem key={size} value={size}>
+                        {size}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </div>
+              {data.data.length === 0 ? (
+                <Typography
+                  variant="body1"
+                  textAlign="center"
+                  sx={{
+                    color: "gray",
+                    fontSize: { xs: "1rem", sm: "1.25rem" },
                   }}
                 >
-                  <TableCell>{request.processId}</TableCell>
-                  <TableCell>{formatDateWithOrdinal(request.requestDate)}</TableCell>
-                  <TableCell>{request.requester}</TableCell>
-                  <TableCell>{request.jobTitle}</TableCell>
-                  <TableCell>{request.location}</TableCell>
-                  <TableCell>{request.minSalary}</TableCell>
-                  <TableCell>{request.maxSalary}</TableCell>
-                  <TableCell>{request.employmentType}</TableCell>
-                  <TableCell>{request.status}</TableCell>
-                  <TableCell>
-                    <Button
-                      variant="contained"
-                      size="small"
-                      sx={{
-                        backgroundColor: "#1976d2",
-                        color: "white",
-                        "&:hover": {
-                          backgroundColor: "#1565c0",
-                        },
-                      }}
-                      onClick={() =>
-                        navigate(
-                          `/job-post-request/${request.processId}`
-                        )
-                      }
-                    >
-                      View Details
-                    </Button>
-                  </TableCell>
-                </TableRow>
-              ))}
-            </TableBody>
-          </Table>
+                  No unreviewed requests found.
+                </Typography>
+              ) :
+                <>
+                  <Table sx={{ minWidth: 650, }}>
+                    <TableHead sx={{ backgroundColor: "#1976d2" }}>
+                      <TableRow>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>Process Id</TableCell>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Request Date
+                        </TableCell>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Requester
+                        </TableCell>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Job Title
+                        </TableCell>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Location
+                        </TableCell>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Min Salary
+                        </TableCell>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Max Salary
+                        </TableCell>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Employment Type
+                        </TableCell>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Status
+                        </TableCell>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Actions
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {data.data.map((request) => (
+                        <TableRow
+                          key={request.processId}
+                          sx={{
+                            "&:hover": { backgroundColor: "#f5f5f5" },
+                          }}
+                        >
+                          <TableCell>{request.processId}</TableCell>
+                          <TableCell>{formatDateWithOrdinal(request.requestDate)}</TableCell>
+                          <TableCell>{request.requester}</TableCell>
+                          <TableCell>{request.jobTitle}</TableCell>
+                          <TableCell>{request.location}</TableCell>
+                          <TableCell>{request.minSalary}</TableCell>
+                          <TableCell>{request.maxSalary}</TableCell>
+                          <TableCell>{request.employmentType}</TableCell>
+                          <TableCell>{request.status}</TableCell>
+                          <TableCell>
+                            <Button
+                              variant="contained"
+                              size="small"
+                              sx={{
+                                backgroundColor: "#1976d2",
+                                color: "white",
+                                "&:hover": {
+                                  backgroundColor: "#1565c0",
+                                },
+                              }}
+                              onClick={() =>
+                                navigate(
+                                  `/job-post-request/${request.processId}`
+                                )
+                              }
+                            >
+                              View Details
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  {/* Pagination */}
+                  <ReactPaginate
+                    previousLabel="Previous"
+                    nextLabel="Next"
+                    breakLabel="..."
+                    pageCount={data?.totalPages}
+                    onPageChange={handlePageClick}
+                    containerClassName="flex justify-center items-center space-x-3 mt-4" // Container with spacing and centering
+                    activeClassName="bg-blue-500 text-white px-4 py-2 rounded-md" // Active page styling with larger text and a background color
+                    pageClassName="px-4 py-2 border border-gray-300 rounded-md cursor-pointer hover:bg-blue-200 transition duration-200" // Page buttons styling
+                    breakClassName="text-gray-600 px-2 py-2" // Styling for the break dots
+                    previousClassName={`${page === 1 ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer hover:bg-blue-200'} px-4 py-2 border border-gray-300 rounded-md transition duration-200 `} // Previous button styling
+                    nextClassName={`${page === data?.totalPages ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer hover:bg-blue-200'} px-4 py-2 border border-gray-300 rounded-md transition duration-200 `} // Next button styling
+                    previousLinkClassName={`${page === 1 ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer'} text-gray-700`} // Previous button text color
+                    nextLinkClassName={`${page === data?.totalPages ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer'} text-gray-700`} // Next button text color
+                    disabledClassName="cursor-not-allowed text-gray-400" // Disabled button styling
+                    selectedClassName="bg-blue-500 text-white" // Selected page button styling
+                  />
+                </>
+              }
+            </CustomTabPanel>
+            {/* tab History Job Post Request selected section */}
+            <CustomTabPanel value={value} index={1}>
+              {/* Filters Section */}
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 items-center">
+                <TextField
+                  label="Search Jobs"
+                  variant="outlined"
+                  value={searchQuery}
+                  onChange={handleSearchChange}
+                  fullWidth
+                  sx={{
+                    fontWeight: 'bold',
+                    backgroundColor: '#f7f9fc',
+                    borderRadius: 2,
+                    boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                    '& .MuiInputBase-root': {
+                      fontSize: '1.2rem',
+                    },
+                  }}
+                />
+                <TextField
+                  label="Job Title"
+                  variant="outlined"
+                  value={jobTitle}
+                  onChange={(e) => setJobTitle(e.target.value)}
+                  fullWidth
+                  sx={{ fontSize: '0.9rem' }}
+                />
+                <TextField
+                  label="Location"
+                  variant="outlined"
+                  value={location}
+                  onChange={(e) => setLocation(e.target.value)}
+                  fullWidth
+                  sx={{ fontSize: '0.9rem' }}
+                />
+                <FormControl variant="outlined">
+                  <InputLabel id="employment-type-label">Employment Type</InputLabel>
+                  <Select
+                    label="Employment Types"
+                    labelId="employment-type-label"
+                    value={employmentType}
+                    onChange={(e) => setEmploymentType(e.target.value)}
+                    sx={{ fontSize: '0.9rem' }}
+                  >
+                    <MenuItem value="">All Types</MenuItem>
+                    <MenuItem value="Permanent">Permanent</MenuItem>
+                    <MenuItem value="Intern">Intern</MenuItem>
+                    <MenuItem value="Contract">Contract</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl variant="outlined">
+                  <InputLabel id="job-post-request-status-label">Job Post Request Status</InputLabel>
+                  <Select
+                    labelId="job-post-request-status-label"
+                    value={jobPostRequestStatus}
+                    onChange={(e) => setJobPostRequestStatus(e.target.value)}
+                    sx={{ fontSize: '0.9rem' }}
+                    label="Job Post Request Statuses"
+                  >
+                    <MenuItem value="">All Types</MenuItem>
+                    <MenuItem value="Approved by HR Manager">Accepted</MenuItem>
+                    <MenuItem value="Rejected by HR Manager">Rejected</MenuItem>
+                  </Select>
+                </FormControl>
+                <FormControl variant="outlined">
+                  <InputLabel id="page-size-label">Items per Page</InputLabel>
+                  <Select
+                    label="Items per Pages"
+                    labelId="page-size-label"
+                    value={pageSize}
+                    onChange={handlePageSizeChange}
+                    sx={{ fontSize: '0.9rem' }}
+                  >
+                    {pageSizes.map((size) => (
+                      <MenuItem key={size} value={size}>
+                        {size}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </div>
+              {data.data.length === 0 ? (
+                <Typography
+                  variant="body1"
+                  textAlign="center"
+                  sx={{
+                    color: "gray",
+                    fontSize: { xs: "1rem", sm: "1.25rem" },
+                  }}
+                >
+                  No unreviewed requests found.
+                </Typography>
+              ) :
+                <>
+                  <Table sx={{ minWidth: 650, }}>
+                    <TableHead sx={{ backgroundColor: "#1976d2" }}>
+                      <TableRow>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>Process Id</TableCell>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Request Date
+                        </TableCell>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Requester
+                        </TableCell>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Job Title
+                        </TableCell>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Location
+                        </TableCell>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Min Salary
+                        </TableCell>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Max Salary
+                        </TableCell>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Employment Type
+                        </TableCell>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Status
+                        </TableCell>
+                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                          Actions
+                        </TableCell>
+                      </TableRow>
+                    </TableHead>
+                    <TableBody>
+                      {data.data.map((request) => (
+                        <TableRow
+                          key={request.processId}
+                          sx={{
+                            "&:hover": { backgroundColor: "#f5f5f5" },
+                          }}
+                        >
+                          <TableCell>{request.processId}</TableCell>
+                          <TableCell>{formatDateWithOrdinal(request.requestDate)}</TableCell>
+                          <TableCell>{request.requester}</TableCell>
+                          <TableCell>{request.jobTitle}</TableCell>
+                          <TableCell>{request.location}</TableCell>
+                          <TableCell>{request.minSalary}</TableCell>
+                          <TableCell>{request.maxSalary}</TableCell>
+                          <TableCell>{request.employmentType}</TableCell>
+                          <TableCell>{request.status}</TableCell>
+                          <TableCell>
+                            <Button
+                              variant="contained"
+                              size="small"
+                              sx={{
+                                backgroundColor: "#1976d2",
+                                color: "white",
+                                "&:hover": {
+                                  backgroundColor: "#1565c0",
+                                },
+                              }}
+                              onClick={() =>
+                                navigate(
+                                  `/job-post-request/${request.processId}`
+                                )
+                              }
+                            >
+                              View Details
+                            </Button>
+                          </TableCell>
+                        </TableRow>
+                      ))}
+                    </TableBody>
+                  </Table>
+                  {/* Pagination */}
+                  <ReactPaginate
+                    previousLabel="Previous"
+                    nextLabel="Next"
+                    breakLabel="..."
+                    pageCount={data?.totalPages}
+                    onPageChange={handlePageClick}
+                    containerClassName="flex justify-center items-center space-x-3 mt-4" // Container with spacing and centering
+                    activeClassName="bg-blue-500 text-white px-4 py-2 rounded-md" // Active page styling with larger text and a background color
+                    pageClassName="px-4 py-2 border border-gray-300 rounded-md cursor-pointer hover:bg-blue-200 transition duration-200" // Page buttons styling
+                    breakClassName="text-gray-600 px-2 py-2" // Styling for the break dots
+                    previousClassName={`${page === 1 ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer hover:bg-blue-200'} px-4 py-2 border border-gray-300 rounded-md transition duration-200 `} // Previous button styling
+                    nextClassName={`${page === data?.totalPages ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer hover:bg-blue-200'} px-4 py-2 border border-gray-300 rounded-md transition duration-200 `} // Next button styling
+                    previousLinkClassName={`${page === 1 ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer'} text-gray-700`} // Previous button text color
+                    nextLinkClassName={`${page === data?.totalPages ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer'} text-gray-700`} // Next button text color
+                    disabledClassName="cursor-not-allowed text-gray-400" // Disabled button styling
+                    selectedClassName="bg-blue-500 text-white" // Selected page button styling
+                  />
+                </>
+              }
+            </CustomTabPanel>
+          </Box>
         </TableContainer>
       )}
     </Box>
   );
+
+  if (currentUser.roles.includes("Recruiter")) {
+    return (
+      <Box
+        // className="mx-auto bg-white rounded-lg shadow-md"
+        sx={{
+          margin: "2rem auto", // Adds consistent spacing with navbar
+          padding: { xs: "1rem", sm: "1.5rem", md: "2rem" }, // Responsive padding
+          boxSizing: "border-box",
+          width: "100%",
+          maxWidth: { xs: "100%", lg: "90%" }
+        }}
+      >
+        <Typography
+          variant="h6"
+          sx={{
+            fontWeight: "bold",
+            fontSize: { xs: "1.25rem", sm: "1.5rem" },
+            textAlign: 'center'
+          }}
+        >
+          Job Post Requests
+        </Typography>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "end", // Membuat tombol di kanan
+            alignItems: "center",
+            marginBottom: "1.5rem",
+          }}
+        >
+
+          <Button
+            variant="contained"
+            sx={{
+              backgroundColor: "black",
+              color: "white",
+              fontWeight: "bold",
+              textTransform: "none",
+              padding: { xs: "0.5rem 1rem", sm: "0.75rem 1.5rem" },
+              "&:hover": {
+                backgroundColor: "#424242",
+              },
+            }}
+            className="rounded-lg shadow-md"
+            onClick={() => navigate('/job-post-request/new')}
+          >
+            Add New Job Post Request
+          </Button>
+        </Box>
+        {isLoading ? (
+          <Box
+            sx={{
+              display: "flex",
+              justifyContent: "center",
+              alignItems: "center",
+              height: "200px",
+            }}
+          >
+            <CircularProgress />
+          </Box>
+        ) : (
+          <TableContainer
+            sx={{
+              borderRadius: "8px",
+              paddingTop: 1,
+              overflowX: "auto", // Makes table scrollable on small screens
+            }}
+          >
+            {/* Filter Section */}
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 items-center">
+              <TextField
+                label="Search Jobs"
+                variant="outlined"
+                value={searchQuery}
+                onChange={handleSearchChange}
+                fullWidth
+                sx={{
+                  fontWeight: 'bold',
+                  backgroundColor: '#f7f9fc',
+                  borderRadius: 2,
+                  boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                  '& .MuiInputBase-root': {
+                    fontSize: '1.2rem',
+                  },
+                }}
+              />
+              <TextField
+                label="Job Title"
+                variant="outlined"
+                value={jobTitle}
+                onChange={(e) => setJobTitle(e.target.value)}
+                fullWidth
+                sx={{ fontSize: '0.9rem' }}
+              />
+              <TextField
+                label="Location"
+                variant="outlined"
+                value={location}
+                onChange={(e) => setLocation(e.target.value)}
+                fullWidth
+                sx={{ fontSize: '0.9rem' }}
+              />
+              <FormControl variant="outlined">
+                <InputLabel id="employment-type-label">Employment Type</InputLabel>
+                <Select
+                  label="Employment Types"
+                  labelId="employment-type-label"
+                  value={employmentType}
+                  onChange={(e) => setEmploymentType(e.target.value)}
+                  sx={{ fontSize: '0.9rem' }}
+                >
+                  <MenuItem value="">All Types</MenuItem>
+                  <MenuItem value="Permanent">Permanent</MenuItem>
+                  <MenuItem value="Intern">Intern</MenuItem>
+                  <MenuItem value="Contract">Contract</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl variant="outlined">
+                <InputLabel id="job-post-request-status-label">Job Post Request Status</InputLabel>
+                <Select
+                  labelId="job-post-request-status-label"
+                  value={jobPostRequestStatus}
+                  onChange={(e) => setJobPostRequestStatus(e.target.value)}
+                  sx={{ fontSize: '0.9rem' }}
+                  label="Job Post Request Statuses"
+                >
+                  <MenuItem value="">All Types</MenuItem>
+                  <MenuItem value="Pending Approval">Submitted</MenuItem>
+                  <MenuItem value="Approved by HR Manager">Accepted</MenuItem>
+                  <MenuItem value="Modification by HR Manager">Modification</MenuItem>
+                  <MenuItem value="Rejected by HR Manager">Rejected</MenuItem>
+                </Select>
+              </FormControl>
+              <FormControl variant="outlined">
+                <InputLabel id="page-size-label">Items per Page</InputLabel>
+                <Select
+                  label="Items per Pages"
+                  labelId="page-size-label"
+                  value={pageSize}
+                  onChange={handlePageSizeChange}
+                  sx={{ fontSize: '0.9rem' }}
+                >
+                  {pageSizes.map((size) => (
+                    <MenuItem key={size} value={size}>
+                      {size}
+                    </MenuItem>
+                  ))}
+                </Select>
+              </FormControl>
+            </div>
+            {data.data.length === 0 ?
+              <Typography
+                variant="body1"
+                textAlign="center"
+                sx={{
+                  color: "gray",
+                  fontSize: { xs: "1rem", sm: "1.25rem" },
+                }}
+              >
+                No requests found.
+              </Typography>
+              : <Table sx={{ minWidth: 650 }}>
+                <TableHead sx={{ backgroundColor: "#1976d2" }}>
+                  <TableRow>
+                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>Process Id</TableCell>
+                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                      Request Date
+                    </TableCell>
+                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                      Requester
+                    </TableCell>
+                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                      Job Title
+                    </TableCell>
+                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                      Location
+                    </TableCell>
+                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                      Min Salary
+                    </TableCell>
+                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                      Max Salary
+                    </TableCell>
+                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                      Employment Type
+                    </TableCell>
+                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                      Status
+                    </TableCell>
+                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                      Actions
+                    </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {data.data.map((request) => (
+                    <TableRow
+                      key={request.processId}
+                      sx={{
+                        "&:hover": { backgroundColor: "#f5f5f5" },
+                      }}
+                    >
+                      <TableCell>{request.processId}</TableCell>
+                      <TableCell>{formatDateWithOrdinal(request.requestDate)}</TableCell>
+                      <TableCell>{request.requester}</TableCell>
+                      <TableCell>{request.jobTitle}</TableCell>
+                      <TableCell>{request.location}</TableCell>
+                      <TableCell>{request.minSalary}</TableCell>
+                      <TableCell>{request.maxSalary}</TableCell>
+                      <TableCell>{request.employmentType}</TableCell>
+                      <TableCell>{request.status}</TableCell>
+                      <TableCell>
+                        <Button
+                          variant="contained"
+                          size="small"
+                          sx={{
+                            backgroundColor: "#1976d2",
+                            color: "white",
+                            "&:hover": {
+                              backgroundColor: "#1565c0",
+                            },
+                          }}
+                          onClick={() =>
+                            navigate(
+                              `/job-post-request/${request.processId}`
+                            )
+                          }
+                        >
+                          View Details
+                        </Button>
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>}
+            {/* Pagination */}
+            <ReactPaginate
+              previousLabel="Previous"
+              nextLabel="Next"
+              breakLabel="..."
+              pageCount={data?.totalPages}
+              onPageChange={handlePageClick}
+              containerClassName="flex justify-center items-center space-x-3 mt-4" // Container with spacing and centering
+              activeClassName="bg-blue-500 text-white px-4 py-2 rounded-md" // Active page styling with larger text and a background color
+              pageClassName="px-4 py-2 border border-gray-300 rounded-md cursor-pointer hover:bg-blue-200 transition duration-200" // Page buttons styling
+              breakClassName="text-gray-600 px-2 py-2" // Styling for the break dots
+              previousClassName={`${page === 1 ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer hover:bg-blue-200'} px-4 py-2 border border-gray-300 rounded-md transition duration-200 `} // Previous button styling
+              nextClassName={`${page === data?.totalPages ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer hover:bg-blue-200'} px-4 py-2 border border-gray-300 rounded-md transition duration-200 `} // Next button styling
+              previousLinkClassName={`${page === 1 ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer'} text-gray-700`} // Previous button text color
+              nextLinkClassName={`${page === data?.totalPages ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer'} text-gray-700`} // Next button text color
+              disabledClassName="cursor-not-allowed text-gray-400" // Disabled button styling
+              selectedClassName="bg-blue-500 text-white" // Selected page button styling
+            />
+          </TableContainer>
+        )}
+      </Box>
+    )
+  };
 };
 
 export default JobPostRequestPage;

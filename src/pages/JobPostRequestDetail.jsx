@@ -360,34 +360,50 @@ const JobPostRequestDetailPage = () => {
     </Modal>
 
       {/* Add Comments and Update Status */}
-      {currentUser.roles.includes(requestDetails.requiredRole) && (
+      {currentUser.roles.includes(requestDetails.requiredRole) ? (
         <Box
-          sx={{
-            display: "flex",
-            justifyContent: "flex-end",
-            gap: "1rem",
-          }}
+        sx={{
+          display: "flex",
+          justifyContent: "space-between", // Ensure buttons are at opposite ends
+          alignItems: "center", // Align buttons vertically
+          gap: "1rem",
+          mt: 2, // Optional: Add some margin-top for spacing
+        }}
+      >
+        {/* Back Button */}
+        <Button
+          variant="contained"
+          color="secondary"
+          onClick={() => navigate(-1)}
         >
-          {currentUser.roles.includes(requestDetails.requiredRole) ?
-            <Button
-              variant="outlined"
-              sx={{
-                color: "#1976d2",
+          Back
+        </Button>
+      
+        {/* Conditional Buttons */}
+        {currentUser.roles.includes(requestDetails.requiredRole) && (
+          <Button
+            variant="outlined"
+            sx={{
+              color: "#1976d2",
+              borderColor: "#1976d2",
+              "&:hover": {
+                backgroundColor: "#e3f2fd",
                 borderColor: "#1976d2",
-                "&:hover": {
-                  backgroundColor: "#e3f2fd",
-                  borderColor: "#1976d2",
-                },
-              }}
-              onClick={() =>{
-                requestDetails.requiredRole === "Recruiter" ? navigate(`/edit/job-post-request/${requestDetails.processId}`) : setOpenReviewModal(true)
-              }} // Open the review modal
-            >
-              {requestDetails.requiredRole === "Recruiter" ? "Edit Job Post Request" : "Review"}
-            </Button> : ''
-          }
-        </Box>
-      )}
+              },
+            }}
+            onClick={() => {
+              requestDetails.requiredRole === "Recruiter"
+                ? navigate(`/edit/job-post-request/${requestDetails.processId}`)
+                : setOpenReviewModal(true);
+            }}
+          >
+            {requestDetails.requiredRole === "Recruiter"
+              ? "Edit Job Post Request"
+              : "Review"}
+          </Button>
+        )}
+      </Box>
+      ) : <Button variant="contained" color="secondary" onClick={() => navigate(-1)}>Back</Button>}
     </Box>
   );
 };

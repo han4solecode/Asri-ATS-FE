@@ -6,8 +6,10 @@ import {
     Box,
 } from "@mui/material";
 import JobPostRequestService from "../services/jobPostRequestService";
+import { useNavigate } from "react-router-dom";
 
 const JobPostRequestFormPage = () => {
+    const navigate = useNavigate();
     const [formValues, setFormValues] = useState({
         jobTitle: "",
         description: "",
@@ -53,7 +55,7 @@ const JobPostRequestFormPage = () => {
             validationErrors.maxSalary = "Max salary is required.";
         }
 
-        if(+formValues.minSalary > +formValues.maxSalary) {
+        if (+formValues.minSalary > +formValues.maxSalary) {
             validationErrors.minSalary = "Min salary should not be more than max salary"
         }
 
@@ -108,110 +110,118 @@ const JobPostRequestFormPage = () => {
 
     return (
         <div className="mt-10 mb-10 flex items-center justify-center">
-             <Box
-            component="form"
-            onSubmit={handleSubmit}
-            className="sm:w-3/4 md:w-3/4 mt-10 mb-10 border rounded shadow-lg p-4"
-        >
-            <Typography variant="h5" className="mb-5 font-semibold text-gray-700">
-                Job Post Request Form
-            </Typography>
+            <Box
+                component="form"
+                onSubmit={handleSubmit}
+                className="sm:w-3/4 md:w-3/4 mt-10 mb-10 border rounded shadow-lg p-4"
+            >
+                <Typography variant="h5" className="mb-5 font-semibold text-gray-700">
+                    Job Post Request Form
+                </Typography>
 
-            {/* Personal Information */}
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                <TextField
-                    label="Job Title"
-                    name="jobTitle"
-                    value={formValues.jobTitle}
-                    onChange={handleInputChange}
-                    error={!!errors.jobTitle}
-                    helperText={errors.jobTitle}
-                    fullWidth
-                />
-                <TextField
-                    label="Description"
-                    name="description"
-                    value={formValues.description}
-                    onChange={handleInputChange}
-                    error={!!errors.description}
-                    helperText={errors.description}
-                    fullWidth
-                />
-                <TextField
-                    label="Requirements"
-                    name="requirements"
-                    value={formValues.requirements}
-                    onChange={handleInputChange}
-                    error={!!errors.requirements}
-                    helperText={errors.requirements}
-                    fullWidth
-                />
-                <TextField
-                    label="Location"
-                    name="location"
-                    value={formValues.location}
-                    onChange={handleInputChange}
-                    error={!!errors.location}
-                    helperText={errors.location}
-                    fullWidth
-                />
-                <TextField
-                    label="Min Salary"
-                    name="minSalary"
-                    type="number"
-                    value={formValues.minSalary}
-                    onChange={handleInputChange}
-                    error={!!errors.minSalary}
-                    helperText={errors.minSalary}
-                    fullWidth
-                />
-                <TextField
-                    label="Max Salary"
-                    name="maxSalary"
-                    type="number"
-                    value={formValues.maxSalary}
-                    onChange={handleInputChange}
-                    error={!!errors.maxSalary}
-                    helperText={errors.maxSalary}
-                    fullWidth
-                />
-                <TextField
-                    label="Employment Type"
-                    name="employmentType"
-                    value={formValues.employmentType}
-                    onChange={handleInputChange}
-                    error={!!errors.employmentType}
-                    helperText={errors.employmentType}
-                    fullWidth
-                />
-                <TextField
-                    label="Comments"
-                    name="comments"
-                    value={formValues.comments}
-                    onChange={handleInputChange}
-                    error={!!errors.comments}
-                    helperText={errors.comments}
-                    fullWidth
-                />
-            </div>
+                {/* Personal Information */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                    <TextField
+                        label="Job Title"
+                        name="jobTitle"
+                        value={formValues.jobTitle}
+                        onChange={handleInputChange}
+                        error={!!errors.jobTitle}
+                        helperText={errors.jobTitle}
+                        fullWidth
+                    />
+                    <TextField
+                        label="Location"
+                        name="location"
+                        value={formValues.location}
+                        onChange={handleInputChange}
+                        error={!!errors.location}
+                        helperText={errors.location}
+                        fullWidth
+                    />
+                    <TextField
+                        label="Description"
+                        name="description"
+                        multiline
+                        rows={4}
+                        value={formValues.description}
+                        onChange={handleInputChange}
+                        error={!!errors.description}
+                        helperText={errors.description}
+                        fullWidth
+                    />
+                    <TextField
+                        label="Requirements"
+                        name="requirements"
+                        multiline
+                        rows={4}
+                        value={formValues.requirements}
+                        onChange={handleInputChange}
+                        error={!!errors.requirements}
+                        helperText={errors.requirements}
+                        fullWidth
+                    />
+                    <TextField
+                        label="Min Salary"
+                        name="minSalary"
+                        type="number"
+                        value={formValues.minSalary}
+                        onChange={handleInputChange}
+                        error={!!errors.minSalary}
+                        helperText={errors.minSalary}
+                        fullWidth
+                    />
+                    <TextField
+                        label="Max Salary"
+                        name="maxSalary"
+                        type="number"
+                        value={formValues.maxSalary}
+                        onChange={handleInputChange}
+                        error={!!errors.maxSalary}
+                        helperText={errors.maxSalary}
+                        fullWidth
+                    />
+                    <TextField
+                        label="Employment Type"
+                        name="employmentType"
+                        value={formValues.employmentType}
+                        onChange={handleInputChange}
+                        error={!!errors.employmentType}
+                        helperText={errors.employmentType}
+                        fullWidth
+                    />
+                    <TextField
+                        label="Comments"
+                        name="comments"
+                        value={formValues.comments}
+                        onChange={handleInputChange}
+                        error={!!errors.comments}
+                        helperText={errors.comments}
+                        fullWidth
+                    />
+                </div>
 
-            {/* Submit Button */}
-            <div className="flex flex-col gap-2 items-center justify-center pt-2">
-
-                <Button
-                    type="submit"
-                    variant="contained"
-                    className="w-full mt-6"
-                    sx={{ width: "80%", backgroundColor: "#1f2937" }}
-                >
-                    {isSubmitting ? "Submitting..." : "Submit"}
-                </Button>
-            </div>
-        </Box>
-
-
+                {/* Submit Button */}
+                <div className="flex items-center justify-between pt-2 w-full">
+                    <Button
+                        variant="contained"
+                        color="secondary"
+                        onClick={() => navigate(-1)}
+                    >
+                        Back
+                    </Button>
+                    <Button
+                        type="submit"
+                        variant="contained"
+                        className="mt-6"
+                        sx={{  backgroundColor: "#1f2937" }} // Adjust width if necessary
+                    >
+                        {isSubmitting ? "Submitting..." : "Submit"}
+                    </Button>
+                </div>
+            </Box>
         </div>
-       
+
     );
 };
 

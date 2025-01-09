@@ -5,13 +5,18 @@ const jobPostRequest = async (userData) => {
   return res;
 };
 
-const jobPostRequestList = async () => {
-  const res = await AxiosInstance.api.get("/api/JobPostRequest/recruiter");
+const jobPostRequestList = async (params) => {
+  const res = await AxiosInstance.api.get("/api/JobPostRequest/recruiter", {params});
   return res;
 };
 
-const jobPostRequestToBeReviewed = async () => {
-  const res = await AxiosInstance.api.get("/api/JobPostRequest");
+const jobPostRequestToBeReviewed = async (params) => {
+  const res = await AxiosInstance.api.get("/api/JobPostRequest",{params});
+  return res;
+};
+
+const historyJobPostRequest = async (params) => {
+  const res = await AxiosInstance.api.get("/api/JobPostRequest/history", { params });
   return res;
 };
 
@@ -38,7 +43,8 @@ const JobPostRequestService = {
   jobPostRequestList,
   details,
   reviewJobPostRequest,
-  updateJobPostRequest
+  updateJobPostRequest,
+  historyJobPostRequest
 };
 
 export default JobPostRequestService;
