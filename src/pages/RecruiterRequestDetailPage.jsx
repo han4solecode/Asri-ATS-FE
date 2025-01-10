@@ -9,6 +9,7 @@ import {
   Modal,
   TextField,
 } from "@mui/material";
+import { useSelector } from "react-redux";
 import AxiosInstance from "../services/api";
 import RecruiterRegisterService from "../services/recruiterRegister.service";
 
@@ -19,6 +20,7 @@ const RecruiterRequestDetailPage = () => {
   const [loading, setLoading] = useState(false);
   const [openReviewModal, setOpenReviewModal] = useState(false);
   const [processing, setProcessing] = useState(false);
+  const { user: currentUser } = useSelector((state) => state.auth);
 
   // Fetch recruiter request details
   useEffect(() => {
@@ -138,20 +140,23 @@ const RecruiterRequestDetailPage = () => {
           gap: "1rem",
         }}
       >
-        <Button
-          variant="outlined"
-          sx={{
-            color: "#1976d2",
-            borderColor: "#1976d2",
-            "&:hover": {
-              backgroundColor: "#e3f2fd",
+        {/* Only show the "Review" button if the current user is an HR Manager and isApproved is null */}
+        {currentUser.roles.includes("HR Manager") && requestDetails.isApproved === null && (
+          <Button
+            variant="outlined"
+            sx={{
+              color: "#1976d2",
               borderColor: "#1976d2",
-            },
-          }}
-          onClick={() => setOpenReviewModal(true)} // Open the review modal
-        >
-          Review
-        </Button>
+              "&:hover": {
+                backgroundColor: "#e3f2fd",
+                borderColor: "#1976d2",
+              },
+            }}
+            onClick={() => setOpenReviewModal(true)} // Open the review modal
+          >
+            Review
+          </Button>
+        )}
       </Box>
 
       {/* Review Modal */}

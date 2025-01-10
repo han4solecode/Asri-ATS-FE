@@ -18,7 +18,7 @@ import {
 } from "@mui/material";
 import ReactPaginate from "react-paginate";
 import { useNavigate } from "react-router-dom";
-import "../App.css"
+import "../App.css";
 import ApplicationJobService from "../services/applicationJob.service";
 
 const ApplicationJobPage = () => {
@@ -50,20 +50,44 @@ const ApplicationJobPage = () => {
   };
 
   if (isLoading) {
-    return <div className="text-center"><CircularProgress /></div>;
+    return (
+      <div className="text-center">
+        <CircularProgress />
+      </div>
+    );
   }
 
   if (isError) {
     return (
-      <div className="text-center text-red-500">
-        Error: {error.message}
-      </div>
+      <div className="text-center text-red-500">Error: {error.message}</div>
     );
   }
 
   const { data: apiResponse, totalRecords } = data;
   const applicationStatuses = apiResponse?.data || [];
   const pageCount = Math.ceil(totalRecords / pageSize);
+
+  // Map status to specific colors
+  const getStatusStyles = (status) => {
+    switch (status) {
+      case "Offer by HR Manager":
+        return { backgroundColor: "#4CAF50", color: "#FFFFFF" }; // Green
+      case "Complete by HR Manager":
+        return { backgroundColor: "#16C79A", color: "#FFFFFF" };
+      case "Rejected":
+        return { backgroundColor: "#F44336", color: "#FFFFFF" }; // Red
+      case "Modification by Applicant":
+        return { backgroundColor: "#FFEB3B", color: "#000000" }; // Yellow
+      case "Update by Applicant":
+        return { backgroundColor: "#FFEB3B", color: "#000000" };
+      case "Interview Scheduled":
+        return { backgroundColor: "#2196F3", color: "#FFFFFF" }; // Blue
+      case "Confirm by Applicant":
+        return { backgroundColor: "#48CFCB", color: "#000000" };
+      default:
+        return { backgroundColor: "#E0E0E0", color: "#000000" }; // Gray
+    }
+  };
 
   return (
     <div className="p-4">
@@ -108,7 +132,7 @@ const ApplicationJobPage = () => {
                 <TableCell>
                   <Chip
                     label={status.status}
-                    className={"bg-teal-300 text-white"}
+                    sx={getStatusStyles(status.status)} // Use the sx prop for inline styling
                     size="small"
                   />
                 </TableCell>
@@ -119,7 +143,9 @@ const ApplicationJobPage = () => {
                     variant="contained"
                     color="primary"
                     size="small"
-                    onClick={() => navigate(`/application-job/${status.processId}`)}
+                    onClick={() =>
+                      navigate(`/application-job/${status.processId}`)
+                    }
                   >
                     View Details
                   </Button>

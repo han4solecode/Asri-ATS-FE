@@ -21,36 +21,25 @@ import {
 } from "@mui/material";
 import MenuIcon from "@mui/icons-material/Menu";
 
-const Navbar = () => {
+const Navbar = ({ isDrawerOpen, setIsDrawerOpen }) => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { user: currentUser } = useSelector((state) => state.auth);
 
   const theme = useTheme();
   const isMediumOrLarger = useMediaQuery(theme.breakpoints.up("md"));
-  const [drawerOpen, setDrawerOpen] = useState(isMediumOrLarger);
 
-    // Adjust the drawer state when the screen size changes
-    React.useEffect(() => {
-      setDrawerOpen(isMediumOrLarger);
-    }, [isMediumOrLarger]);
-  
-    const handleDrawerToggle = () => {
-      setDrawerOpen((prev) => !prev);
-    };
-  
+  useEffect(() => {
+    // Open drawer automatically on larger screens
+    setIsDrawerOpen(isMediumOrLarger);
+  }, [isMediumOrLarger]);
+
+  const handleDrawerToggle = () => {
+    setIsDrawerOpen((prev) => !prev); // Toggle for all screens
+  };
+
   const menuItems = [
     { label: "Job Search", path: "/", visibleForAll: true },
-    {
-      label: "Profile",
-      path: "/profile",
-      visibleForRoles: [
-        "Administrator",
-        "HR Manager",
-        "Recruiter",
-        "Applicant",
-      ],
-    },
     {
       label: "Company Registration Request",
       path: "/requests/company-registration",
@@ -109,30 +98,75 @@ const Navbar = () => {
             alignItems: "center",
           }}
         >
-          {/* Logo and Menu Items */}
-          <Box sx={{ display: "flex", alignItems: "center", gap: "2rem" }}>
-            <Typography
-              variant="h6"
-              sx={{
-                fontWeight: "bold",
-                color: "#ffffff",
-                cursor: "pointer",
-                "&:hover": { color: "#e5e7eb" },
-              }}
-              onClick={handleDrawerToggle}
-            >
-              Logo
-            </Typography>
-          </Box>
-
-          {/* Authentication Buttons (Desktop) */}
-          <Box
+          {/* Logo or Drawer Toggle */}
+          <Typography
+            variant="h6"
             sx={{
-              display: { xs: "none", md: "flex" },
-              alignItems: "center",
-              gap: "1rem",
+              fontWeight: "bold",
+              color: "#ffffff",
+              cursor: "pointer",
+              "&:hover": { color: "#e5e7eb" },
             }}
+            onClick={handleDrawerToggle} // Always toggle the drawer
           >
+            Logo
+          </Typography>
+        </Toolbar>
+      </AppBar>
+
+      {/* Drawer */}
+      <Drawer
+        anchor="left"
+        open={isDrawerOpen}
+        onClose={() => !isMediumOrLarger && setIsDrawerOpen(false)}
+        variant={isMediumOrLarger ? "persistent" : "temporary"}
+        sx={{
+          "& .MuiDrawer-paper": {
+            backgroundColor: "#1f2937",
+            color: "#ffffff",
+            width: "250px",
+          },
+        }}
+      >
+        <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
+          <Typography
+            variant="h6"
+            sx={{
+              fontWeight: "bold",
+              padding: "1rem",
+              textAlign: "center",
+              cursor: "pointer",
+            }}
+            onClick={handleDrawerToggle}
+          >
+            Logo
+          </Typography>
+          <Divider sx={{ backgroundColor: "#374151" }} />
+
+          {/* Navigation Links */}
+          <List>
+            {menuItems.filter(isMenuVisible).map((item, index) => (
+              <ListItem key={index} disablePadding>
+                <ListItemButton
+                  onClick={() => {
+                    navigate(item.path);
+                    if (!isMediumOrLarger) setIsDrawerOpen(false);
+                  }}
+                  sx={{
+                    "&:hover": {
+                      backgroundColor: "#374151",
+                    },
+                  }}
+                >
+                  <ListItemText primary={item.label} />
+                </ListItemButton>
+              </ListItem>
+            ))}
+          </List>
+          <Divider sx={{ backgroundColor: "#374151" }} />
+
+          {/* Authentication Buttons */}
+          <Box sx={{ padding: "1rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
             {!currentUser ? (
               <>
                 <Button
@@ -211,143 +245,6 @@ const Navbar = () => {
                   Logout
                 </Button>
               </>
-            )}
-          </Box>
-
-          {/* Hamburger Menu for small screens */}
-          <IconButton
-            edge="start"
-            color="inherit"
-            aria-label="menu"
-            sx={{ display: { xs: "block", md: "none" } }}
-            onClick={handleDrawerToggle}
-          >
-            <MenuIcon />
-          </IconButton>
-        </Toolbar>
-      </AppBar>
-
-      {/* Drawer for navigation */}
-      <Drawer
-        anchor="left"
-        open={drawerOpen}
-        onClose={() => !isMediumOrLarger && setDrawerOpen(false)}
-        variant={isMediumOrLarger ? "persistent" : "temporary"}
-        sx={{
-          "& .MuiDrawer-paper": {
-            backgroundColor: "#1f2937",
-            color: "#ffffff",
-            width: "250px",
-          },
-        }}
-      >
-        <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-          <Typography
-            variant="h6"
-            sx={{
-              fontWeight: "bold",
-              padding: "1rem",
-              textAlign: "center",
-              cursor: "pointer",
-            }}
-            onClick={() => setDrawerOpen(false)}
-          >
-            Logo
-          </Typography>
-          <Divider sx={{ backgroundColor: "#374151" }} />
-
-          <List>
-            {menuItems.filter(isMenuVisible).map((item, index) => (
-              <ListItem key={index} disablePadding>
-                <ListItemButton
-                  onClick={() => {
-                    navigate(item.path);
-                    if (!isMediumOrLarger) setDrawerOpen(false);
-                  }}
-                  sx={{
-                    "&:hover": {
-                      backgroundColor: "#374151",
-                    },
-                  }}
-                >
-                  <ListItemText primary={item.label} />
-                </ListItemButton>
-              </ListItem>
-            ))}
-          </List>
-
-          <Divider sx={{ backgroundColor: "#374151" }} />
-          <Box sx={{ padding: "1rem" }}>
-            {!currentUser ? (
-              <>
-                <Button
-                  fullWidth
-                  onClick={() => {
-                    navigate("/register-company");
-                    if (!isMediumOrLarger) setDrawerOpen(false);
-                  }}
-                  sx={{
-                    backgroundColor: "#10b981",
-                    color: "#ffffff",
-                    marginBottom: "0.5rem",
-                    "&:hover": {
-                      backgroundColor: "#059669",
-                    },
-                  }}
-                >
-                  Register Company
-                </Button>
-                <Button
-                  fullWidth
-                  onClick={() => {
-                    navigate("/login");
-                    if (!isMediumOrLarger) setDrawerOpen(false);
-                  }}
-                  sx={{
-                    backgroundColor: "#374151",
-                    color: "#ffffff",
-                    marginBottom: "0.5rem",
-                    "&:hover": {
-                      backgroundColor: "#4b5563",
-                    },
-                  }}
-                >
-                  Login
-                </Button>
-                <Button
-                  fullWidth
-                  onClick={() => {
-                    navigate("/register");
-                    if (!isMediumOrLarger) setDrawerOpen(false);
-                  }}
-                  sx={{
-                    backgroundColor: "#374151",
-                    color: "#ffffff",
-                    "&:hover": {
-                      backgroundColor: "#4b5563",
-                    },
-                  }}
-                >
-                  Register
-                </Button>
-              </>
-            ) : (
-              <Button
-                fullWidth
-                onClick={() => {
-                  handleLogout();
-                  if (!isMediumOrLarger) setDrawerOpen(false);
-                }}
-                sx={{
-                  backgroundColor: "#374151",
-                  color: "#ffffff",
-                  "&:hover": {
-                    backgroundColor: "#4b5563",
-                  },
-                }}
-              >
-                Logout
-              </Button>
             )}
           </Box>
         </Box>
