@@ -18,7 +18,18 @@ import {
   TableRow,
   TableCell,
   TableBody,
+  Container,
+  Card,
+  CardContent,
 } from "@mui/material";
+
+// Material UI Icons
+import BusinessIcon from '@mui/icons-material/Business';
+import LocationOnIcon from '@mui/icons-material/LocationOn';
+import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
+import ScheduleIcon from '@mui/icons-material/Schedule';
+import DescriptionIcon from '@mui/icons-material/Description';
+import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import JobPostRequestService from "../services/jobPostRequestService";
 import { useSelector } from "react-redux";
 
@@ -136,6 +147,65 @@ const JobPostRequestDetailPage = () => {
 
   return (
     <Box className="w-11/12 mx-auto mt-10 mb-10 p-4 bg-white rounded-lg shadow-md border border-gray-300">
+      <div>
+        {/* Job Post Details Card */}
+        <Container sx={{ marginTop: 4, marginBottom: 6 }}>
+          <Card sx={{ boxShadow: 4 }}>
+            <CardContent sx={{ padding: 4 }}>
+              {/* Job Title */}
+              <Typography variant="h4" fontWeight="bold" align="center" gutterBottom>
+                {requestDetails.jobTitle}
+              </Typography>
+
+              {/* Job Information */}
+              <Grid container spacing={3} sx={{ marginTop: 2, marginBottom: 3 }}>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center' }}>
+                    <BusinessIcon color="primary" sx={{ marginRight: 1 }} />
+                    <strong>Company:</strong> {requestDetails.companyName}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center' }}>
+                    <LocationOnIcon color="primary" sx={{ marginRight: 1 }} />
+                    <strong>Location:</strong> {requestDetails.location}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center' }}>
+                    <AttachMoneyIcon color="primary" sx={{ marginRight: 1 }} />
+                    <strong>Salary:</strong> {requestDetails.minSalary} - {requestDetails.maxSalary}
+                  </Typography>
+                </Grid>
+                <Grid item xs={12} md={6}>
+                  <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center' }}>
+                    <ScheduleIcon color="primary" sx={{ marginRight: 1 }} />
+                    <strong>Employment Type:</strong> {requestDetails.employmentType}
+                  </Typography>
+                </Grid>
+              </Grid>
+
+              {/* Job Description */}
+              <Typography variant="h6" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
+                <DescriptionIcon color="action" sx={{ marginRight: 1 }} />
+                Description:
+              </Typography>
+              <Typography variant="body2" sx={{ marginBottom: 3, lineHeight: 1.8 }}>
+                {requestDetails.description}
+              </Typography>
+
+              {/* Job Requirements */}
+              <Typography variant="h6" fontWeight="bold" sx={{ display: 'flex', alignItems: 'center', marginBottom: 1 }}>
+                <AssignmentTurnedInIcon color="action" sx={{ marginRight: 1 }} />
+                Requirements:
+              </Typography>
+              <Typography variant="body2" sx={{ lineHeight: 1.8 }}>
+                {requestDetails.requirements}
+              </Typography>
+            </CardContent>
+          </Card>
+        </Container>
+      </div>
 
       {/* Process Details */}
       <Box className="mb-6">
@@ -162,30 +232,7 @@ const JobPostRequestDetailPage = () => {
         </Grid>
       </Box>
 
-      {/* Job Post Request Details */}
-      <Box sx={{ marginTop: 6 }} className="mb-6">
-        <Typography variant="h5" className="mb-4 text-gray-700 font-semibold">
-          Job Post Request Details
-        </Typography>
-        <Grid sx={{ marginTop: 2 }} container spacing={2}>
-          {[
-            { label: 'Job Title', value: requestDetails.jobTitle },
-            { label: 'Company Id', value: requestDetails.companyId },
-            { label: 'Description', value: requestDetails.description },
-            { label: 'Requirements', value: requestDetails.requirements },
-            { label: 'Location', value: requestDetails.location },
-            { label: 'Min Salary', value: requestDetails.minSalary },
-            { label: 'Max Salary', value: requestDetails.maxSalary },
-            { label: 'Employment Type', value: requestDetails.employmentType }
-          ].map((item, index) => (
-            <Grid item xs={12} sm={4} key={index}>
-              <Typography variant="body1" sx={{ marginBottom: 2 }} className="text-gray-600">
-                <strong>{item.label}:</strong> {item.value}
-              </Typography>
-            </Grid>
-          ))}
-        </Grid>
-      </Box>
+
 
       {/* Request History */}
       <Box className="mb-6">
@@ -218,191 +265,191 @@ const JobPostRequestDetailPage = () => {
 
       {/* Review Modal */}
       <Modal
-      open={openReviewModal}
-      onClose={() => setOpenReviewModal(false)}
-      sx={{
-        display: "flex",
-        justifyContent: "center",
-        alignItems: "center",
-      }}
-    >
-      <Paper
+        open={openReviewModal}
+        onClose={() => setOpenReviewModal(false)}
         sx={{
-          padding: "2rem",
-          width: "90%",
-          maxWidth: "400px",
-          borderRadius: "8px",
-          boxShadow: 3,
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
         }}
       >
-        <Typography
-          variant="h6"
+        <Paper
           sx={{
-            textAlign: "center",
-            fontWeight: "bold",
-            marginBottom: "1rem",
-            color: "#333",
+            padding: "2rem",
+            width: "90%",
+            maxWidth: "400px",
+            borderRadius: "8px",
+            boxShadow: 3,
           }}
         >
-          Review Job Post Request
-        </Typography>
-        <Box
-          sx={{
-            display: "flex",
-            flexDirection: { xs: "column", sm: "row" },
-            justifyContent: "space-between",
-            gap: "1rem",
-            marginTop: "1rem",
-          }}
-        >
-          <Button
-            variant="contained"
+          <Typography
+            variant="h6"
             sx={{
-              backgroundColor: action === "Approved" || !action ? "#4caf50" : "#e0e0e0",  // Highlight selected action
-              color: "white",
-              flex: 1,
-              "&:hover": {
-                backgroundColor: action === "Approved" || !action ? "#45a049" : "#bdbdbd",  // Change hover effect based on selection
-              },
+              textAlign: "center",
+              fontWeight: "bold",
+              marginBottom: "1rem",
+              color: "#333",
             }}
-            onClick={() => setAction("Approved")}
-            disabled={processing}
           >
-            Approve
-          </Button>
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: action === "Modification" || !action ? "#ffc107" : "#e0e0e0",  // Highlight selected action
-              color: "white",
-              flex: 2,
-              "&:hover": {
-                backgroundColor: action === "Modification" || !action ? "#e0a800" : "#bdbdbd",  // Change hover effect based on selection
-              },
-            }}
-            onClick={() => setAction("Modification")}
-            disabled={processing}
-          >
-            Modification
-          </Button>
-          <Button
-            variant="contained"
-            sx={{
-              backgroundColor: action === "Rejected" || !action ? "#f44336" : "#e0e0e0",  // Highlight selected action
-              color: "white",
-              flex: 1,
-              "&:hover": {
-                backgroundColor: action === "Rejected" || !action ? "#d32f2f" : "#bdbdbd",  // Change hover effect based on selection
-              },
-            }}
-            onClick={() => setAction("Rejected")}
-            disabled={processing}
-          >
-            Reject
-          </Button>
-        </Box>
-
-        {/* Display error message if no action is selected */}
-        {errors?.action && (
-          <Typography color="error" variant="body2" sx={{ marginTop: "1rem", textAlign: "start" }}>
-            {errors?.action}
+            Review Job Post Request
           </Typography>
-        )}
+          <Box
+            sx={{
+              display: "flex",
+              flexDirection: { xs: "column", sm: "row" },
+              justifyContent: "space-between",
+              gap: "1rem",
+              marginTop: "1rem",
+            }}
+          >
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: action === "Approved" || !action ? "#4caf50" : "#e0e0e0",  // Highlight selected action
+                color: "white",
+                flex: 1,
+                "&:hover": {
+                  backgroundColor: action === "Approved" || !action ? "#45a049" : "#bdbdbd",  // Change hover effect based on selection
+                },
+              }}
+              onClick={() => setAction("Approved")}
+              disabled={processing}
+            >
+              Approve
+            </Button>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: action === "Modification" || !action ? "#ffc107" : "#e0e0e0",  // Highlight selected action
+                color: "white",
+                flex: 2,
+                "&:hover": {
+                  backgroundColor: action === "Modification" || !action ? "#e0a800" : "#bdbdbd",  // Change hover effect based on selection
+                },
+              }}
+              onClick={() => setAction("Modification")}
+              disabled={processing}
+            >
+              Modification
+            </Button>
+            <Button
+              variant="contained"
+              sx={{
+                backgroundColor: action === "Rejected" || !action ? "#f44336" : "#e0e0e0",  // Highlight selected action
+                color: "white",
+                flex: 1,
+                "&:hover": {
+                  backgroundColor: action === "Rejected" || !action ? "#d32f2f" : "#bdbdbd",  // Change hover effect based on selection
+                },
+              }}
+              onClick={() => setAction("Rejected")}
+              disabled={processing}
+            >
+              Reject
+            </Button>
+          </Box>
 
-        <Box className="mb-4 mt-6">
-          <TextField
-            fullWidth
-            label="Comments"
+          {/* Display error message if no action is selected */}
+          {errors?.action && (
+            <Typography color="error" variant="body2" sx={{ marginTop: "1rem", textAlign: "start" }}>
+              {errors?.action}
+            </Typography>
+          )}
+
+          <Box className="mb-4 mt-6">
+            <TextField
+              fullWidth
+              label="Comments"
+              variant="outlined"
+              placeholder="Enter your comments"
+              onChange={(e) => setComment(e.target.value)}
+              error={errors?.comment}  // Display error for comments
+              helperText={errors?.comment}  // Show error message for comments
+            />
+          </Box>
+          <Button
             variant="outlined"
-            placeholder="Enter your comments"
-            onChange={(e) => setComment(e.target.value)}
-            error={errors?.comment}  // Display error for comments
-            helperText={errors?.comment}  // Show error message for comments
-          />
-        </Box>
-        <Button
-          variant="outlined"
-          sx={{
-            marginTop: "1rem",
-            width: "100%",
-            color: "white",  // Primary text color
-            borderColor: "primary.main",  // Primary border color
-            "&:hover": {
-              backgroundColor: "primary.light",  // Lighter shade for hover
-            },
-            backgroundColor: 'primary.main'
-          }}
-          onClick={() =>handleReview()}
-        >
-          Submit Review
-        </Button>
-        <Button
-          variant="outlined"
-          sx={{
-            marginTop: "1rem",
-            width: "100%",
-            color: "gray",
-            borderColor: "gray",
-            "&:hover": {
-              backgroundColor: "#f5f5f5",
-            },
-          }}
-          onClick={() => {
-            setOpenReviewModal(false)
-            setAction("")
-            setComment("")
-            setErrors(null)
-          }}
-        >
-          Cancel
-        </Button>
-      </Paper>
-    </Modal>
+            sx={{
+              marginTop: "1rem",
+              width: "100%",
+              color: "white",  // Primary text color
+              borderColor: "primary.main",  // Primary border color
+              "&:hover": {
+                backgroundColor: "primary.light",  // Lighter shade for hover
+              },
+              backgroundColor: 'primary.main'
+            }}
+            onClick={() => handleReview()}
+          >
+            Submit Review
+          </Button>
+          <Button
+            variant="outlined"
+            sx={{
+              marginTop: "1rem",
+              width: "100%",
+              color: "gray",
+              borderColor: "gray",
+              "&:hover": {
+                backgroundColor: "#f5f5f5",
+              },
+            }}
+            onClick={() => {
+              setOpenReviewModal(false)
+              setAction("")
+              setComment("")
+              setErrors(null)
+            }}
+          >
+            Cancel
+          </Button>
+        </Paper>
+      </Modal>
 
       {/* Add Comments and Update Status */}
       {currentUser.roles.includes(requestDetails.requiredRole) ? (
         <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between", // Ensure buttons are at opposite ends
-          alignItems: "center", // Align buttons vertically
-          gap: "1rem",
-          mt: 2, // Optional: Add some margin-top for spacing
-        }}
-      >
-        {/* Back Button */}
-        <Button
-          variant="contained"
-          color="secondary"
-          onClick={() => navigate(-1)}
+          sx={{
+            display: "flex",
+            justifyContent: "space-between", // Ensure buttons are at opposite ends
+            alignItems: "center", // Align buttons vertically
+            gap: "1rem",
+            mt: 2, // Optional: Add some margin-top for spacing
+          }}
         >
-          Back
-        </Button>
-      
-        {/* Conditional Buttons */}
-        {currentUser.roles.includes(requestDetails.requiredRole) && (
+          {/* Back Button */}
           <Button
-            variant="outlined"
-            sx={{
-              color: "#1976d2",
-              borderColor: "#1976d2",
-              "&:hover": {
-                backgroundColor: "#e3f2fd",
-                borderColor: "#1976d2",
-              },
-            }}
-            onClick={() => {
-              requestDetails.requiredRole === "Recruiter"
-                ? navigate(`/edit/job-post-request/${requestDetails.processId}`)
-                : setOpenReviewModal(true);
-            }}
+            variant="contained"
+            color="secondary"
+            onClick={() => navigate(-1)}
           >
-            {requestDetails.requiredRole === "Recruiter"
-              ? "Edit Job Post Request"
-              : "Review"}
+            Back
           </Button>
-        )}
-      </Box>
+
+          {/* Conditional Buttons */}
+          {currentUser.roles.includes(requestDetails.requiredRole) && (
+            <Button
+              variant="outlined"
+              sx={{
+                color: "#1976d2",
+                borderColor: "#1976d2",
+                "&:hover": {
+                  backgroundColor: "#e3f2fd",
+                  borderColor: "#1976d2",
+                },
+              }}
+              onClick={() => {
+                requestDetails.requiredRole === "Recruiter"
+                  ? navigate(`/edit/job-post-request/${requestDetails.processId}`)
+                  : setOpenReviewModal(true);
+              }}
+            >
+              {requestDetails.requiredRole === "Recruiter"
+                ? "Edit Job Post Request"
+                : "Review"}
+            </Button>
+          )}
+        </Box>
       ) : <Button variant="contained" color="secondary" onClick={() => navigate(-1)}>Back</Button>}
     </Box>
   );
