@@ -5,6 +5,12 @@ const setInterviewScheduleTime = async (userData) => {
     return res;
 }
 
+const updateInterviewScheduleTime = async (userData) => {
+    const res = await AxiosInstance.api.put("/api/InterviewingSchedule/update-schedule", userData);
+    return res;
+}
+
+
 const confirmInterviewScheduleTime = async (userData) => {
     const res = await AxiosInstance.api.post("/api/InterviewingSchedule/confirm", userData);
     return res;
@@ -20,11 +26,18 @@ const reviewInterviewResult = async (reviewData) => {
     return res;
 }
 
+const getInterviewDetail = async (processId) => {
+    const res = await AxiosInstance.api.get(`/api/InterviewingSchedule/application/${processId}`);
+    return res;
+}
+
 const InterviewScheduleService = {
     setInterviewScheduleTime,
+    updateInterviewScheduleTime,
     confirmInterviewScheduleTime,
     markInterviewAsComplete,
-    reviewInterviewResult
+    reviewInterviewResult,
+    getInterviewDetail
 };
 
 export default InterviewScheduleService;

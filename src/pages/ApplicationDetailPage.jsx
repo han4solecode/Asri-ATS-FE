@@ -43,12 +43,62 @@ const ApplicationDetailPage = () => {
     action: "Submit",
     interviewTime: "",
     interviewType: "",
-    interviewers: "",
-    interviewerEmails: "",
+    interviewers: [""],
+    interviewerEmails: [""],
     location: "",
     comment: "",
   });
   const [errorForm, setErrorForm] = useState(null);
+
+  // Add Interviewers 
+  const handleAddInterviewers = () => {
+    setFormValues({
+      ...formValues,
+      interviewers: [
+        ...formValues.interviewers,
+        ""
+      ],
+    });
+  };
+
+  // Remove interviewers
+  const handleRemoveInterviewers = (index) => {
+    const updatedInterviewers = [...formValues.interviewers];
+    updatedInterviewers.splice(index, 1);
+    setFormValues({ ...formValues, interviewers: updatedInterviewers });
+  };
+
+  // Handle change input data interviewers
+  const handleInterviewerChange = (index, value) => {
+    const updatedInterviewers = [...formValues.interviewers];
+    updatedInterviewers[index] = value;
+    setFormValues({ ...formValues, interviewers: updatedInterviewers });
+  };
+
+  // Add Interviewer Emails 
+  const handleAddInterviewerEmails = () => {
+    setFormValues({
+      ...formValues,
+      interviewerEmails: [
+        ...formValues.interviewerEmails,
+        ""
+      ],
+    });
+  };
+
+  // Remove interviewers
+  const handleRemoveInterviewerEmails = (index) => {
+    const updatedInterviewerEmails = [...formValues.interviewerEmails];
+    updatedInterviewerEmails.splice(index, 1);
+    setFormValues({ ...formValues, interviewerEmails: updatedInterviewerEmails });
+  };
+
+  // Handle change input data interviewerEmails
+  const handleInterviewerEmailsChange = (index, value) => {
+    const updatedInterviewerEmails = [...formValues.interviewerEmails];
+    updatedInterviewerEmails[index] = value;
+    setFormValues({ ...formValues, interviewerEmails: updatedInterviewerEmails });
+  };
   // Validate inputs
   const validate = () => {
     let validationErrors = {};
@@ -61,11 +111,11 @@ const ApplicationDetailPage = () => {
       validationErrors.interviewType = "Interview Type is required.";
     }
 
-    if (!formValues.interviewers.trim()) {
+    if (!formValues.interviewers.length === 0) {
       validationErrors.interviewers = "Interviewers are required.";
     }
 
-    if (!formValues.interviewerEmails.trim()) {
+    if (!formValues.interviewerEmails.length === 0) {
       validationErrors.interviewerEmails = "Interviewer emails are required.";
     }
 
@@ -88,7 +138,7 @@ const ApplicationDetailPage = () => {
     setFormValues({ ...formValues, [name]: value });
   };
 
-  // Handle form submission
+  // Handle interview schedule submission
   const handleSubmit = async (e) => {
     e.preventDefault();
 
@@ -107,19 +157,32 @@ const ApplicationDetailPage = () => {
 
     setSubmitting(true);
     try {
-      formValues.interviewerEmails = formValues.interviewerEmails.split(",");
-      formValues.interviewers = formValues.interviewers.split(",");
-      formValues.applicationJobId = details.applicationJobId;
-      const response = await InterviewScheduleService.setInterviewScheduleTime(
-        formValues
-      );
+      let response;
+      // convert time input to utc time
+      const utcDateTime = new Date(formValues.interviewTime).toISOString();
+      if(modalMenu === "Update Interview Schedule") {
+        const updatedInterviewData = {
+          processId: processId,
+          interviewTime: utcDateTime,
+          comment: formValues.comment,
+        };
+
+        response = await InterviewScheduleService.updateInterviewScheduleTime(updatedInterviewData);
+      }
+      else if (modalMenu === "Schedule Interview") {
+        formValues.applicationJobId = details.applicationJobId;
+        formValues.interviewTime = utcDateTime;
+        response = await InterviewScheduleService.setInterviewScheduleTime(formValues);
+      }
+      
       if (response.data.status === "Success") {
         alert("Interview Schedule Time created successful!");
+        setOpenModal(false);
         setFormValues({
           interviewTime: "",
           interviewType: "",
-          interviewers: "",
-          interviewerEmails: "",
+          interviewers: [""],
+          interviewerEmails: [""],
           location: "",
           comment: "",
         });
@@ -133,6 +196,7 @@ const ApplicationDetailPage = () => {
       setSubmitting(false);
     }
   };
+  
 
   const submitCompleteInterview = async () => {
     setSubmitting(true);
@@ -169,6 +233,36 @@ const ApplicationDetailPage = () => {
           processId
         );
         setDetails(response.data);
+
+        if (response.data.currentStep === "HR Manager Update Interview Schedule") {
+          const interviewSchedule = await InterviewScheduleService.getInterviewDetail(processId);
+          const dateWithTimezone = new Date(interviewSchedule.data.interviewTime);
+          // Format waktu ke string dengan format 'YYYY-MM-DDTHH:mm'
+          const adjustedTime = new Date(dateWithTimezone.getTime() - (dateWithTimezone.getTimezoneOffset() * 60000));
+          const formattedTime = adjustedTime.toISOString().slice(0, 16);       // Ganti.slice(0, 19);
+          setFormValues({
+            action: "Update",
+            interviewTime: formattedTime,
+            interviewType: interviewSchedule.data.interviewType,
+            interviewers: interviewSchedule.data.interviewers,
+            interviewerEmails: interviewSchedule.data.interviewerEmails,
+            location: interviewSchedule.data.location,
+            comment: "",
+          });
+        }
+
+        if (response.data.currentStep === "Applicant Reviews Interview Schedule") {
+          const interviewSchedule = await InterviewScheduleService.getInterviewDetail(processId);
+          const dateWithTimezone = new Date(interviewSchedule.data.interviewTime);
+          // Format waktu ke string dengan format 'YYYY-MM-DDTHH:mm'
+          const adjustedTime = new Date(dateWithTimezone.getTime() - (dateWithTimezone.getTimezoneOffset() * 60000));
+          const formattedTime = adjustedTime.toISOString().slice(0, 16);       // Ganti.slice(0, 19);
+          setFormValues({
+            interviewTime: formattedTime,
+            location: interviewSchedule.data.location,
+            interviewType: interviewSchedule.data.interviewType,
+          });
+        }
         setLoading(false);
       } catch (err) {
         setError("Failed to load application details. Please try again.");
@@ -426,7 +520,7 @@ const ApplicationDetailPage = () => {
             >
               Mark Interview As Complete
             </Button>
-          ) : details.currentStep === "HR Manager Set Interview Schedule" ? (
+          ) : details.currentStep === "HR Manager Set Interview Schedule"  ? (
             <Button
               variant="contained"
               color="secondary"
@@ -437,7 +531,17 @@ const ApplicationDetailPage = () => {
             >
               Schedule Interview
             </Button>
-          ) : (
+          ) : details.currentStep === "HR Manager Update Interview Schedule" ? (
+            <Button
+              variant="contained"
+              color="secondary"
+              onClick={() => {
+                setOpenModal(true);
+                setModalMenu("Update Interview Schedule");
+              }}
+            >
+              Update Interview Schedule
+            </Button>) : (
             <Button
               variant="contained"
               color="secondary"
@@ -505,40 +609,73 @@ const ApplicationDetailPage = () => {
                 shrink: true, // Memastikan label selalu berada di atas
               }}
             />
-            <TextField
-              label="Interviewers"
-              multiline
-              rows={4}
-              name="interviewers"
-              value={formValues.interviewers}
-              onChange={handleInputChangeSetInterviewSchedule}
-              error={errorForm?.interviewers}
-              helperText={errorForm?.interviewers}
-              fullWidth
-              className="mt-4"
-              sx={{ marginTop: 2 }}
-              InputLabelProps={{
-                shrink: true, // Memastikan label selalu berada di atas
-              }}
-              placeholder="Example: John Doe,Jane Doe (separate names with commas)"
-            />
-            <TextField
-              label="Interviewer Emails"
-              multiline
-              rows={4}
-              name="interviewerEmails"
-              value={formValues.interviewerEmails}
-              onChange={handleInputChangeSetInterviewSchedule}
-              error={errorForm?.interviewerEmails}
-              helperText={errorForm?.interviewerEmails}
-              fullWidth
-              className="mt-4"
-              sx={{ marginTop: 2 }}
-              InputLabelProps={{
-                shrink: true, // Memastikan label selalu berada di atas
-              }}
-              placeholder="Example: JohnDoe@mail.com,JaneDoe@mail.com (separate emails with commas)"
-            />
+            {formValues.interviewers.map((interviewer, index) => (
+              <>
+                <TextField
+                  key={index}
+                  label="Interviewers"
+                  name="interviewers"
+                  value={interviewer}
+                  onChange={(e) => handleInterviewerChange(index, e.target.value)}
+                  // error={errorForm?.interviewers}
+                  // helperText={errorForm?.interviewers}
+                  fullWidth
+                  className="mt-4"
+                  sx={{ marginTop: 2 }}
+                  InputLabelProps={{
+                    shrink: true, // Memastikan label selalu berada di atas
+                  }}
+                  placeholder="Example: John Doe"
+                />
+                <Button
+                  onClick={handleAddInterviewers}
+                  color="secondary"
+                >
+                  Add Interviewer
+                </Button>
+                {index === 0 ? '' : <Button
+                  onClick={handleRemoveInterviewers}
+                  color="secondary"
+                >
+                  Remove Interviewer
+                </Button>}
+              </>
+            )
+            )}
+
+            {formValues.interviewerEmails.map((interviewerEmail, index) => (
+              <>
+                <TextField
+                  key={index}
+                  label="Interviewer Emails"
+                  name="interviewerEmails"
+                  value={interviewerEmail}
+                  onChange={(e) => handleInterviewerEmailsChange(index, e.target.value)}
+                  // error={errorForm?.interviewers}
+                  // helperText={errorForm?.interviewers}
+                  fullWidth
+                  className="mt-4"
+                  sx={{ marginTop: 2 }}
+                  InputLabelProps={{
+                    shrink: true, // Memastikan label selalu berada di atas
+                  }}
+                  placeholder="Example: John Doe@gmail.com"
+                />
+                <Button
+                  onClick={handleAddInterviewerEmails}
+                  color="secondary"
+                >
+                  Add Interviewer Email
+                </Button>
+                {index === 0 ? '' : <Button
+                  onClick={handleRemoveInterviewerEmails}
+                  color="secondary"
+                >
+                  Remove Interviewer Email
+                </Button>}
+              </>
+            )
+            )}
             <TextField
               label="Location"
               rows={4}
@@ -575,15 +712,6 @@ const ApplicationDetailPage = () => {
             <Button
               onClick={() => {
                 setOpenModal(false);
-                setFormValues({
-                  action: "Submit",
-                  interviewTime: "",
-                  interviewType: "",
-                  interviewers: "",
-                  interviewerEmails: "",
-                  location: "",
-                  comments: "",
-                });
                 setErrorForm(null);
               }}
               color="secondary"
@@ -597,6 +725,150 @@ const ApplicationDetailPage = () => {
               disabled={submitting}
             >
               {submitting ? "Submitting..." : "Submit Set Schedule Time"}
+            </Button>
+          </DialogActions>
+        </Dialog>
+      )}
+
+      {modalMenu === "Update Interview Schedule" && (
+        <Dialog
+          open={openModal}
+          onClose={() => setOpenModal(false)}
+          fullWidth
+          maxWidth="sm"
+        >
+          <DialogTitle>Update Interview Schedule</DialogTitle>
+          <DialogContent>
+            <FormControl disabled fullWidth variant="outlined" sx={{ mt: 2 }}>
+              <InputLabel>Action</InputLabel>
+              <Select
+                value={formValues.action}
+                name="action"
+                onChange={handleInputChangeSetInterviewSchedule}
+                required
+                label="Action"
+              >
+                <MenuItem value="Update">Update</MenuItem>
+              </Select>
+            </FormControl>
+            <TextField
+              disabled
+              label="Interview Type"
+              rows={4}
+              name="interviewType"
+              value={formValues.interviewType}
+              onChange={handleInputChangeSetInterviewSchedule}
+              error={errorForm?.interviewType}
+              helperText={errorForm?.interviewType}
+              fullWidth
+              className="mt-4"
+              sx={{ marginTop: 2 }}
+              InputLabelProps={{
+                shrink: true, // Memastikan label selalu berada di atas
+              }}
+            />
+            <>
+              <TextField
+                disabled
+                label="Interviewers"
+                name="interviewers"
+                value={formValues.interviewers.join(", ")}
+                multiline
+                rows={4}
+                fullWidth
+                className="mt-4"
+                sx={{ marginTop: 2 }}
+                InputLabelProps={{
+                  shrink: true, // Memastikan label selalu berada di atas
+                }}
+              />
+            </>
+
+            <>
+              <TextField
+                disabled
+                label="Interviewer Emails"
+                name="interviewerEmails"
+                value={formValues.interviewerEmails.join(", ")}
+                multiline
+                rows={4}
+                fullWidth
+                className="mt-4"
+                sx={{
+                  marginTop: 2,
+                }}
+                InputLabelProps={{
+                  shrink: true, // Memastikan label selalu berada di atas
+                }}
+              />
+            </>
+            <TextField
+              disabled
+              label="Location"
+              rows={4}
+              name="location"
+              value={formValues.location}
+              onChange={handleInputChangeSetInterviewSchedule}
+              error={errorForm?.location}
+              helperText={errorForm?.location}
+              fullWidth
+              className="mt-4"
+              sx={{ marginTop: 2 }}
+              InputLabelProps={{
+                shrink: true, // Memastikan label selalu berada di atas
+              }}
+            />
+            <TextField
+              label="Interview Time"
+              type="datetime-local"
+              rows={4}
+              name="interviewTime"
+              value={formValues.interviewTime}
+              onChange={handleInputChangeSetInterviewSchedule}
+              error={errorForm?.interviewTime}
+              helperText={errorForm?.interviewTime}
+              fullWidth
+              className="mt-4"
+              sx={{ marginTop: 2 }}
+              InputLabelProps={{
+                shrink: true, // Memastikan label selalu berada di atas
+              }}
+            />
+
+            <TextField
+              label="Comment"
+              multiline
+              rows={4}
+              name="comment"
+              value={formValues.comment}
+              onChange={handleInputChangeSetInterviewSchedule}
+              error={errorForm?.comment}
+              helperText={errorForm?.comment}
+              fullWidth
+              className="mt-4"
+              sx={{ marginTop: 2 }}
+              InputLabelProps={{
+                shrink: true, // Memastikan label selalu berada di atas
+              }}
+            />
+          </DialogContent>
+          <DialogActions>
+            <Button
+              onClick={() => {
+                setOpenModal(false);
+                setErrorForm(null);
+              }}
+              color="secondary"
+            >
+              Cancel
+            </Button>
+            <Button
+              onClick={handleSubmit}
+              variant="contained"
+              color="primary"
+              disabled={submitting}
+            >
+            {submitting ? "Submitting..." : "Update Set Schedule Time"}
             </Button>
           </DialogActions>
         </Dialog>
@@ -662,12 +934,51 @@ const ApplicationDetailPage = () => {
         >
           <DialogTitle>Interview Schedule Confirmation</DialogTitle>
           <DialogContent>
-            <FormControl fullWidth className="mt-4">
+          <TextField
+              disabled
+              label="Interview Time"
+              type="datetime-local"
+              name="interviewTime"
+              value={formValues.interviewTime}
+              fullWidth
+              className="mt-4"
+              sx={{ marginTop: 2 }}
+              InputLabelProps={{
+                shrink: true, // Memastikan label selalu berada di atas
+              }}
+            />
+            <TextField
+              disabled
+              label="Location"
+              name="location"
+              value={formValues.location}
+              fullWidth
+              className="mt-4"
+              sx={{ marginTop: 2 }}
+              InputLabelProps={{
+                shrink: true, // Memastikan label selalu berada di atas
+              }}
+            />
+            <TextField
+              disabled
+              label="Interview Type"
+              rows={4}
+              name="interviewType"
+              value={formValues.interviewType}
+              fullWidth
+              className="mt-4"
+              sx={{ marginTop: 2 }}
+              InputLabelProps={{
+                shrink: true, // Memastikan label selalu berada di atas
+              }}
+            />
+            <FormControl variant="outlined" sx={{ mt: 2 }} fullWidth>
               <InputLabel>Action</InputLabel>
               <Select
                 value={action}
                 onChange={(e) => setAction(e.target.value)}
                 required
+                label="Actio"
               >
                 <MenuItem value="Confirm">Confirm</MenuItem>
                 <MenuItem value="Modification">Request Reschedule</MenuItem>
@@ -680,7 +991,10 @@ const ApplicationDetailPage = () => {
               value={comment}
               onChange={(e) => setComment(e.target.value)}
               fullWidth
-              className="mt-4"
+              sx={{ marginTop: 2 }}
+              InputLabelProps={{
+                shrink: true, // Memastikan label selalu berada di atas
+              }}
             />
           </DialogContent>
           <DialogActions>
