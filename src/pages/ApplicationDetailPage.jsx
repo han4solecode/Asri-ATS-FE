@@ -222,7 +222,7 @@ const ApplicationDetailPage = () => {
     try {
       const interviewCompleteRequest = {
         processId: processId,
-        interviewerCommments: interviewerCommments,
+        interviewersComments: interviewerCommments,
         comment: comment,
       };
       const response = await InterviewScheduleService.markInterviewAsComplete(
