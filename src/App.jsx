@@ -30,6 +30,8 @@ import SubmitApplicationJob from "./pages/SubmitApplicationJobPage";
 import ApplicationJobPage from "./pages/ApplicationJobPage";
 import ApplicationDetailPage from "./pages/ApplicationDetailPage";
 import EditApplicationJobPage from "./pages/EditApplicationJobPage";
+import ApplicantDashboard from "./pages/ApplicantDashboard";
+import RecruiterDashboard from "./pages/RecruiterDashboard";
 
 export const queryClient = new QueryClient();
 
@@ -105,6 +107,10 @@ const router = createBrowserRouter([
     ),
     children: [
       {
+        path: "/dashboard/recruiter",
+        element: <RecruiterDashboard></RecruiterDashboard>,
+      },
+      {
         path: "/job-post-request/new",
         element: <JobPostRequestFormPage></JobPostRequestFormPage>,
       },
@@ -118,6 +124,10 @@ const router = createBrowserRouter([
   {
     element: <MainLayout allowedRoles={["Applicant"]}></MainLayout>,
     children: [
+      {
+        path: "/dashboard/applicant",
+        element: <ApplicantDashboard></ApplicantDashboard>,
+      },
       {
         path: "/document",
         element: <UploadDocumentPage></UploadDocumentPage>,

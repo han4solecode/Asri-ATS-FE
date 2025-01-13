@@ -39,6 +39,16 @@ const Navbar = ({ isDrawerOpen, setIsDrawerOpen }) => {
   };
 
   const menuItems = [
+    {
+      label: "Dashboard",
+      path: "/dashboard/recruiter",
+      visibleForRoles: ["Recruiter"],
+    },
+    {
+      label: "Dashboard",
+      path: "/dashboard/applicant",
+      visibleForRoles: ["Applicant"],
+    },
     { label: "Job Search", path: "/", visibleForAll: true },
     {
       label: "Company Registration Request",
