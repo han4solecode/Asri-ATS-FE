@@ -35,7 +35,7 @@ const ApplicationDetailPage = () => {
   const [openModal, setOpenModal] = useState(false); // Modal state
   const [action, setAction] = useState(""); // Selected action
   const [comment, setComment] = useState(""); // Comment field
-  const [interviewerCommments, setInterviewerComments] = useState(""); // Interviewer Comments field
+  const [interviewerCommments, setInterviewerComments] = useState([""]); // Interviewer Comments field
   const [submitting, setSubmitting] = useState(false); // Submitting state
   const [modalMenu, setModalMenu] = useState("");
   const { user: currentUser } = useSelector((state) => state.auth);
@@ -99,6 +99,25 @@ const ApplicationDetailPage = () => {
     updatedInterviewerEmails[index] = value;
     setFormValues({ ...formValues, interviewerEmails: updatedInterviewerEmails });
   };
+
+    // Add Interviewer Comments 
+    const handleAddInterviewerComments = () => {
+      setInterviewerComments([...interviewerCommments,""]);
+    };
+  
+    // Remove interviewer comments
+    const handleRemoveInterviewerComments = (index) => {
+      const updatedInterviewerComments = [...interviewerCommments];
+      updatedInterviewerComments.splice(index, 1);
+      setInterviewerComments(updatedInterviewerComments);
+    };
+  
+    // Handle change input data interviewer comments
+    const handleInterviewerCommentsChange = (index, value) => {
+      const updatedInterviewerComments = [...interviewerCommments];
+      updatedInterviewerComments[index] = value;
+      setInterviewerComments(updatedInterviewerComments);
+    };
   // Validate inputs
   const validate = () => {
     let validationErrors = {};
@@ -206,9 +225,6 @@ const ApplicationDetailPage = () => {
         interviewerCommments: interviewerCommments,
         comment: comment,
       };
-
-      interviewCompleteRequest.interviewerCommments =
-        interviewerCommments.split(",");
       const response = await InterviewScheduleService.markInterviewAsComplete(
         interviewCompleteRequest
       );
@@ -263,6 +279,21 @@ const ApplicationDetailPage = () => {
             interviewType: interviewSchedule.data.interviewType,
           });
         }
+
+        if (response.data.currentStep === "Interview Process") {
+          const interviewSchedule = await InterviewScheduleService.getInterviewDetail(processId);
+          const dateWithTimezone = new Date(interviewSchedule.data.interviewTime);
+          // Format waktu ke string dengan format 'YYYY-MM-DDTHH:mm'
+          const adjustedTime = new Date(dateWithTimezone.getTime() - (dateWithTimezone.getTimezoneOffset() * 60000));
+          const formattedTime = adjustedTime.toISOString().slice(0, 16);       // Ganti.slice(0, 19);
+          setFormValues({
+            interviewers: interviewSchedule.data.interviewers,
+            interviewTime: formattedTime,
+            location: interviewSchedule.data.location,
+            interviewType: interviewSchedule.data.interviewType,
+          });
+        }
+        
         setLoading(false);
       } catch (err) {
         setError("Failed to load application details. Please try again.");
@@ -634,7 +665,7 @@ const ApplicationDetailPage = () => {
                   Add Interviewer
                 </Button>
                 {index === 0 ? '' : <Button
-                  onClick={handleRemoveInterviewers}
+                  onClick={()=>{handleRemoveInterviewers(index)}}
                   color="secondary"
                 >
                   Remove Interviewer
@@ -668,7 +699,7 @@ const ApplicationDetailPage = () => {
                   Add Interviewer Email
                 </Button>
                 {index === 0 ? '' : <Button
-                  onClick={handleRemoveInterviewerEmails}
+                  onClick={()=>{handleRemoveInterviewerEmails(index)}}
                   color="secondary"
                 >
                   Remove Interviewer Email
@@ -757,7 +788,6 @@ const ApplicationDetailPage = () => {
               rows={4}
               name="interviewType"
               value={formValues.interviewType}
-              onChange={handleInputChangeSetInterviewSchedule}
               error={errorForm?.interviewType}
               helperText={errorForm?.interviewType}
               fullWidth
@@ -1023,16 +1053,81 @@ const ApplicationDetailPage = () => {
         >
           <DialogTitle>Mark Interview As Complete</DialogTitle>
           <DialogContent>
-            <TextField
-              label="Interviewer Comments"
-              multiline
-              rows={4}
-              value={interviewerCommments}
-              onChange={(e) => setInterviewerComments(e.target.value)}
+          <TextField
+              disabled
+              label="Interview Time"
+              name="interviewTime"
+              value={formValues.interviewTime}
               fullWidth
               className="mt-4"
-              placeholder="Example: good candidate,I approve (separate comments with commas)"
+              sx={{ marginTop: 2 }}
+              InputLabelProps={{
+                shrink: true, // Memastikan label selalu berada di atas
+              }}
             />
+          <TextField
+              disabled
+              label="Interview Type"
+              name="interviewType"
+              value={formValues.interviewType}
+              error={errorForm?.interviewType}
+              helperText={errorForm?.interviewType}
+              fullWidth
+              className="mt-4"
+              sx={{ marginTop: 2 }}
+              InputLabelProps={{
+                shrink: true, // Memastikan label selalu berada di atas
+              }}
+            />
+            <>
+              <TextField
+                disabled
+                label="Interviewers"
+                name="interviewers"
+                value={formValues.interviewers.join(", ")}
+                multiline
+                rows={4}
+                fullWidth
+                className="mt-4"
+                sx={{ marginTop: 2 }}
+                InputLabelProps={{
+                  shrink: true, // Memastikan label selalu berada di atas
+                }}
+              />
+            </>
+            {interviewerCommments.map((interviewerComment, index) => (
+              <>
+                <TextField
+                  key={index}
+                  label="Interviewer Comments"
+                  name="interviewerComments"
+                  value={interviewerComment}
+                  onChange={(e) => handleInterviewerCommentsChange(index, e.target.value)}
+                  // error={errorForm?.interviewers}
+                  // helperText={errorForm?.interviewers}
+                  fullWidth
+                  className="mt-4"
+                  sx={{ marginTop: 2 }}
+                  InputLabelProps={{
+                    shrink: true, // Memastikan label selalu berada di atas
+                  }}
+                  placeholder="Example: good candidate,I approve"
+                />
+                <Button
+                  onClick={handleAddInterviewerComments}
+                  color="secondary"
+                >
+                  Add Interviewer Comments
+                </Button>
+                {index === 0 ? '' : <Button
+                  onClick={()=>{handleRemoveInterviewerComments(index)}}
+                  color="secondary"
+                >
+                  Remove Interviewer Comments
+                </Button>}
+              </>
+            )
+            )}
             <TextField
               label="Comments"
               multiline
