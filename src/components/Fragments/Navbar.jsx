@@ -158,6 +158,37 @@ const Navbar = ({ isDrawerOpen, setIsDrawerOpen }) => {
           </Typography>
           <Divider sx={{ backgroundColor: "#374151" }} />
 
+          {/* Profile Section */}
+          {currentUser && (
+            <Button
+              onClick={() => navigate("/profile")}
+              sx={{
+                color: "#ffffff",
+                textAlign: "left",
+                display: "flex",
+                alignItems: "center",
+                gap: "1rem",
+                padding: "1rem",
+                "&:hover": {
+                  backgroundColor: "#374151",
+                },
+              }}
+            >
+              <Avatar
+                src="https://via.placeholder.com/32"
+                alt="Profile"
+                sx={{ width: 48, height: 48 }}
+              />
+              <Box>
+                <Typography variant="body2">Welcome,</Typography>
+                <Typography variant="body1" fontWeight="bold">
+                  {currentUser.username}
+                </Typography>
+              </Box>
+            </Button>
+          )}
+          <Divider sx={{ backgroundColor: "#374151" }} />
+
           {/* Navigation Links */}
           <List>
             {menuItems.filter(isMenuVisible).map((item, index) => (
@@ -224,29 +255,6 @@ const Navbar = ({ isDrawerOpen, setIsDrawerOpen }) => {
               </>
             ) : (
               <>
-                <Button
-                  onClick={() => navigate("/profile")}
-                  sx={{
-                    color: "#ffffff",
-                    "&:hover": {
-                      backgroundColor: "#374151",
-                    },
-                  }}
-                >
-                  <Box sx={{ display: "flex", alignItems: "center", gap: "0.5rem" }}>
-                    <Avatar
-                      src="https://via.placeholder.com/32"
-                      alt="Profile"
-                      sx={{ width: 32, height: 32 }}
-                    />
-                    <Box sx={{ textAlign: "left" }}>
-                      <Typography variant="body2">Welcome,</Typography>
-                      <Typography variant="body1" fontWeight="bold">
-                        {currentUser.username}
-                      </Typography>
-                    </Box>
-                  </Box>
-                </Button>
                 <Button
                   onClick={handleLogout}
                   sx={{
