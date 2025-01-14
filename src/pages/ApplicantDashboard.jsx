@@ -1,12 +1,34 @@
 import React, { useState, useEffect } from "react";
-import { Tabs, Tab, Box, Card, CardContent, Typography } from "@mui/material";
+import {
+  Tabs,
+  Tab,
+  Box,
+  Card,
+  CardContent,
+  Typography,
+  Table,
+  TableContainer,
+  TableHead,
+  TableRow,
+  TableCell,
+  TableBody,
+  Paper,
+  Button,
+} from "@mui/material";
 import DashboardService from "../services/dashboard.service";
+import { useNavigate } from "react-router-dom";
 
 const ApplicantDashboard = () => {
   const [selectedTab, setSelectedTab] = useState(0);
-  const [data, setData] = useState({ applicationPipeline: [], interviewSchedule: [] });
+  const [data, setData] = useState({
+    applicationPipeline: [],
+    interviewSchedule: [],
+    notification: [],
+  });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -36,7 +58,7 @@ const ApplicantDashboard = () => {
     return <div className="text-center p-4 text-red-500">Error: {error}</div>;
   }
 
-  const { applicationPipeline, interviewSchedule } = data;
+  const { applicationPipeline, interviewSchedule, notification } = data;
 
   return (
     <Box className="p-4 md:p-8 lg:p-12">
@@ -51,9 +73,11 @@ const ApplicantDashboard = () => {
       >
         <Tab label="Application Status Tracker" />
         <Tab label="Interview Schedule" />
+        <Tab label="Notifications" />
       </Tabs>
 
       <Box>
+        {/* Application Status Tracker */}
         {selectedTab === 0 && (
           <Box className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {applicationPipeline.map((application) => (
@@ -80,6 +104,7 @@ const ApplicantDashboard = () => {
           </Box>
         )}
 
+        {/* Interview Schedule */}
         {selectedTab === 1 && (
           <Box className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {interviewSchedule.map((interview) => (
@@ -104,6 +129,47 @@ const ApplicantDashboard = () => {
               </Card>
             ))}
           </Box>
+        )}
+
+        {/* Notifications */}
+        {selectedTab === 2 && (
+          <TableContainer component={Paper} className="shadow-lg">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell className="font-bold">Application ID</TableCell>
+                  <TableCell className="font-bold">Applicant Name</TableCell>
+                  <TableCell className="font-bold">Job Title</TableCell>
+                  <TableCell className="font-bold">Status</TableCell>
+                  <TableCell className="font-bold">Current Step</TableCell>
+                  <TableCell className="font-bold">Comments</TableCell>
+                  <TableCell className="font-bold">Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {notification.map((note) => (
+                  <TableRow key={note.applicationId}>
+                    <TableCell>{note.applicationId}</TableCell>
+                    <TableCell>{note.applicantName}</TableCell>
+                    <TableCell>{note.jobTitle}</TableCell>
+                    <TableCell>{note.status}</TableCell>
+                    <TableCell>{note.currentStep}</TableCell>
+                    <TableCell>{note.comments}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        color="primary"
+                        onClick={() => navigate(`/application-job/${note.processId}`)}
+                      >
+                        View Details
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         )}
       </Box>
     </Box>

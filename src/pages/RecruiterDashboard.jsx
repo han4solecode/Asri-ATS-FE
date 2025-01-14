@@ -7,8 +7,17 @@ import {
   CardContent,
   Typography,
   CircularProgress,
+  Table,
+  TableContainer,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableRow,
+  Paper,
+  Button,
 } from "@mui/material";
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from "recharts";
+import { useNavigate } from "react-router-dom";
 import DashboardService from "../services/dashboard.service";
 
 const RecruiterDashboard = () => {
@@ -16,9 +25,11 @@ const RecruiterDashboard = () => {
   const [data, setData] = useState({
     applicationPipeline: {},
     analyticSnapshot: {},
+    taskReminders: [],
   });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchDashboardData = async () => {
@@ -50,13 +61,11 @@ const RecruiterDashboard = () => {
 
   if (error) {
     return (
-      <div className="text-center p-4 text-red-500">
-        Error: {error}
-      </div>
+      <div className="text-center p-4 text-red-500">Error: {error}</div>
     );
   }
 
-  const { applicationPipeline, analyticSnapshot } = data;
+  const { applicationPipeline, analyticSnapshot, taskReminders } = data;
 
   // Recharts PieChart Data
   const pieChartData = Object.entries(applicationPipeline.submittedApplications).map(
@@ -81,6 +90,7 @@ const RecruiterDashboard = () => {
       >
         <Tab label="Analytics Overview" />
         <Tab label="Application Status Tracker" />
+        <Tab label="Task Reminders" />
       </Tabs>
 
       <Box>
@@ -141,7 +151,10 @@ const RecruiterDashboard = () => {
                       label
                     >
                       {pieChartData.map((entry, index) => (
-                        <Cell key={`cell-${index}`} fill={COLORS[index % COLORS.length]} />
+                        <Cell
+                          key={`cell-${index}`}
+                          fill={COLORS[index % COLORS.length]}
+                        />
                       ))}
                     </Pie>
                     <Tooltip />
@@ -169,6 +182,46 @@ const RecruiterDashboard = () => {
               )
             )}
           </Box>
+        )}
+
+        {selectedTab === 2 && (
+          <TableContainer component={Paper} className="shadow-lg">
+            <Table>
+              <TableHead>
+                <TableRow>
+                  <TableCell className="font-bold">Application ID</TableCell>
+                  <TableCell className="font-bold">Applicant Name</TableCell>
+                  <TableCell className="font-bold">Job Title</TableCell>
+                  <TableCell className="font-bold">Status</TableCell>
+                  <TableCell className="font-bold">Current Step</TableCell>
+                  <TableCell className="font-bold">Comments</TableCell>
+                  <TableCell className="font-bold">Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {taskReminders.map((task) => (
+                  <TableRow key={task.applicationId}>
+                    <TableCell>{task.applicationId}</TableCell>
+                    <TableCell>{task.applicantName}</TableCell>
+                    <TableCell>{task.jobTitle}</TableCell>
+                    <TableCell>{task.status}</TableCell>
+                    <TableCell>{task.currentStep}</TableCell>
+                    <TableCell>{task.comments}</TableCell>
+                    <TableCell>
+                      <Button
+                        variant="contained"
+                        size="small"
+                        color="primary"
+                        onClick={() => navigate(`/application-job/${task.processId}`)}
+                      >
+                        View Details
+                      </Button>
+                    </TableCell>
+                  </TableRow>
+                ))}
+              </TableBody>
+            </Table>
+          </TableContainer>
         )}
       </Box>
     </Box>

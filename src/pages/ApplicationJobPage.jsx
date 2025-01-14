@@ -74,7 +74,7 @@ const ApplicationJobPage = () => {
         return { backgroundColor: "#4CAF50", color: "#FFFFFF" }; // Green
       case "Complete by HR Manager":
         return { backgroundColor: "#16C79A", color: "#FFFFFF" };
-      case "Rejected":
+      case "Rejected by HR Manager":
         return { backgroundColor: "#F44336", color: "#FFFFFF" }; // Red
       case "Modification by Applicant":
         return { backgroundColor: "#FFEB3B", color: "#000000" }; // Yellow
