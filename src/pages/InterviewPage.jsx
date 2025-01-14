@@ -224,7 +224,7 @@ const InterviewPage = () => {
                                     No confirmed interview schedules found.
                                 </Typography>
                             ) :
-                                <>
+                                <div style={{ overflowX: "auto" }}>
                                     <Table sx={{ minWidth: 650, }}>
                                         <TableHead sx={{ backgroundColor: "#1976d2" }}>
                                             <TableRow>
@@ -282,7 +282,7 @@ const InterviewPage = () => {
                                         disabledClassName="cursor-not-allowed text-gray-400" // Disabled button styling
                                         selectedClassName="bg-blue-500 text-white" // Selected page button styling
                                     />
-                                </>
+                                </div>
                             }
                         </CustomTabPanel>
                         {/* tab Interview Schedule Unconfirmed Interview section */}
@@ -318,7 +318,7 @@ const InterviewPage = () => {
                                     No unconfirmed interview schedules found.
                                 </Typography>
                             ) :
-                                <>
+                                <div style={{ overflowX: "auto" }}>
                                     <Table sx={{ minWidth: 650, }}>
                                         <TableHead sx={{ backgroundColor: "#1976d2" }}>
                                             <TableRow>
@@ -376,7 +376,7 @@ const InterviewPage = () => {
                                         disabledClassName="cursor-not-allowed text-gray-400" // Disabled button styling
                                         selectedClassName="bg-blue-500 text-white" // Selected page button styling
                                     />
-                                </>
+                                </div>
                             }
                         </CustomTabPanel>
                         {/* tab Interview Schedule Unconfirmed Interview section */}
@@ -412,7 +412,7 @@ const InterviewPage = () => {
                                     No completed interview schedules found.
                                 </Typography>
                             ) :
-                                <>
+                                <div style={{ overflowX: "auto" }}>
                                     <Table sx={{ minWidth: 650, }}>
                                         <TableHead sx={{ backgroundColor: "#1976d2" }}>
                                             <TableRow>
@@ -470,7 +470,7 @@ const InterviewPage = () => {
                                         disabledClassName="cursor-not-allowed text-gray-400" // Disabled button styling
                                         selectedClassName="bg-blue-500 text-white" // Selected page button styling
                                     />
-                                </>
+                                </div>
                             }
                         </CustomTabPanel>
                     </Box>

@@ -321,7 +321,7 @@ const JobPostRequestPage = () => {
                   No unreviewed requests found.
                 </Typography>
               ) :
-                <>
+                <div style={{ overflowX: "auto" }}>
                   <Table sx={{ minWidth: 650, }}>
                     <TableHead sx={{ backgroundColor: "#1976d2" }}>
                       <TableRow>
@@ -414,7 +414,7 @@ const JobPostRequestPage = () => {
                     disabledClassName="cursor-not-allowed text-gray-400" // Disabled button styling
                     selectedClassName="bg-blue-500 text-white" // Selected page button styling
                   />
-                </>
+                </div>
               }
             </CustomTabPanel>
             {/* tab History Job Post Request selected section */}
@@ -511,7 +511,7 @@ const JobPostRequestPage = () => {
                   No unreviewed requests found.
                 </Typography>
               ) :
-                <>
+                <div style={{ overflowX: "auto" }}>
                   <Table sx={{ minWidth: 650, }}>
                     <TableHead sx={{ backgroundColor: "#1976d2" }}>
                       <TableRow>
@@ -604,7 +604,7 @@ const JobPostRequestPage = () => {
                     disabledClassName="cursor-not-allowed text-gray-400" // Disabled button styling
                     selectedClassName="bg-blue-500 text-white" // Selected page button styling
                   />
-                </>
+                </div>
               }
             </CustomTabPanel>
           </Box>
@@ -774,80 +774,84 @@ const JobPostRequestPage = () => {
               >
                 No requests found.
               </Typography>
-              : <Table sx={{ minWidth: 650 }}>
-                <TableHead sx={{ backgroundColor: "#1976d2" }}>
-                  <TableRow>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>Process Id</TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                      Request Date
-                    </TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                      Requester
-                    </TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                      Job Title
-                    </TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                      Location
-                    </TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                      Min Salary
-                    </TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                      Max Salary
-                    </TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                      Employment Type
-                    </TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                      Status
-                    </TableCell>
-                    <TableCell sx={{ color: "white", fontWeight: "bold" }}>
-                      Actions
-                    </TableCell>
-                  </TableRow>
-                </TableHead>
-                <TableBody>
-                  {data.data.map((request) => (
-                    <TableRow
-                      key={request.processId}
-                      sx={{
-                        "&:hover": { backgroundColor: "#f5f5f5" },
-                      }}
-                    >
-                      <TableCell>{request.processId}</TableCell>
-                      <TableCell>{formatDateWithOrdinal(request.requestDate)}</TableCell>
-                      <TableCell>{request.requester}</TableCell>
-                      <TableCell>{request.jobTitle}</TableCell>
-                      <TableCell>{request.location}</TableCell>
-                      <TableCell>{request.minSalary}</TableCell>
-                      <TableCell>{request.maxSalary}</TableCell>
-                      <TableCell>{request.employmentType}</TableCell>
-                      <TableCell>{request.status}</TableCell>
-                      <TableCell>
-                        <Button
-                          variant="contained"
-                          size="small"
-                          sx={{
-                            backgroundColor: "#1976d2",
-                            color: "white",
-                            "&:hover": {
-                              backgroundColor: "#1565c0",
-                            },
-                          }}
-                          onClick={() =>
-                            navigate(
-                              `/job-post-request/${request.processId}`
-                            )
-                          }
-                        >
-                          View Details
-                        </Button>
+              :
+              <div style={{ overflowX: "auto" }}>
+                <Table sx={{ minWidth: 650 }}>
+                  <TableHead sx={{ backgroundColor: "#1976d2" }}>
+                    <TableRow>
+                      <TableCell sx={{ color: "white", fontWeight: "bold" }}>Process Id</TableCell>
+                      <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                        Request Date
+                      </TableCell>
+                      <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                        Requester
+                      </TableCell>
+                      <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                        Job Title
+                      </TableCell>
+                      <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                        Location
+                      </TableCell>
+                      <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                        Min Salary
+                      </TableCell>
+                      <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                        Max Salary
+                      </TableCell>
+                      <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                        Employment Type
+                      </TableCell>
+                      <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                        Status
+                      </TableCell>
+                      <TableCell sx={{ color: "white", fontWeight: "bold" }}>
+                        Actions
                       </TableCell>
                     </TableRow>
-                  ))}
-                </TableBody>
-              </Table>}
+                  </TableHead>
+                  <TableBody>
+                    {data.data.map((request) => (
+                      <TableRow
+                        key={request.processId}
+                        sx={{
+                          "&:hover": { backgroundColor: "#f5f5f5" },
+                        }}
+                      >
+                        <TableCell>{request.processId}</TableCell>
+                        <TableCell>{formatDateWithOrdinal(request.requestDate)}</TableCell>
+                        <TableCell>{request.requester}</TableCell>
+                        <TableCell>{request.jobTitle}</TableCell>
+                        <TableCell>{request.location}</TableCell>
+                        <TableCell>{request.minSalary}</TableCell>
+                        <TableCell>{request.maxSalary}</TableCell>
+                        <TableCell>{request.employmentType}</TableCell>
+                        <TableCell>{request.status}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="contained"
+                            size="small"
+                            sx={{
+                              backgroundColor: "#1976d2",
+                              color: "white",
+                              "&:hover": {
+                                backgroundColor: "#1565c0",
+                              },
+                            }}
+                            onClick={() =>
+                              navigate(
+                                `/job-post-request/${request.processId}`
+                              )
+                            }
+                          >
+                            View Details
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            }
             {/* Pagination */}
             <ReactPaginate
               previousLabel="Previous"
