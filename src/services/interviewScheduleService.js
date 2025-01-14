@@ -31,13 +31,19 @@ const getInterviewDetail = async (processId) => {
     return res;
 }
 
+const getInterviewSchedules = async (params, filter) => {
+    const res = await AxiosInstance.api.get(`/api/InterviewingSchedule/${filter}`, {params});
+    return res;
+}
+
 const InterviewScheduleService = {
     setInterviewScheduleTime,
     updateInterviewScheduleTime,
     confirmInterviewScheduleTime,
     markInterviewAsComplete,
     reviewInterviewResult,
-    getInterviewDetail
+    getInterviewDetail,
+    getInterviewSchedules
 };
 
 export default InterviewScheduleService;

@@ -32,6 +32,7 @@ import ApplicationDetailPage from "./pages/ApplicationDetailPage";
 import EditApplicationJobPage from "./pages/EditApplicationJobPage";
 import ApplicantDashboard from "./pages/ApplicantDashboard";
 import RecruiterDashboard from "./pages/RecruiterDashboard";
+import InterviewPage from "./pages/InterviewPage";
 
 export const queryClient = new QueryClient();
 
@@ -157,6 +158,10 @@ const router = createBrowserRouter([
       {
         path: "/application-job/:processId",
         element: <ApplicationDetailPage></ApplicationDetailPage>,
+      },
+      {
+        path: "/interview-schedule",
+        element: <InterviewPage></InterviewPage>,
       }
     ],
     errorElement: "Page not found",

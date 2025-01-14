@@ -70,6 +70,11 @@ const Navbar = ({ isDrawerOpen, setIsDrawerOpen }) => {
       path: "/application-job",
       visibleForRoles: ["Recruiter", "HR Manager", "Applicant"],
     },
+    {
+      label: "Interview",
+      path: "/interview-schedule",
+      visibleForRoles: ["Recruiter", "HR Manager", "Applicant"],
+    },
     { label: "Document", path: "/document", visibleForRoles: ["Applicant"] },
   ];
 
