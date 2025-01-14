@@ -35,7 +35,7 @@ const RecruiterDashboard = () => {
     const fetchDashboardData = async () => {
       try {
         setLoading(true);
-        const response = await DashboardService.recruiterDashboard(); // Adjust API call
+        const response = await DashboardService.recruiterDashboard();
         setData(response.data);
       } catch (err) {
         setError(err.message || "Failed to fetch data.");
@@ -60,22 +60,25 @@ const RecruiterDashboard = () => {
   }
 
   if (error) {
-    return (
-      <div className="text-center p-4 text-red-500">Error: {error}</div>
-    );
+    return <div className="text-center p-4 text-red-500">Error: {error}</div>;
   }
 
   const { applicationPipeline, analyticSnapshot, taskReminders } = data;
 
-  // Recharts PieChart Data
-  const pieChartData = Object.entries(applicationPipeline.submittedApplications).map(
+  const totalApplications = Object.values(applicationPipeline.submittedApplications || {}).reduce(
+    (sum, count) => sum + count,
+    0
+  );
+
+  const pieChartData = Object.entries(applicationPipeline.submittedApplications || {}).map(
     ([status, count]) => ({
       name: status,
       value: count,
+      percentage: ((count / totalApplications) * 100).toFixed(1),
     })
   );
 
-  const COLORS = ["#8884d8", "#82ca9d", "#ffc658", "#ff8042"];
+  const COLORS = ["#4caf50", "#2196f3", "#ff9800", "#f44336"];
 
   return (
     <Box className="p-4 md:p-8 lg:p-12">
@@ -86,7 +89,7 @@ const RecruiterDashboard = () => {
         indicatorColor="primary"
         variant="scrollable"
         scrollButtons="auto"
-        className="mb-4"
+        className="mb-6"
       >
         <Tab label="Analytics Overview" />
         <Tab label="Application Status Tracker" />
@@ -95,44 +98,40 @@ const RecruiterDashboard = () => {
 
       <Box>
         {selectedTab === 0 && (
-          <Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-            {/* Card for Total Submitted Applications */}
+          <Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
             <Card className="shadow-lg">
               <CardContent>
-                <Typography variant="h6" className="font-bold">
+                <Typography variant="h6" className="font-bold mb-2">
                   Total Submitted Applications
                 </Typography>
-                <Typography className="text-4xl font-bold text-blue-500">
+                <Typography className="text-4xl font-bold text-blue-600">
                   {analyticSnapshot.submittedApplications}
                 </Typography>
               </CardContent>
             </Card>
 
-            {/* Card for Job Offers */}
             <Card className="shadow-lg">
               <CardContent>
-                <Typography variant="h6" className="font-bold">
+                <Typography variant="h6" className="font-bold mb-2">
                   Total Job Offers
                 </Typography>
-                <Typography className="text-4xl font-bold text-green-500">
+                <Typography className="text-4xl font-bold text-green-600">
                   {analyticSnapshot.jobOffers}
                 </Typography>
               </CardContent>
             </Card>
 
-            {/* Card for Average Time to Hire */}
             <Card className="shadow-lg">
               <CardContent>
-                <Typography variant="h6" className="font-bold">
+                <Typography variant="h6" className="font-bold mb-2">
                   Average Time to Hire (Days)
                 </Typography>
-                <Typography className="text-4xl font-bold text-purple-500">
+                <Typography className="text-4xl font-bold text-purple-600">
                   {analyticSnapshot.averageTimeToHire.toFixed(2)}
                 </Typography>
               </CardContent>
             </Card>
 
-            {/* Pie Chart */}
             <Card className="col-span-1 md:col-span-2 shadow-lg">
               <CardContent>
                 <Typography variant="h6" className="font-bold mb-4">
@@ -148,7 +147,7 @@ const RecruiterDashboard = () => {
                       cy="50%"
                       outerRadius={100}
                       fill="#8884d8"
-                      label
+                      label={({ name, percentage }) => `${name} (${percentage}%)`}
                     >
                       {pieChartData.map((entry, index) => (
                         <Cell
@@ -167,7 +166,7 @@ const RecruiterDashboard = () => {
 
         {selectedTab === 1 && (
           <Box className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {Object.entries(applicationPipeline.submittedApplications).map(
+            {Object.entries(applicationPipeline.submittedApplications || {}).map(
               ([status, count], index) => (
                 <Card key={index} className="shadow-lg">
                   <CardContent>
