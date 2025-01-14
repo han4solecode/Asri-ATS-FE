@@ -60,7 +60,7 @@ const InterviewPage = () => {
     const [value, setValue] = useState(0);
     const [page, setPage] = useState(1);
     const [pageSize, setPageSize] = useState(5);
-    const pageSizes = [5, 1, 15, 20];
+    const pageSizes = [5, 10, 15, 20];
 
     const { data, isLoading, isError } = useQuery({
         queryKey: ['interviewSchedules', page, pageSize, value],

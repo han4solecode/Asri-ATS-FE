@@ -3,8 +3,10 @@ import UserService from "../services/userService";
 import { useQuery } from "@tanstack/react-query";
 import PersonIcon from "@mui/icons-material/Person";
 import { useNavigate } from 'react-router-dom';
+import { useSelector } from "react-redux";
 
 const ProfilePage = () => {
+  const { user: currentUser } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   const fetchUserProfile = async () => {
     const response = await UserService.details();
@@ -39,6 +41,7 @@ const ProfilePage = () => {
     dob,
     sex,
     roles,
+    companyName
   } = data;
 
   return (
@@ -56,7 +59,7 @@ const ProfilePage = () => {
                 {roles[0]}
               </Typography>
               <div className="mt-4">
-                <Button onClick={()=> navigate("/edit/profile")} variant="contained" color="primary" size="small">
+                <Button onClick={() => navigate("/edit/profile")} variant="contained" color="primary" size="small">
                   Edit Profile
                 </Button>
               </div>
@@ -124,7 +127,7 @@ const ProfilePage = () => {
           </div>
 
           {/* Roles */}
-          <div>
+          <div className="mb-6">
             <Typography
               variant="h6"
               className="font-semibold text-gray-800 mb-4"
@@ -135,6 +138,20 @@ const ProfilePage = () => {
               <li>{roles[0]}</li>
             </ul>
           </div>
+          {/* Company Name */}
+          {!currentUser.roles.includes("Applicant") &&
+            <div>
+              <Typography
+                variant="h6"
+                className="font-semibold text-gray-800 mb-4"
+              >
+                Company
+              </Typography>
+              <ul className="list-disc list-inside text-gray-700">
+                <li>{companyName}</li>
+              </ul>
+            </div>
+          }
         </div>
       </div>
     </>
