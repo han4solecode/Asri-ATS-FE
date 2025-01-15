@@ -33,6 +33,7 @@ import EditApplicationJobPage from "./pages/EditApplicationJobPage";
 import ApplicantDashboard from "./pages/ApplicantDashboard";
 import RecruiterDashboard from "./pages/RecruiterDashboard";
 import InterviewPage from "./pages/InterviewPage";
+import AdministratorDashboard from "./pages/AdministratorDashboard";
 import HRManagerDashboardPage from "./pages/HRManagerDashboard";
 
 export const queryClient = new QueryClient();
@@ -59,6 +60,10 @@ const router = createBrowserRouter([
   {
     element: <MainLayout allowedRoles={["Administrator"]}></MainLayout>,
     children: [
+      {
+        path: "/dashboard/administrator",
+        element: <AdministratorDashboard></AdministratorDashboard>,
+      },
       {
         path: "/requests/company-registration",
         element: (
@@ -92,7 +97,9 @@ const router = createBrowserRouter([
     errorElement: "Page not found",
   },
   {
-    element: <MainLayout allowedRoles={["HR Manager","Recruiter"]}></MainLayout>,
+    element: (
+      <MainLayout allowedRoles={["HR Manager", "Recruiter"]}></MainLayout>
+    ),
     children: [
       {
         path: "/job-post-request",
@@ -106,11 +113,7 @@ const router = createBrowserRouter([
     errorElement: "Page not found",
   },
   {
-    element: (
-      <MainLayout
-        allowedRoles={["Recruiter"]}
-      ></MainLayout>
-    ),
+    element: <MainLayout allowedRoles={["Recruiter"]}></MainLayout>,
     children: [
       {
         path: "/dashboard/recruiter",
@@ -149,12 +152,16 @@ const router = createBrowserRouter([
       {
         path: "/application-job/:processId/edit",
         element: <EditApplicationJobPage></EditApplicationJobPage>,
-      }
+      },
     ],
     errorElement: "Page not found",
   },
   {
-    element: <MainLayout allowedRoles={["HR Manager","Recruiter","Applicant"]}></MainLayout>,
+    element: (
+      <MainLayout
+        allowedRoles={["HR Manager", "Recruiter", "Applicant"]}
+      ></MainLayout>
+    ),
     children: [
       {
         path: "/application-job",
@@ -167,7 +174,7 @@ const router = createBrowserRouter([
       {
         path: "/interview-schedule",
         element: <InterviewPage></InterviewPage>,
-      }
+      },
     ],
     errorElement: "Page not found",
   },

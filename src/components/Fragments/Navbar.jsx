@@ -41,6 +41,11 @@ const Navbar = ({ isDrawerOpen, setIsDrawerOpen }) => {
   const menuItems = [
     {
       label: "Dashboard",
+      path: "/dashboard/administrator",
+      visibleForRoles: ["Administrator"],
+    },
+    {
+      label: "Dashboard",
       path: "/dashboard/recruiter",
       visibleForRoles: ["Recruiter"],
     },
@@ -217,7 +222,14 @@ const Navbar = ({ isDrawerOpen, setIsDrawerOpen }) => {
           <Divider sx={{ backgroundColor: "#374151" }} />
 
           {/* Authentication Buttons */}
-          <Box sx={{ padding: "1rem", display: "flex", flexDirection: "column", gap: "1rem" }}>
+          <Box
+            sx={{
+              padding: "1rem",
+              display: "flex",
+              flexDirection: "column",
+              gap: "1rem",
+            }}
+          >
             {!currentUser ? (
               <>
                 <Button
