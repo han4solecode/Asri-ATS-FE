@@ -250,7 +250,7 @@ const ApplicationDetailPage = () => {
         );
         setDetails(response.data);
 
-        if (response.data.currentStep === "HR Manager Update Interview Schedule") {
+        if (response.data.currentStep === "HR Manager Updates Interview Schedule") {
           const interviewSchedule = await InterviewScheduleService.getInterviewDetail(processId);
           const dateWithTimezone = new Date(interviewSchedule.data.interviewTime);
           // Format waktu ke string dengan format 'YYYY-MM-DDTHH:mm'
@@ -562,7 +562,7 @@ const ApplicationDetailPage = () => {
             >
               Schedule Interview
             </Button>
-          ) : details.currentStep === "HR Manager Update Interview Schedule" ? (
+          ) : details.currentStep === "HR Manager Updates Interview Schedule" ? (
             <Button
               variant="contained"
               color="secondary"
