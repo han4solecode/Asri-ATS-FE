@@ -1,13 +1,22 @@
-import { Button, CircularProgress, Divider, Typography } from "@mui/material";
+import React, { useState } from "react";
+import { Button, CircularProgress, Divider, Typography, Modal, Box, TextField, IconButton } from "@mui/material";
 import UserService from "../services/userService";
 import { useQuery } from "@tanstack/react-query";
 import PersonIcon from "@mui/icons-material/Person";
 import { useNavigate } from 'react-router-dom';
 import { useSelector } from "react-redux";
+import CloseIcon from "@mui/icons-material/Close";
+import AuthService from "../services/auth.service";
 
 const ProfilePage = () => {
   const { user: currentUser } = useSelector((state) => state.auth);
   const navigate = useNavigate();
+  
+  const [openModal, setOpenModal] = useState(false);
+  const [newPassword, setNewPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState("");
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+
   const fetchUserProfile = async () => {
     const response = await UserService.details();
     return response.data;
@@ -17,6 +26,33 @@ const ProfilePage = () => {
     queryKey: ["userProfile"],
     queryFn: () => fetchUserProfile(),
   });
+  
+  const handleChangePassword = async () => {
+    if (newPassword !== confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+  
+    setIsChangingPassword(true);
+  
+    try {
+      const response = await AuthService.changePassword({ newPassword });
+  
+      // Check response status and handle cases where data is a plain string
+      if (response.status === 200 && typeof response.data === "string" && response.data.includes("successfully")) {
+        alert(response.data); // Display the success message from the API
+        setOpenModal(false); // Close the modal
+      } else {
+        // Display API-specific failure message, if available
+        alert(response.data.message || "Failed to change password.");
+      }
+    } catch (error) {
+      console.error("Error during password change:", error);
+      alert("An error occurred. Please try again later.");
+    } finally {
+      setIsChangingPassword(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -58,9 +94,18 @@ const ProfilePage = () => {
               <Typography variant="body2" className="text-gray-600">
                 {roles[0]}
               </Typography>
-              <div className="mt-4">
-                <Button onClick={() => navigate("/edit/profile")} variant="contained" color="primary" size="small">
+              <div className="mt-4 flex flex-wrap gap-2">
+                <Button onClick={() => navigate("/edit/profile")} variant="contained" color="primary" size="small" className="w-full sm:w-auto">
                   Edit Profile
+                </Button>
+                <Button
+                  onClick={() => setOpenModal(true)}
+                  variant="outlined"
+                  color="secondary"
+                  size="small"
+                  className="w-full sm:w-auto"
+                >
+                  Change Password
                 </Button>
               </div>
             </div>
@@ -154,6 +199,55 @@ const ProfilePage = () => {
           }
         </div>
       </div>
+
+      {/* Change Password Modal */}
+      <Modal open={openModal} onClose={() => setOpenModal(false)}>
+        <Box
+          className="bg-white p-6 rounded-lg shadow-md"
+          sx={{
+            width: { xs: 300, sm: 400 },
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%)",
+          }}
+        >
+          <div className="flex justify-between items-center mb-4">
+            <Typography variant="h6" className="font-semibold">
+              Change Password
+            </Typography>
+            <IconButton onClick={() => setOpenModal(false)}>
+              <CloseIcon />
+            </IconButton>
+          </div>
+          <TextField
+            fullWidth
+            label="New Password"
+            type="password"
+            value={newPassword}
+            onChange={(e) => setNewPassword(e.target.value)}
+            margin="normal"
+          />
+          <TextField
+            fullWidth
+            label="Confirm Password"
+            type="password"
+            value={confirmPassword}
+            onChange={(e) => setConfirmPassword(e.target.value)}
+            margin="normal"
+          />
+          <Button
+            fullWidth
+            variant="contained"
+            color="primary"
+            onClick={handleChangePassword}
+            disabled={isChangingPassword || !newPassword || !confirmPassword}
+            sx={{ mt: 2 }}
+          >
+            {isChangingPassword ? "Changing..." : "Submit"}
+          </Button>
+        </Box>
+      </Modal>
     </>
   );
 };

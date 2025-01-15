@@ -14,6 +14,7 @@ import {
   TableBody,
   Paper,
   Button,
+  Chip,
 } from "@mui/material";
 import DashboardService from "../services/dashboard.service";
 import { useNavigate } from "react-router-dom";
@@ -50,6 +51,27 @@ const ApplicantDashboard = () => {
     setSelectedTab(newValue);
   };
 
+  const getStatusStyles = (status) => {
+    switch (status) {
+      case "Offer by HR Manager":
+        return { backgroundColor: "#4CAF50", color: "#FFFFFF" }; // Green
+      case "Complete by HR Manager":
+        return { backgroundColor: "#16C79A", color: "#FFFFFF" };
+      case "Rejected by HR Manager":
+        return { backgroundColor: "#F44336", color: "#FFFFFF" }; // Red
+      case "Modification by Applicant":
+        return { backgroundColor: "#FFEB3B", color: "#000000" }; // Yellow
+      case "Update by Applicant":
+        return { backgroundColor: "#FFEB3B", color: "#000000" };
+      case "Interview Scheduled":
+        return { backgroundColor: "#2196F3", color: "#FFFFFF" }; // Blue
+      case "Confirm by Applicant":
+        return { backgroundColor: "#48CFCB", color: "#000000" };
+      default:
+        return { backgroundColor: "#E0E0E0", color: "#000000" }; // Gray
+    }
+  };
+
   if (loading) {
     return <div className="text-center p-4">Loading...</div>;
   }
@@ -83,21 +105,32 @@ const ApplicantDashboard = () => {
             {applicationPipeline.map((application) => (
               <Card key={application.applicationId} className="shadow-lg">
                 <CardContent>
-                  <Typography variant="h6" className="font-bold">
+                  <Typography variant="h6" className="font-bold mb-2">
                     {application.jobTitle}
                   </Typography>
                   <Typography className="text-gray-600">
                     Applicant: {application.applicantName}
                   </Typography>
-                  <Typography className="text-gray-600">
-                    Status: {application.status}
-                  </Typography>
+                    <Chip
+                      label={application.status}
+                      sx={getStatusStyles(application.status)} // Use the sx prop for inline styling
+                      size="small"
+                    />
                   <Typography className="text-gray-600">
                     Current Step: {application.currentStep}
                   </Typography>
                   <Typography className="text-gray-500 mt-2">
                     Comments: {application.comments}
                   </Typography>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    color="primary"
+                    className="mt-4"
+                    onClick={() => navigate(`/application-job/${application.processId}`)}
+                  >
+                    View Details
+                  </Button>
                 </CardContent>
               </Card>
             ))}
@@ -110,7 +143,7 @@ const ApplicantDashboard = () => {
             {interviewSchedule.map((interview) => (
               <Card key={interview.applicationId} className="shadow-lg">
                 <CardContent>
-                  <Typography variant="h6" className="font-bold">
+                  <Typography variant="h6" className="font-bold mb-2">
                     {interview.jobTitle}
                   </Typography>
                   <Typography className="text-gray-600">
@@ -125,6 +158,15 @@ const ApplicantDashboard = () => {
                   <Typography className="text-gray-600">
                     Interviewers: {interview.interviewers.join(", ")}
                   </Typography>
+                  <Button
+                    variant="contained"
+                    size="small"
+                    color="primary"
+                    className="mt-4"
+                    onClick={() => navigate(`/interview-schedule`)}
+                  >
+                    View Details
+                  </Button>
                 </CardContent>
               </Card>
             ))}
@@ -152,7 +194,13 @@ const ApplicantDashboard = () => {
                     <TableCell>{note.applicationId}</TableCell>
                     <TableCell>{note.applicantName}</TableCell>
                     <TableCell>{note.jobTitle}</TableCell>
-                    <TableCell>{note.status}</TableCell>
+                    <TableCell>
+                    <Chip
+                      label={note.status}
+                      sx={getStatusStyles(note.status)} // Use the sx prop for inline styling
+                      size="small"
+                    />
+                    </TableCell>
                     <TableCell>{note.currentStep}</TableCell>
                     <TableCell>{note.comments}</TableCell>
                     <TableCell>
@@ -160,7 +208,7 @@ const ApplicantDashboard = () => {
                         variant="contained"
                         size="small"
                         color="primary"
-                        onClick={() => navigate(`/application-job/${note.processId}`)}
+                        onClick={() => navigate(`/notification/${note.applicationId}`)}
                       >
                         View Details
                       </Button>

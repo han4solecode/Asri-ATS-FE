@@ -81,7 +81,7 @@ const RecruiterDashboard = () => {
   const COLORS = ["#4caf50", "#2196f3", "#ff9800", "#f44336"];
 
   return (
-    <Box className="p-4 md:p-8 lg:p-12">
+    <Box className="p-6 md:p-10 bg-gray-100 min-h-screen">
       <Tabs
         value={selectedTab}
         onChange={handleTabChange}
@@ -89,7 +89,7 @@ const RecruiterDashboard = () => {
         indicatorColor="primary"
         variant="scrollable"
         scrollButtons="auto"
-        className="mb-6"
+        className="mb-6 bg-white shadow rounded-lg"
       >
         <Tab label="Analytics Overview" />
         <Tab label="Application Status Tracker" />
@@ -99,9 +99,10 @@ const RecruiterDashboard = () => {
       <Box>
         {selectedTab === 0 && (
           <Box className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            <Card className="shadow-lg">
+            {/* Snapshot Cards */}
+            <Card className="shadow-lg transition-transform transform hover:scale-105">
               <CardContent>
-                <Typography variant="h6" className="font-bold mb-2">
+                <Typography variant="h6" className="font-bold mb-2 text-gray-700">
                   Total Submitted Applications
                 </Typography>
                 <Typography className="text-4xl font-bold text-blue-600">
@@ -110,9 +111,9 @@ const RecruiterDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="shadow-lg">
+            <Card className="shadow-lg transition-transform transform hover:scale-105">
               <CardContent>
-                <Typography variant="h6" className="font-bold mb-2">
+                <Typography variant="h6" className="font-bold mb-2 text-gray-700">
                   Total Job Offers
                 </Typography>
                 <Typography className="text-4xl font-bold text-green-600">
@@ -121,9 +122,9 @@ const RecruiterDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="shadow-lg">
+            <Card className="shadow-lg transition-transform transform hover:scale-105">
               <CardContent>
-                <Typography variant="h6" className="font-bold mb-2">
+                <Typography variant="h6" className="font-bold mb-2 text-gray-700">
                   Average Time to Hire (Days)
                 </Typography>
                 <Typography className="text-4xl font-bold text-purple-600">
@@ -132,12 +133,13 @@ const RecruiterDashboard = () => {
               </CardContent>
             </Card>
 
-            <Card className="col-span-1 md:col-span-2 shadow-lg">
+            {/* Expanded Graph Card */}
+            <Card className="col-span-1 md:col-span-2 lg:col-span-3 shadow-lg transition-transform transform hover:scale-105 bg-gradient-to-r from-blue-50 to-blue-100">
               <CardContent>
-                <Typography variant="h6" className="font-bold mb-4">
+                <Typography variant="h6" className="font-bold mb-4 text-gray-700">
                   Application Status Breakdown
                 </Typography>
-                <ResponsiveContainer width="100%" height={300}>
+                <ResponsiveContainer width="100%" height={400}>
                   <PieChart>
                     <Pie
                       data={pieChartData}
@@ -145,7 +147,7 @@ const RecruiterDashboard = () => {
                       nameKey="name"
                       cx="50%"
                       cy="50%"
-                      outerRadius={100}
+                      outerRadius={120}
                       fill="#8884d8"
                       label={({ name, percentage }) => `${name} (${percentage}%)`}
                     >
@@ -168,9 +170,12 @@ const RecruiterDashboard = () => {
           <Box className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
             {Object.entries(applicationPipeline.submittedApplications || {}).map(
               ([status, count], index) => (
-                <Card key={index} className="shadow-lg">
+                <Card
+                  key={index}
+                  className="shadow-lg transition-transform transform hover:scale-105 bg-gradient-to-r from-gray-50 to-gray-100"
+                >
                   <CardContent>
-                    <Typography variant="h6" className="font-bold">
+                    <Typography variant="h6" className="font-bold text-gray-700">
                       {status}
                     </Typography>
                     <Typography className="text-4xl font-bold text-gray-700">
@@ -186,7 +191,7 @@ const RecruiterDashboard = () => {
         {selectedTab === 2 && (
           <TableContainer component={Paper} className="shadow-lg">
             <Table>
-              <TableHead>
+              <TableHead className="bg-gray-50">
                 <TableRow>
                   <TableCell className="font-bold">Application ID</TableCell>
                   <TableCell className="font-bold">Applicant Name</TableCell>

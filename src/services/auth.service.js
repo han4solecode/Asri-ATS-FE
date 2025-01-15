@@ -23,11 +23,17 @@ const refreshToken = async () => {
   return res;
 };
 
+const changePassword = async (userData) => {
+  const res = await AxiosInstance.api.post("/api/auth/ChangePassword", userData);
+  return res;
+};
+
 const AuthService = {
   registerAplicant,
   login,
   logout,
   refreshToken,
+  changePassword,
 };
 
 export default AuthService;
