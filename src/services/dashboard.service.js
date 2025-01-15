@@ -10,9 +10,15 @@ const recruiterDashboard = async (params) => {
   return res;
 };
 
+const HRManagerDashboard = async () => {
+  const res = await AxiosInstance.api.get("/api/Dashboard/HRManager-dashboard");
+  return res;
+};
+
 const DashboardService = {
   applicantDashboard,
   recruiterDashboard,
+  HRManagerDashboard
 };
 
 export default DashboardService;

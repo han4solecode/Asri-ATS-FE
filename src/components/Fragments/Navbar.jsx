@@ -49,6 +49,11 @@ const Navbar = ({ isDrawerOpen, setIsDrawerOpen }) => {
       path: "/dashboard/applicant",
       visibleForRoles: ["Applicant"],
     },
+    {
+      label: "Dashboard",
+      path: "/dashboard/HRManager",
+      visibleForRoles: ["HR Manager"],
+    },
     { label: "Job Search", path: "/", visibleForAll: true },
     {
       label: "Company Registration Request",

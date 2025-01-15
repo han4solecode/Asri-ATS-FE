@@ -33,6 +33,7 @@ import EditApplicationJobPage from "./pages/EditApplicationJobPage";
 import ApplicantDashboard from "./pages/ApplicantDashboard";
 import RecruiterDashboard from "./pages/RecruiterDashboard";
 import InterviewPage from "./pages/InterviewPage";
+import HRManagerDashboardPage from "./pages/HRManagerDashboard";
 
 export const queryClient = new QueryClient();
 
@@ -82,6 +83,10 @@ const router = createBrowserRouter([
       {
         path: "/recruiter-request/:id",
         element: <RecruiterRequestDetailPage></RecruiterRequestDetailPage>,
+      },
+      {
+        path: "/dashboard/HRManager",
+        element: <HRManagerDashboardPage></HRManagerDashboardPage>,
       },
     ],
     errorElement: "Page not found",
