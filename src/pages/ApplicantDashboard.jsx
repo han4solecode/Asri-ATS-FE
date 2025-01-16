@@ -208,7 +208,7 @@ const ApplicantDashboard = () => {
                         variant="contained"
                         size="small"
                         color="primary"
-                        onClick={() => navigate(`/notification/${note.applicationId}`)}
+                        onClick={() => navigate(`/application-job/${note.processId}`)}
                       >
                         View Details
                       </Button>

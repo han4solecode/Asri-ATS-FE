@@ -91,6 +91,11 @@ const Navbar = ({ isDrawerOpen, setIsDrawerOpen }) => {
       visibleForRoles: ["Recruiter", "HR Manager", "Applicant"],
     },
     { label: "Document", path: "/document", visibleForRoles: ["Applicant"] },
+    {
+      label: "Report",
+      path: "/report/administrator",
+      visibleForRoles: ["Administrator"],
+    },
   ];
 
   const isMenuVisible = (item) => {

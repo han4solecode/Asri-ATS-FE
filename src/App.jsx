@@ -39,6 +39,7 @@ import JobPostTemplateRequestFormPage from "./pages/JobPostTemplateRequestFormPa
 import JobPostTemplateRequestPage from "./pages/JobPostTemplateRequestPage";
 import JobPostTemplateRequestDetailPage from "./pages/JobPostTemplateRequestDetailPage";
 import JobPostTemplateDetailPage from "./pages/JobPostTemplateDetail";
+import ReportAdministrator from "./pages/ReportAdministrator";
 
 export const queryClient = new QueryClient();
 
@@ -78,6 +79,12 @@ const router = createBrowserRouter([
         path: "/requests/company-registration/review/:id",
         element: (
           <CompanyRegistrationRequestReviewPage></CompanyRegistrationRequestReviewPage>
+        ),
+      },
+      {
+        path: "/report/administrator",
+        element: (
+          <ReportAdministrator></ReportAdministrator>
         ),
       },
     ],
