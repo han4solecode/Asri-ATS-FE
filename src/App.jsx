@@ -40,6 +40,7 @@ import JobPostTemplateRequestPage from "./pages/JobPostTemplateRequestPage";
 import JobPostTemplateRequestDetailPage from "./pages/JobPostTemplateRequestDetailPage";
 import JobPostTemplateDetailPage from "./pages/JobPostTemplateDetail";
 import ReportAdministrator from "./pages/ReportAdministrator";
+import ReportHRManager from "./pages/ReportHRManager";
 
 export const queryClient = new QueryClient();
 
@@ -104,6 +105,11 @@ const router = createBrowserRouter([
         path: "/dashboard/HRManager",
         element: <HRManagerDashboardPage></HRManagerDashboardPage>,
       },
+      {
+        path: "/report/HR_Manager",
+        element: <ReportHRManager></ReportHRManager>,
+      },
+
     ],
     errorElement: "Page not found",
   },
