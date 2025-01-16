@@ -147,12 +147,14 @@ function AdministratorDashboard(props) {
                     <TableHead>
                       <TableRow>
                         <TableCell className="font-bold">Full Name</TableCell>
-                        <TableCell className="font-bold">Address</TableCell>
                         <TableCell className="font-bold">Username</TableCell>
                         <TableCell className="font-bold">Email</TableCell>
                         <TableCell className="font-bold">
                           Phone Number
                         </TableCell>
+                        <TableCell className="font-bold">Address</TableCell>
+                        <TableCell className="font-bold">DOB</TableCell>
+                        <TableCell className="font-bold">Sex</TableCell>
                         <TableCell className="font-bold">Action</TableCell>
                       </TableRow>
                     </TableHead>
@@ -169,10 +171,14 @@ function AdministratorDashboard(props) {
                             <TableCell>
                               {user.firstName} {user.lastName}
                             </TableCell>
-                            <TableCell>{user.address}</TableCell>
                             <TableCell>{user.userName}</TableCell>
                             <TableCell>{user.email}</TableCell>
                             <TableCell>{user.phoneNumber}</TableCell>
+                            <TableCell>{user.address}</TableCell>
+                            <TableCell>
+                              {new Date(user.dob).toDateString()}
+                            </TableCell>
+                            <TableCell>{user.sex}</TableCell>
                             <TableCell>
                               <Button
                                 variant="contained"
@@ -220,14 +226,16 @@ function AdministratorDashboard(props) {
                   <Table stickyHeader sx={{ height: 500 }}>
                     <TableHead>
                       <TableRow>
-                        <TableCell className="font-bold">No</TableCell>
                         <TableCell className="font-bold">Full Name</TableCell>
                         <TableCell className="font-bold">Email</TableCell>
                         <TableCell className="font-bold">
                           Phone Number
                         </TableCell>
+                        <TableCell className="font-bold">Address</TableCell>
                         <TableCell className="font-bold">Company</TableCell>
                         <TableCell className="font-bold">Role</TableCell>
+                        <TableCell className="font-bold">DOB</TableCell>
+                        <TableCell className="font-bold">Sex</TableCell>
                         <TableCell className="font-bold">Action</TableCell>
                       </TableRow>
                     </TableHead>
@@ -241,14 +249,18 @@ function AdministratorDashboard(props) {
                         )
                         .map((user, index) => (
                           <TableRow key={user.userId}>
-                            <TableCell>{index + 1}</TableCell>
                             <TableCell>
                               {user.firstName} {user.lastName}
                             </TableCell>
                             <TableCell>{user.email}</TableCell>
                             <TableCell>{user.phoneNumber}</TableCell>
+                            <TableCell>{user.address}</TableCell>
                             <TableCell>{user.company}</TableCell>
                             <TableCell>{user.roles}</TableCell>
+                            <TableCell>
+                              {new Date(user.dob).toDateString()}
+                            </TableCell>
+                            <TableCell>{user.sex}</TableCell>
                             <TableCell>
                               <Button
                                 variant="contained"
