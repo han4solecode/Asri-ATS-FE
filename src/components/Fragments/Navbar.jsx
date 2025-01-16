@@ -71,6 +71,11 @@ const Navbar = ({ isDrawerOpen, setIsDrawerOpen }) => {
       visibleForRoles: ["Recruiter", "HR Manager"],
     },
     {
+      label: "Job Post Template Request",
+      path: "/job-post-template-request",
+      visibleForRoles: ["Recruiter", "HR Manager"],
+    },
+    {
       label: "Application",
       path: "/application-job",
       visibleForRoles: ["Recruiter", "HR Manager", "Applicant"],

@@ -34,6 +34,10 @@ import ApplicantDashboard from "./pages/ApplicantDashboard";
 import RecruiterDashboard from "./pages/RecruiterDashboard";
 import InterviewPage from "./pages/InterviewPage";
 import HRManagerDashboardPage from "./pages/HRManagerDashboard";
+import JobPostTemplateRequestFormPage from "./pages/JobPostTemplateRequestFormPage";
+import JobPostTemplateRequestPage from "./pages/JobPostTemplateRequestPage";
+import JobPostTemplateRequestDetailPage from "./pages/JobPostTemplateRequestDetailPage";
+import JobPostTemplateDetailPage from "./pages/JobPostTemplateDetail";
 
 export const queryClient = new QueryClient();
 
@@ -99,8 +103,20 @@ const router = createBrowserRouter([
         element: <JobPostRequestPage></JobPostRequestPage>,
       },
       {
+        path: "/job-post-template-request",
+        element: <JobPostTemplateRequestPage></JobPostTemplateRequestPage>,
+      },
+      {
+        path: "/job-post-template-request/:id",
+        element: <JobPostTemplateRequestDetailPage></JobPostTemplateRequestDetailPage>,
+      },
+      {
         path: "/job-post-request/:id",
         element: <JobPostRequestDetailPage></JobPostRequestDetailPage>,
+      },
+      {
+        path: "/job-post-template/:id",
+        element: <JobPostTemplateDetailPage></JobPostTemplateDetailPage>,
       },
     ],
     errorElement: "Page not found",
@@ -119,6 +135,10 @@ const router = createBrowserRouter([
       {
         path: "/job-post-request/new",
         element: <JobPostRequestFormPage></JobPostRequestFormPage>,
+      },
+      {
+        path: "/job-post-template-request/new",
+        element: <JobPostTemplateRequestFormPage></JobPostTemplateRequestFormPage>,
       },
       {
         path: "/edit/job-post-request/:id",

@@ -11,48 +11,43 @@ import {
   Typography,
   CircularProgress,
   Box,
-  MenuItem,
-  Select,
-  InputLabel,
-  FormControl,
-  TextField,
+  Tooltip
 } from "@mui/material";
 import PropTypes from 'prop-types';
 import Tabs from '@mui/material/Tabs';
 import Tab from '@mui/material/Tab';
 import { useNavigate } from "react-router-dom";
-import { useSelector } from "react-redux";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
-import ReactPaginate from "react-paginate";
 import DashboardService from "../services/dashboard.service";
+import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
 
 function CustomTabPanel(props) {
-    const { children, value, index, ...other } = props;
+  const { children, value, index, ...other } = props;
 
-    return (
-        <div
-            role="tabpanel"
-            hidden={value !== index}
-            id={`simple-tabpanel-${value}`}
-            aria-labelledby={`simple-tab-${value}`}
-            {...other}
-        >
-            {value === index && <Box sx={{ paddingTop: 3, paddingBottom: 3 }}>{children}</Box>}
-        </div>
-    );
+  return (
+    <div
+      role="tabpanel"
+      hidden={value !== index}
+      id={`simple-tabpanel-${value}`}
+      aria-labelledby={`simple-tab-${value}`}
+      {...other}
+    >
+      {value === index && <Box sx={{ paddingTop: 3, paddingBottom: 3 }}>{children}</Box>}
+    </div>
+  );
 }
 
 CustomTabPanel.propTypes = {
-    children: PropTypes.node,
-    index: PropTypes.number.isRequired,
-    value: PropTypes.number.isRequired,
+  children: PropTypes.node,
+  index: PropTypes.number.isRequired,
+  value: PropTypes.number.isRequired,
 };
 
 function a11yProps(value) {
-    return {
-        id: `simple-tab-${value}`,
-        'aria-controls': `simple-tabpanel-${value}`,
-    };
+  return {
+    id: `simple-tab-${value}`,
+    'aria-controls': `simple-tabpanel-${value}`,
+  };
 }
 
 
@@ -69,13 +64,12 @@ const HRManagerDashboardPage = () => {
     queryKey: ['HRDashboard'],
     queryFn: () => fetchHRDashboard(),
     keepPreviousData: true,
-    placeholderData:keepPreviousData
+    placeholderData: keepPreviousData
   });
 
   // Fetch job posts with filters and pagination
   const fetchHRDashboard = async () => {
     const response = await DashboardService.HRManagerDashboard();
-    console.log(response.data)
     return response.data;
   };
 
@@ -102,7 +96,9 @@ const HRManagerDashboardPage = () => {
     const ordinal = getOrdinalSuffix(day);
 
     return `${month} ${day}${ordinal}, ${year}   ${hour}:${minute}`;
-};
+  };
+
+  const COLORS = ["#4caf50", "#2196f3", "#ff9800", "#f44336"];
 
   if (isError) return <div className="text-center py-10">Error loading data.</div>;
 
@@ -156,12 +152,13 @@ const HRManagerDashboardPage = () => {
             overflowX: "auto", // Makes table scrollable on small screens
           }}
         >
-          <Box sx={{ width: '100%' }}>
+          <Box sx={{ width: '100%'}}>
             {/* select tab section */}
             <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-              <Tabs value={value} onChange={handleChange} aria-label="basic tabs example">
+              <Tabs variant="scrollable" value={value} onChange={handleChange} aria-label="basic tabs example">
                 <Tab label="Job Post Request" {...a11yProps(0)} />
                 <Tab label="Recruiter Request" {...a11yProps(1)} />
+                <Tab label="Recruitment Funnel" {...a11yProps(2)} />
               </Tabs>
             </Box>
             {/* tab Job Post Request to be reviewed selected section */}
@@ -256,7 +253,7 @@ const HRManagerDashboardPage = () => {
                 </div>
               }
             </CustomTabPanel>
-            {/* tab History Job Post Request selected section */}
+            {/* tab Recruiter Request selected section */}
             <CustomTabPanel value={value} index={1}>
               {data.recruiterRequests.length === 0 ? (
                 <Typography
@@ -314,7 +311,7 @@ const HRManagerDashboardPage = () => {
                               }}
                               onClick={() =>
                                 navigate(
-                                    `/recruiter-request/${request.recruiterRegistrationRequestId}`
+                                  `/recruiter-request/${request.recruiterRegistrationRequestId}`
                                 )
                               }
                             >
@@ -327,6 +324,31 @@ const HRManagerDashboardPage = () => {
                   </Table>
                 </div>
               }
+            </CustomTabPanel>
+            {/* tab Recruiter Request selected section */}
+            <CustomTabPanel value={value} index={2}>
+              <ResponsiveContainer width="100%" height={300}>
+                <PieChart>
+                  <Pie
+                    data={data.recruitmentFunnel}
+                    dataKey="count"
+                    nameKey="stageName"
+                    cx="50%"
+                    cy="50%"
+                    outerRadius={100}
+                    fill="#8884d8"
+                    label={({ stageName, count }) => `${stageName} (${count})`}
+                  >
+                    {data.recruitmentFunnel.map((entry, index) => (
+                      <Cell
+                        key={`cell-${index}`}
+                        fill={COLORS[index % COLORS.length]}
+                      />
+                    ))}
+                  </Pie>
+                  <Tooltip />
+                </PieChart>
+              </ResponsiveContainer>
             </CustomTabPanel>
           </Box>
         </TableContainer>
