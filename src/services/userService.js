@@ -20,11 +20,17 @@ const deleteDocument = async (id) => {
   return res;
 };
 
+const deleteUser = async (username) => {
+  const res = await AxiosInstance.api.delete(`/api/user/delete/${username}`)
+  return res
+}
+
 const UserService = {
   details,
   updateProfile,
   uploadDocument,
   deleteDocument,
+  deleteUser
 };
 
 export default UserService;
