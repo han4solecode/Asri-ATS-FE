@@ -44,10 +44,17 @@ function AdministratorDashboard(props) {
     companyRegistrationTableRowsPerPage,
     setCompanyRegistrationTableRowsPerPage,
   ] = useState(5);
+  const [roleChangeRequestsTablePage, setRoleChangeRequestsTablePage] =
+    useState(0);
+  const [
+    roleChangeRequestsTableRowsPerPage,
+    setRoleChangeRequestsTableRowsPerPage,
+  ] = useState(5);
 
   useEffect(() => {
     if (selectedTab === 0) {
       setIsLoading(true);
+      setError(null);
       DashboardService.adminGetAllUsersInfo()
         .then((res) => {
           setUserInfos(res.data);
@@ -60,6 +67,7 @@ function AdministratorDashboard(props) {
         });
     } else if (selectedTab === 1) {
       setIsLoading(true);
+      setError(null);
       DashboardService.adminGetAllCompanyRegistrationRequest()
         .then((res) => {
           setCompanyRegistrations(res.data);
@@ -72,6 +80,7 @@ function AdministratorDashboard(props) {
         });
     } else {
       setIsLoading(true);
+      setError(null);
       DashboardService.adminGetAllRoleChangeRequest()
         .then((res) => {
           setRoleChangeRequests(res.data);
@@ -114,6 +123,15 @@ function AdministratorDashboard(props) {
   const handleCompanyRegistrationTableChangeRowsPerPage = (e) => {
     setCompanyRegistrationTableRowsPerPage(+e.target.value);
     setCompanyRegistrationTablePage(0);
+  };
+
+  const handleRoleChangeRequestsTableChangePage = (e, newPage) => {
+    setRoleChangeRequestsTablePage(newPage);
+  };
+
+  const handleRoleChangeRequestsTableChangeRowsPerPage = (e) => {
+    setRoleChangeRequestsTableRowsPerPage(+e.target.value);
+    setRoleChangeRequestsTablePage(0);
   };
 
   const handleDeleteUser = (userName) => {
@@ -402,7 +420,80 @@ function AdministratorDashboard(props) {
             </Table>
           </TableContainer>
         )}
-        {selectedTab === 2 && "Role Change Requests"}
+
+        {selectedTab === 2 && (
+          <TableContainer component={Paper} className="shadow-lg">
+            <Table stickyHeader sx={{ maxHeight: 500 }}>
+              <TableHead>
+                <TableRow>
+                  <TableCell className="font-bold">ID</TableCell>
+                  <TableCell className="font-bold">Requester</TableCell>
+                  <TableCell className="font-bold">Company</TableCell>
+                  <TableCell className="font-bold">Current Role</TableCell>
+                  <TableCell className="font-bold">Requested Role</TableCell>
+                  <TableCell className="font-bold">Action</TableCell>
+                </TableRow>
+              </TableHead>
+              <TableBody>
+                {roleChangeRequests.length > 0 ? (
+                  roleChangeRequests
+                    .slice(
+                      roleChangeRequestsTablePage *
+                        roleChangeRequestsTableRowsPerPage,
+                      roleChangeRequestsTablePage *
+                        roleChangeRequestsTableRowsPerPage +
+                        roleChangeRequestsTableRowsPerPage
+                    )
+                    .map((rcr) => (
+                      <TableRow key={rcr.roleChangeRequestId}>
+                        <TableCell>{rcr.roleChangeRequestId}</TableCell>
+                        <TableCell>{rcr.userFullName}</TableCell>
+                        <TableCell>{rcr.companyName}</TableCell>
+                        <TableCell>{rcr.currentRole}</TableCell>
+                        <TableCell>{rcr.requestedRole}</TableCell>
+                        <TableCell>
+                          <Button
+                            variant="contained"
+                            size="small"
+                            sx={{
+                              backgroundColor: "#1f2937",
+                              color: "white",
+                            }}
+                            onClick={() => navigate()}
+                          >
+                            View Details
+                          </Button>
+                        </TableCell>
+                      </TableRow>
+                    ))
+                ) : (
+                  <TableRow>
+                    <TableCell
+                      colSpan={5}
+                      className="text-center text-gray-600"
+                    >
+                      {error ? error : "No requests found"}
+                    </TableCell>
+                  </TableRow>
+                )}
+              </TableBody>
+              <TableFooter>
+                <TableRow>
+                  <TablePagination
+                    rowsPerPageOptions={[5, 10, 25]}
+                    count={roleChangeRequests.length}
+                    rowsPerPage={roleChangeRequestsTableRowsPerPage}
+                    page={roleChangeRequestsTablePage}
+                    onPageChange={handleRoleChangeRequestsTableChangePage}
+                    onRowsPerPageChange={
+                      handleRoleChangeRequestsTableChangeRowsPerPage
+                    }
+                  ></TablePagination>
+                </TableRow>
+              </TableFooter>
+            </Table>
+          </TableContainer>
+        )}
       </Box>
     </Box>
   );
