@@ -79,30 +79,30 @@ const SubmitApplicationJob = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    setErrors({});
-
+    setErrors({}); // Clear previous errors
+  
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
       return;
     }
-
+  
     const applicationData = new FormData();
     applicationData.append("jobPostId", jobPostId);
     applicationData.append("workExperience", formData.workExperience);
     applicationData.append("education", formData.education);
     applicationData.append("skills", formData.skills);
-
+  
     if (formData.supportingDocumentsId) {
       applicationData.append("supportingDocumentsId", formData.supportingDocumentsId);
     }
-
+  
     [...filesButton1, ...filesButton2].forEach((file) => {
       applicationData.append("SupportingDocuments", file);
     });
-
+  
     try {
-      setLoading(true);
+      setLoading(true); // Set loading to true
       const response = await AxiosInstance.apiNew.post(
         "/api/ApplicationJob/SubmitApplication",
         applicationData
@@ -112,7 +112,7 @@ const SubmitApplicationJob = () => {
     } catch (error) {
       alert(error.response?.data?.message || "An error occurred");
     } finally {
-      setLoading(false);
+      setLoading(false); // Reset loading to false
     }
   };
 
@@ -272,7 +272,7 @@ const SubmitApplicationJob = () => {
               variant="contained"
               fullWidth
               disabled={loading}
-              sx={{ py: 1.5 , width: "80%", backgroundColor: "#1f2937" }}
+              sx={{ py: 1.5, width: "80%", backgroundColor: "#1f2937" }}
             >
               {loading ? <CircularProgress size={24} color="inherit" /> : "Submit Application"}
             </Button>
