@@ -22,6 +22,7 @@ import {
   Card,
   CardContent,
 } from "@mui/material";
+import CryptoJS from "crypto-js";
 
 // Material UI Icons
 import BusinessIcon from '@mui/icons-material/Business';
@@ -33,8 +34,24 @@ import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import JobPostRequestService from "../services/jobPostRequestService";
 import { useSelector } from "react-redux";
 
+const SECRET_KEY = "your-secure-key";
+
+const decodeProcessId = (encryptedId) => {
+  try {
+    const decoded = decodeURIComponent(encryptedId); // Decode the URL-safe string
+    const bytes = CryptoJS.AES.decrypt(decoded, SECRET_KEY);
+    const originalId = bytes.toString(CryptoJS.enc.Utf8);
+    if (!originalId) throw new Error("Decryption failed or returned empty string");
+    return originalId;
+  } catch (error) {
+    console.error("Error decoding process ID:", error);
+    return null;
+  }
+};
+
 const JobPostRequestDetailPage = () => {
-  const { id } = useParams(); // Get the request ID from the URL
+  const { id: encryptedId } = useParams();
+  const id = decodeProcessId(encryptedId);
   const navigate = useNavigate();
   const [requestDetails, setRequestDetails] = useState(null);
   const [loading, setLoading] = useState(false);

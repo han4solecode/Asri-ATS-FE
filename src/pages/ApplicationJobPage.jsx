@@ -19,7 +19,21 @@ import {
 import ReactPaginate from "react-paginate";
 import { useNavigate } from "react-router-dom";
 import "../App.css";
+import CryptoJS from "crypto-js";
 import ApplicationJobService from "../services/applicationJob.service";
+
+const SECRET_KEY = "your-secure-key";
+
+const encodeProcessId = (id) => {
+  try {
+    if (!id) throw new Error("Invalid process ID");
+    const encrypted = CryptoJS.AES.encrypt(String(id), SECRET_KEY).toString();
+    return encodeURIComponent(encrypted); // Encode the encrypted string for URL safety
+  } catch (error) {
+    console.error("Error encoding process ID:", error);
+    return null;
+  }
+};
 
 const ApplicationJobPage = () => {
   const [currentPage, setCurrentPage] = useState(1);
@@ -139,16 +153,21 @@ const ApplicationJobPage = () => {
                 <TableCell>{status.currentStep}</TableCell>
                 <TableCell>{status.comments || "N/A"}</TableCell>
                 <TableCell>
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    size="small"
-                    onClick={() =>
-                      navigate(`/application-job/${status.processId}`)
+                <Button
+                  variant="contained"
+                  color="primary"
+                  size="small"
+                  onClick={() => {
+                    const encodedId = encodeProcessId(status.processId);
+                    if (encodedId) {
+                      navigate(`/application-job/${encodedId}`);
+                    } else {
+                      console.error("Failed to encode process ID, navigation aborted.");
                     }
-                  >
-                    View Details
-                  </Button>
+                  }}
+                >
+                  View Details
+                </Button>
                 </TableCell>
               </TableRow>
             ))}

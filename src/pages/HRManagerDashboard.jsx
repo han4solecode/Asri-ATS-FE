@@ -20,6 +20,20 @@ import { useNavigate } from "react-router-dom";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import DashboardService from "../services/dashboard.service";
 import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
+import CryptoJS from "crypto-js";
+
+const SECRET_KEY = "your-secure-key";
+
+const encodeProcessId = (id) => {
+  try {
+    if (!id) throw new Error("Invalid process ID");
+    const encrypted = CryptoJS.AES.encrypt(String(id), SECRET_KEY).toString();
+    return encodeURIComponent(encrypted); // Encode the encrypted string for URL safety
+  } catch (error) {
+    console.error("Error encoding process ID:", error);
+    return null;
+  }
+};
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -237,11 +251,14 @@ const HRManagerDashboardPage = () => {
                                   backgroundColor: "#1565c0",
                                 },
                               }}
-                              onClick={() =>
-                                navigate(
-                                  `/job-post-request/${request.processId}`
-                                )
-                              }
+                              onClick={() => {
+                                const encodedId = encodeProcessId(request.processId);
+                                if (encodedId) {
+                                  navigate(`/job-post-request/${encodedId}`);
+                                } else {
+                                  console.error("Failed to encode process ID, navigation aborted.");
+                                }
+                              }}
                             >
                               View Details
                             </Button>
@@ -309,11 +326,14 @@ const HRManagerDashboardPage = () => {
                                   backgroundColor: "#1565c0",
                                 },
                               }}
-                              onClick={() =>
-                                navigate(
-                                  `/recruiter-request/${request.recruiterRegistrationRequestId}`
-                                )
-                              }
+                              onClick={() => {
+                                const encodedId = encodeProcessId(request.recruiterRegistrationRequestId);
+                                if (encodedId) {
+                                  navigate(`/recruiter-request/${encodedId}`);
+                                } else {
+                                  console.error("Failed to encode process ID, navigation aborted.");
+                                }
+                              }}
                             >
                               View Details
                             </Button>

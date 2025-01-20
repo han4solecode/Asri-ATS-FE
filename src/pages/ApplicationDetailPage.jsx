@@ -23,11 +23,29 @@ import {
 } from "@mui/material";
 import { useParams, useNavigate } from "react-router-dom"; // For accessing processId if used in routing
 import { useSelector } from "react-redux";
+import CryptoJS from "crypto-js";
 import ApplicationJobService from "../services/applicationJob.service";
 import InterviewScheduleService from "../services/interviewScheduleService";
 
+const SECRET_KEY = "your-secure-key";
+
+const decodeProcessId = (encryptedId) => {
+  try {
+    const decoded = decodeURIComponent(encryptedId); // Decode the URL-safe string
+    const bytes = CryptoJS.AES.decrypt(decoded, SECRET_KEY);
+    const originalId = bytes.toString(CryptoJS.enc.Utf8);
+    if (!originalId) throw new Error("Decryption failed or returned empty string");
+    return originalId;
+  } catch (error) {
+    console.error("Error decoding process ID:", error);
+    return null;
+  }
+};
+
+
 const ApplicationDetailPage = () => {
-  const { processId } = useParams(); // Assumes `processId` is passed via route params
+  const { processId: encryptedProcessId } = useParams();
+  const processId = decodeProcessId(encryptedProcessId);
   const navigate = useNavigate();
   const [details, setDetails] = useState(null);
   const [loading, setLoading] = useState(true);

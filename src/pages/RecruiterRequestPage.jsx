@@ -19,6 +19,20 @@ import {
 } from "@mui/material";
 import { useNavigate } from "react-router-dom";
 import RecruiterRegisterService from "../services/recruiterRegister.service";
+import CryptoJS from "crypto-js";
+
+const SECRET_KEY = "your-secure-key";
+
+const encodeProcessId = (id) => {
+  try {
+    if (!id) throw new Error("Invalid process ID");
+    const encrypted = CryptoJS.AES.encrypt(String(id), SECRET_KEY).toString();
+    return encodeURIComponent(encrypted); // Encode the encrypted string for URL safety
+  } catch (error) {
+    console.error("Error encoding process ID:", error);
+    return null;
+  }
+};
 
 const RecruiterRequestPage = () => {
   const [tabIndex, setTabIndex] = useState(0); // Tab index state
@@ -91,11 +105,14 @@ const RecruiterRequestPage = () => {
                 variant="contained"
                 size="small"
                 className="bg-blue-600 hover:bg-blue-500 text-white"
-                onClick={() =>
-                  navigate(
-                    `/recruiter-request/${request.recruiterRegistrationRequestId}`
-                  )
-                }
+                onClick={() => {
+                  const encodedId = encodeProcessId(request.recruiterRegistrationRequestId);
+                  if (encodedId) {
+                    navigate(`/recruiter-request/${encodedId}`);
+                  } else {
+                    console.error("Failed to encode process ID, navigation aborted.");
+                  }
+                }}
               >
                 View Details
               </Button>
@@ -134,11 +151,14 @@ const RecruiterRequestPage = () => {
                     variant="contained"
                     size="small"
                     className="bg-blue-600 hover:bg-blue-500 text-white"
-                    onClick={() =>
-                      navigate(
-                        `/recruiter-request/${request.recruiterRegistrationRequestId}`
-                      )
-                    }
+                    onClick={() => {
+                      const encodedId = encodeProcessId(request.recruiterRegistrationRequestId);
+                      if (encodedId) {
+                        navigate(`/recruiter-request/${encodedId}`);
+                      } else {
+                        console.error("Failed to encode process ID, navigation aborted.");
+                      }
+                    }}
                   >
                     View Details
                   </Button>

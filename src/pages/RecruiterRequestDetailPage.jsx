@@ -12,9 +12,26 @@ import {
 import { useSelector } from "react-redux";
 import AxiosInstance from "../services/api";
 import RecruiterRegisterService from "../services/recruiterRegister.service";
+import CryptoJS from "crypto-js";
+
+const SECRET_KEY = "your-secure-key";
+
+const decodeId = (encryptedId) => {
+  try {
+    const decoded = decodeURIComponent(encryptedId); // Decode the URL-safe string
+    const bytes = CryptoJS.AES.decrypt(decoded, SECRET_KEY);
+    const originalId = bytes.toString(CryptoJS.enc.Utf8);
+    if (!originalId) throw new Error("Decryption failed or returned empty string");
+    return originalId;
+  } catch (error) {
+    console.error("Error decoding process ID:", error);
+    return null;
+  }
+};
 
 const RecruiterRequestDetailPage = () => {
-  const { id } = useParams(); // Get the request ID from the URL
+  const { id: encryptedId } = useParams();
+  const id = decodeId(encryptedId);
   const navigate = useNavigate();
   const [requestDetails, setRequestDetails] = useState(null);
   const [loading, setLoading] = useState(false);

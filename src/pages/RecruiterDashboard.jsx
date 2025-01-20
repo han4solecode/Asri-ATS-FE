@@ -19,6 +19,20 @@ import {
 import { PieChart, Pie, Tooltip, Cell, ResponsiveContainer } from "recharts";
 import { useNavigate } from "react-router-dom";
 import DashboardService from "../services/dashboard.service";
+import CryptoJS from "crypto-js";
+
+const SECRET_KEY = "your-secure-key";
+
+const encodeProcessId = (id) => {
+  try {
+    if (!id) throw new Error("Invalid process ID");
+    const encrypted = CryptoJS.AES.encrypt(String(id), SECRET_KEY).toString();
+    return encodeURIComponent(encrypted); // Encode the encrypted string for URL safety
+  } catch (error) {
+    console.error("Error encoding process ID:", error);
+    return null;
+  }
+};
 
 const RecruiterDashboard = () => {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -216,7 +230,14 @@ const RecruiterDashboard = () => {
                         variant="contained"
                         size="small"
                         color="primary"
-                        onClick={() => navigate(`/application-job/${task.processId}`)}
+                        onClick={() => {
+                          const encodedId = encodeProcessId(task.processId);
+                          if (encodedId) {
+                            navigate(`/application-job/${encodedId}`);
+                          } else {
+                            console.error("Failed to encode process ID, navigation aborted.");
+                          }
+                        }}
                       >
                         View Details
                       </Button>

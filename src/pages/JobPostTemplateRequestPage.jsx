@@ -25,6 +25,20 @@ import { useSelector } from "react-redux";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import ReactPaginate from "react-paginate";
 import JobPostTemplateRequestService from "../services/jobPostTemplateRequestService";
+import CryptoJS from "crypto-js";
+
+const SECRET_KEY = "your-secure-key";
+
+const encodeId = (id) => {
+  try {
+    if (!id) throw new Error("Invalid process ID");
+    const encrypted = CryptoJS.AES.encrypt(String(id), SECRET_KEY).toString();
+    return encodeURIComponent(encrypted); // Encode the encrypted string for URL safety
+  } catch (error) {
+    console.error("Error encoding process ID:", error);
+    return null;
+  }
+};
 
 function CustomTabPanel(props) {
   const { children, value, index, ...other } = props;
@@ -306,11 +320,14 @@ const JobPostTemplateRequestPage = () => {
                                   backgroundColor: "#1565c0",
                                 },
                               }}
-                              onClick={() =>
-                                navigate(
-                                  `/job-post-template-request/${request.jobPostTemplateRequestId}`
-                                )
-                              }
+                              onClick={() => {
+                                const encodedId = encodeId(request.jobPostTemplateRequestId);
+                                if (encodedId) {
+                                  navigate(`/job-post-template-request/${encodedId}`);
+                                } else {
+                                  console.error("Failed to encode process ID, navigation aborted.");
+                                }
+                              }}
                             >
                               View Details
                             </Button>
@@ -447,11 +464,14 @@ const JobPostTemplateRequestPage = () => {
                                   backgroundColor: "#1565c0",
                                 },
                               }}
-                              onClick={() =>
-                                navigate(
-                                  `/job-post-template-request/${request.jobPostTemplateRequestId}`
-                                )
-                              }
+                              onClick={() => {
+                                const encodedId = encodeId(request.jobPostTemplateRequestId);
+                                if (encodedId) {
+                                  navigate(`/job-post-template-request/${encodedId}`);
+                                } else {
+                                  console.error("Failed to encode process ID, navigation aborted.");
+                                }
+                              }}
                             >
                               View Details
                             </Button>
@@ -588,11 +608,14 @@ const JobPostTemplateRequestPage = () => {
                                   backgroundColor: "#1565c0",
                                 },
                               }}
-                              onClick={() =>
-                                navigate(
-                                  `/job-post-template-request/${request.jobPostTemplateRequestId}`
-                                )
-                              }
+                              onClick={() => {
+                                const encodedId = encodeId(request.jobPostTemplateRequestId);
+                                if (encodedId) {
+                                  navigate(`/job-post-template-request/${encodedId}`);
+                                } else {
+                                  console.error("Failed to encode process ID, navigation aborted.");
+                                }
+                              }}
                             >
                               View Details
                             </Button>
@@ -816,11 +839,14 @@ const JobPostTemplateRequestPage = () => {
                                 backgroundColor: "#1565c0",
                               },
                             }}
-                            onClick={() =>
-                              navigate(
-                                `/job-post-template-request/${request.jobPostTemplateRequestId}`
-                              )
-                            }
+                            onClick={() => {
+                              const encodedId = encodeId(request.jobPostTemplateRequestId);
+                              if (encodedId) {
+                                navigate(`/job-post-template-request/${encodedId}`);
+                              } else {
+                                console.error("Failed to encode process ID, navigation aborted.");
+                              }
+                            }}
                           >
                             View Details
                           </Button>

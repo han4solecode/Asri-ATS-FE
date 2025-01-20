@@ -18,6 +18,20 @@ import {
 } from "@mui/material";
 import DashboardService from "../services/dashboard.service";
 import { useNavigate } from "react-router-dom";
+import CryptoJS from "crypto-js";
+
+const SECRET_KEY = "your-secure-key";
+
+const encodeProcessId = (id) => {
+  try {
+    if (!id) throw new Error("Invalid process ID");
+    const encrypted = CryptoJS.AES.encrypt(String(id), SECRET_KEY).toString();
+    return encodeURIComponent(encrypted); // Encode the encrypted string for URL safety
+  } catch (error) {
+    console.error("Error encoding process ID:", error);
+    return null;
+  }
+};
 
 const ApplicantDashboard = () => {
   const [selectedTab, setSelectedTab] = useState(0);
@@ -127,7 +141,14 @@ const ApplicantDashboard = () => {
                     size="small"
                     color="primary"
                     className="mt-4"
-                    onClick={() => navigate(`/application-job/${application.processId}`)}
+                    onClick={() => {
+                      const encodedId = encodeProcessId(application.processId);
+                      if (encodedId) {
+                        navigate(`/application-job/${encodedId}`);
+                      } else {
+                        console.error("Failed to encode process ID, navigation aborted.");
+                      }
+                    }}
                   >
                     View Details
                   </Button>
@@ -165,7 +186,7 @@ const ApplicantDashboard = () => {
                     className="mt-4"
                     onClick={() => navigate(`/interview-schedule`)}
                   >
-                    View Details
+                    View More
                   </Button>
                 </CardContent>
               </Card>
@@ -208,7 +229,14 @@ const ApplicantDashboard = () => {
                         variant="contained"
                         size="small"
                         color="primary"
-                        onClick={() => navigate(`/application-job/${note.processId}`)}
+                        onClick={() => {
+                          const encodedId = encodeProcessId(note.processId);
+                          if (encodedId) {
+                            navigate(`/application-job/${encodedId}`);
+                          } else {
+                            console.error("Failed to encode process ID, navigation aborted.");
+                          }
+                        }}
                       >
                         View Details
                       </Button>

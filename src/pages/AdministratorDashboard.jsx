@@ -21,6 +21,20 @@ import {
   Paper,
   Button,
 } from "@mui/material";
+import CryptoJS from "crypto-js";
+
+const SECRET_KEY = "your-secure-key";
+
+const encodeProcessId = (id) => {
+  try {
+    if (!id) throw new Error("Invalid process ID");
+    const encrypted = CryptoJS.AES.encrypt(String(id), SECRET_KEY).toString();
+    return encodeURIComponent(encrypted); // Encode the encrypted string for URL safety
+  } catch (error) {
+    console.error("Error encoding process ID:", error);
+    return null;
+  }
+};
 
 function AdministratorDashboard(props) {
   const {} = props;
@@ -380,11 +394,14 @@ function AdministratorDashboard(props) {
                                 backgroundColor: "#1f2937",
                                 color: "white",
                               }}
-                              onClick={() =>
-                                navigate(
-                                  `/requests/company-registration/review/${cr.companyRequestId}`
-                                )
-                              }
+                              onClick={() => {
+                                const encodedId = encodeProcessId(cr.companyRequestId);
+                                if (encodedId) {
+                                  navigate(`/requests/company-registration/review/${encodedId}`);
+                                } else {
+                                  console.error("Failed to encode process ID, navigation aborted.");
+                                }
+                              }}
                             >
                               View Details
                             </Button>

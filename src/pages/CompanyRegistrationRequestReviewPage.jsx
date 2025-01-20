@@ -2,10 +2,27 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import CompanyService from "../services/company.service";
 import { CircularProgress, Button } from "@mui/material";
+import CryptoJS from "crypto-js";
+
+const SECRET_KEY = "your-secure-key";
+
+const decodeId = (encryptedId) => {
+  try {
+    const decoded = decodeURIComponent(encryptedId); // Decode the URL-safe string
+    const bytes = CryptoJS.AES.decrypt(decoded, SECRET_KEY);
+    const originalId = bytes.toString(CryptoJS.enc.Utf8);
+    if (!originalId) throw new Error("Decryption failed or returned empty string");
+    return originalId;
+  } catch (error) {
+    console.error("Error decoding process ID:", error);
+    return null;
+  }
+};
 
 function CompanyRegistrationRequestReviewPage(props) {
   const {} = props;
-  const { id } = useParams();
+  const { id: encryptedId } = useParams();
+  const id = decodeId(encryptedId);
   const navigate = useNavigate();
 
   const [request, setRequest] = useState({});
