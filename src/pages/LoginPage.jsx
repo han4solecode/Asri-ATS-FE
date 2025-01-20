@@ -4,6 +4,7 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { login, reset } from "../slices/authSlice";
+import { useForm } from "react-hook-form"
 
 function LoginPage(props) {
   const {} = props;
@@ -14,13 +15,12 @@ function LoginPage(props) {
     (state) => state.auth
   );
 
-  const initialvalues = {
-    username: "",
-    password: "",
-  };
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
-  const [formValues, setFormValues] = useState(initialvalues);
-  const [errors, setErrors] = useState(initialvalues);
   const [showPassword, setShowPassword] = useState(false);
 
   useEffect(() => {
@@ -36,40 +36,10 @@ function LoginPage(props) {
     dispatch(reset());
   }, [isError, isSuccess, message, navigate, dispatch]);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
-  };
-
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-
-    // validation
-    let errorMessages = {};
-
-    if (!formValues.username.trim()) {
-      errorMessages.username = "Username is required";
-    }
-
-    if (!formValues.password) {
-      errorMessages.password = "Passwword is required";
-    }
-
-    setErrors(errorMessages);
-
-    let formValid = true;
-    for (let propName in errorMessages) {
-      if (errorMessages[propName].length > 0) {
-        formValid = false;
-      }
-    }
-
-    if (formValid) {
-      // create new applicant account
-      let newApplicant = { ...formValues };
-      dispatch(login(newApplicant));
-    }
-  };
+  const handleFormSubmit = (data) => {
+      // login applicant account
+      dispatch(login(data));
+  }
 
   return (
     <div className="sm:w-6/12 md:w-6/12 mt-10 mb-10">
@@ -84,10 +54,11 @@ function LoginPage(props) {
               name="username"
               fullWidth
               size="large"
-              value={formValues.username}
-              onChange={handleInputChange}
-              error={errors.username}
-              helperText={errors.username}
+              {...register("username",{
+                required:"Username is required"
+              })}
+              error={!!errors.username}
+              helperText={errors.username?.message}
               sx={{ mb: 4, mt: 1 }}
             ></TextField>
             <TextField
@@ -97,10 +68,11 @@ function LoginPage(props) {
               size="large"
               type={showPassword ? "text" : "password"}
               autoComplete="current-password"
-              value={formValues.password}
-              onChange={handleInputChange}
-              error={errors.password}
-              helperText={errors.password}
+              {...register("password",{
+                required:"Password is required"
+              })}
+              error={!!errors.password}
+              helperText={errors.password?.message}
               slotProps={{
                 input: {
                   endAdornment: (
@@ -121,7 +93,9 @@ function LoginPage(props) {
             <Button
               variant="contained"
               sx={{ width: "40%", backgroundColor: "#1f2937" }}
-              onClick={handleFormSubmit}
+              onClick={handleSubmit((data) => {
+                handleFormSubmit(data);
+              })}
             >
               {isLoading ? "Loggin into Your Account..." : "Login"}
             </Button>
