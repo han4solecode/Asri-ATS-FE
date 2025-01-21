@@ -9,13 +9,14 @@ import {
   FormHelperText,
   CircularProgress,
 } from "@mui/material";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import UserService from "../services/userService";
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
+import { useForm } from "react-hook-form";
 
 function EditProfilePage(props) {
-  const {} = props;
+  const { } = props;
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
 
@@ -27,128 +28,36 @@ function EditProfilePage(props) {
   const { data, isLoading, isError } = useQuery({
     queryKey: ["userProfile"],
     queryFn: () => fetchUserProfile(),
+    keepPreviousData: true,
+    placeholderData: keepPreviousData,
   });
 
   const {
-    userName,
-    email,
-    phoneNumber,
-    firstName,
-    lastName,
-    address,
-    dob,
-    sex,
-  } = data;
+    register,
+    handleSubmit,
+    formState: { errors },
+    watch,
+    setValue,
+  } = useForm();
 
-  const initialvalues = {
-    firstName: firstName,
-    lastName: lastName,
-    email: email,
-    phoneNumber: phoneNumber,
-    address: address,
-    dob: dob,
-    sex: sex,
-  };
+  const selectedGender = watch("sex");
 
-  const initialvaluesError = {
-    firstName: "",
-    lastName: "",
-    email: "",
-    phoneNumber: "",
-    address: "",
-    dob: "",
-    sex: "",
-  };
+  useEffect(() => {
+    if (data) {
+      Object.keys(data).forEach((key) => {
+        setValue(key, data[key]);
+      });
+    }
+  }, [data, setValue]);
 
-  const [formValues, setFormValues] = useState(initialvalues);
-  const [errors, setErrors] = useState(initialvaluesError);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
-  };
-
-  const handleFormSubmit = async (e) => {
+  const handleFormSubmit = async (editedProfileData) => {
     try {
-      e.preventDefault();
-
-      // validation
-      const currentDate = new Date().toISOString().slice(0, 10);
-      const phoneNumberRegex = /^(0)8[1-9][0-9]{6,9}$/;
-      const emailRegex = /\S+@\S+\.\S+/;
-      let errorMessages = {};
-
-      if (!formValues.firstName.trim()) {
-        errorMessages.firstName = "First name is required";
-      } else if (formValues.firstName.length > 50) {
-        errorMessages.firstName = "First name cannot exceed 50 characters";
-      } else {
-        errorMessages.firstName = "";
-      }
-
-      if (!formValues.lastName.trim()) {
-        errorMessages.lastName = "Last name is required";
-      } else if (formValues.lastName.length > 50) {
-        errorMessages.lastName = "Last name cannot exceed 50 characters";
-      } else {
-        errorMessages.lastName = "";
-      }
-
-      if (!formValues.address.trim()) {
-        errorMessages.address = "Address is required";
-      } else if (formValues.address.length > 200) {
-        errorMessages.address = "Address cannot exceed 200 characters";
-      } else {
-        errorMessages.address = "";
-      }
-
-      if (!formValues.dob) {
-        errorMessages.dob = "Date of birth is required";
-      } else if (formValues.dob > currentDate) {
-        errorMessages.dob = "Date of birth is not valid";
-      } else {
-        errorMessages.dob = "";
-      }
-
-      if (!formValues.sex) {
-        errorMessages.sex = "Gender is required";
-      } else {
-        errorMessages.sex = "";
-      }
-
-      if (!formValues.email) {
-        errorMessages.email = "Email is required";
-      } else if (!emailRegex.test(formValues.email)) {
-        errorMessages.email = "Email is not valid";
-      } else {
-        errorMessages.email = "";
-      }
-
-      if (!formValues.phoneNumber) {
-        errorMessages.phoneNumber = "Phone number is required";
-      } else if (!phoneNumberRegex.test(formValues.phoneNumber)) {
-        errorMessages.phoneNumber = "Phone number is not valid";
-      } else {
-        errorMessages.phoneNumber = "";
-      }
-
-      setErrors(errorMessages);
-
-      let formValid = true;
-      for (let propName in errorMessages) {
-        if (errorMessages[propName].length > 0) {
-          formValid = false;
-        }
-      }
-
-      if (formValid) {
-        // edit applicant account
-        let editedApplicant = { ...formValues, userName: userName };
-        setLoading(true);
-        await UserService.updateProfile(editedApplicant);
-        alert("Your profile has been updated!");
-        navigate("/profile");
-      }
+      // edit applicant account
+      let editedApplicant = { ...editedProfileData, userName: data.userName };
+      setLoading(true);
+      await UserService.updateProfile(editedApplicant);
+      alert("Your profile has been updated!");
+      navigate("/profile");
     } catch (error) {
       alert(error.response.data.message);
     } finally {
@@ -186,20 +95,28 @@ function EditProfilePage(props) {
               name="firstName"
               fullWidth
               size="large"
-              value={formValues.firstName}
-              onChange={handleInputChange}
-              error={errors.firstName}
-              helperText={errors.firstName}
+              {...register("firstName",{
+                required:"First name is required", 
+                maxLength:{
+                value:50,
+                message:"First name cannot exceed 50 characters"
+              }})}
+              error={!!errors.firstName}
+              helperText={errors.firstName?.message}
             ></TextField>
             <TextField
               label="Last Name"
               name="lastName"
               fullWidth
               size="large"
-              value={formValues.lastName}
-              onChange={handleInputChange}
-              error={errors.lastName}
-              helperText={errors.lastName}
+              {...register("lastName",{
+                required:"Last name is required", 
+                maxLength:{
+                value:50,
+                message:"Last name cannot exceed 50 characters"
+              }})}
+              error={!!errors.lastName}
+              helperText={errors.lastName?.message}
             ></TextField>
             <TextField
               label="Email Address"
@@ -207,10 +124,14 @@ function EditProfilePage(props) {
               fullWidth
               size="large"
               placeholder="email@example.com"
-              value={formValues.email}
-              onChange={handleInputChange}
-              error={errors.email}
-              helperText={errors.email}
+              {...register("email",{
+                required:"Email is required", 
+                pattern:{
+                value: /\S+@\S+\.\S+/,
+                message:"Email is not valid"
+              }})}
+              error={!!errors.email}
+              helperText={errors.email?.message}
             ></TextField>
             <TextField
               label="Phone Number"
@@ -218,10 +139,14 @@ function EditProfilePage(props) {
               fullWidth
               size="large"
               placeholder="08XXXXXXXX"
-              value={formValues.phoneNumber}
-              onChange={handleInputChange}
-              error={errors.phoneNumber}
-              helperText={errors.phoneNumber}
+              {...register("phoneNumber",{
+                required:"Phone number is required", 
+                pattern:{
+                value: /^(0)8[1-9][0-9]{6,9}$/,
+                message:"Phone number is not valid"
+              }})}
+              error={!!errors.phoneNumber}
+              helperText={errors.phoneNumber?.message}
             ></TextField>
           </div>
           <div className="flex flex-col gap-2 md:flex-row mb-4">
@@ -232,10 +157,14 @@ function EditProfilePage(props) {
               size="large"
               multiline
               maxRows={3}
-              value={formValues.address}
-              onChange={handleInputChange}
-              error={errors.address}
-              helperText={errors.address}
+              {...register("address",{
+                required:"Address is required", 
+                maxLength:{
+                value:200,
+                message:"Address cannot exceed 200 characters"
+              }})}
+              error={!!errors.address}
+              helperText={errors.address?.message}
             ></TextField>
           </div>
           <div className="grid grid-cols-2 gap-2 mb-4">
@@ -245,18 +174,24 @@ function EditProfilePage(props) {
               fullWidth
               size="large"
               type="date"
-              value={formValues.dob}
-              onChange={handleInputChange}
-              error={errors.dob}
-              helperText={errors.dob}
+              {...register("dob",{
+                required:"Date of birth is required", 
+                validate:{
+                  isValidDate:(value) => {
+                    const currentDate = new Date().toISOString().slice(0, 10);
+                    return value < currentDate || "Date of birth is not valid";
+                  }
+                }})}
+              error={!!errors.dob}
+              helperText={errors.dob?.message}
             ></TextField>
-            <FormControl error={errors.sex}>
+            <FormControl error={!!errors.sex}>
               <FormLabel id="gender-radio-group-label">Gender</FormLabel>
               <RadioGroup
                 aria-labelledby="gender-radio-buttons-group-label"
                 name="sex"
-                value={formValues.sex}
-                onChange={handleInputChange}
+                value={selectedGender || ""}
+                onChange={(e) => setValue("sex", e.target.value)}
                 sx={{ color: "#374151" }}
               >
                 <FormControlLabel
@@ -270,14 +205,16 @@ function EditProfilePage(props) {
                   label="Female"
                 />
               </RadioGroup>
-              <FormHelperText>{errors.sex}</FormHelperText>
+              <FormHelperText>{errors.sex?.message}</FormHelperText>
             </FormControl>
           </div>
           <div className="flex flex-col gap-2 items-center justify-center">
             <Button
               variant="contained"
               sx={{ width: "80%", backgroundColor: "#1f2937" }}
-              onClick={handleFormSubmit}
+              onClick={handleSubmit((data) => {
+                handleFormSubmit(data);
+              })}
             >
               {loading ? "Updating Your Profile..." : "Edit Profile"}
             </Button>

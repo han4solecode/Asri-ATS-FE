@@ -217,7 +217,7 @@ function RegisterPage(props) {
               error={!!errors.dob}
               helperText={errors.dob?.message}
             ></TextField>
-            <FormControl error={errors.sex}>
+            <FormControl error={!!errors.sex}>
               <FormLabel id="gender-radio-group-label">Gender</FormLabel>
               <RadioGroup
                 aria-labelledby="gender-radio-buttons-group-label"

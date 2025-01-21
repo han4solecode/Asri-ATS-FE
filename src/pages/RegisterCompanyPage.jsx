@@ -13,140 +13,33 @@ import {
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import CompanyService from "../services/company.service";
+import { useForm } from "react-hook-form";
 
 function RegisterCompanyPage(props) {
-  const {} = props;
+  const { } = props;
   const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
-  const initialvalues = {
-    // user info
-    firstName: "",
-    lastName: "",
-    email: "",
-    phoneNumber: "",
-    userAddress: "",
-    dob: "",
-    sex: "",
-    // company info
-    companyName: "",
-    companyAddress: "",
-  };
-
-  const [formValues, setFormValues] = useState(initialvalues);
-  const [errors, setErrors] = useState(initialvalues);
   const [isLoading, setIsLoading] = useState(false);
 
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
+  const handleFormSubmit = (data) => {
+    setIsLoading(true);
+    CompanyService.registerCompanyRequest(data)
+      .then((res) => {
+        alert(res.data.message);
+      })
+      .catch((err) => {
+        console.log(err);
+        alert(err.response.data.message);
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
-
-  const handleFormSubmit = (e) => {
-    e.preventDefault();
-
-    // validation
-    const currentDate = new Date().toISOString().slice(0, 10);
-    const phoneNumberRegex = /^(0)8[1-9][0-9]{6,9}$/;
-    const emailRegex = /\S+@\S+\.\S+/;
-    let errorMessages = {};
-
-    if (!formValues.companyName.trim()) {
-      errorMessages.companyName = "Company name is required";
-    } else if (formValues.companyName.length > 50) {
-      errorMessages.companyName = "Company name cannot exceed 50 characters";
-    } else {
-      errorMessages.companyName = "";
-    }
-
-    if (!formValues.companyAddress.trim()) {
-      errorMessages.companyAddress = "Company address is required";
-    } else if (formValues.companyAddress.length > 200) {
-      errorMessages.companyAddress =
-        "Company address cannot exceed 200 characters";
-    } else {
-      errorMessages.companyAddress = "";
-    }
-
-    if (!formValues.firstName.trim()) {
-      errorMessages.firstName = "First name is required";
-    } else if (formValues.firstName.length > 50) {
-      errorMessages.firstName = "First name cannot exceed 50 characters";
-    } else {
-      errorMessages.firstName = "";
-    }
-
-    if (!formValues.lastName.trim()) {
-      errorMessages.lastName = "Last name is required";
-    } else if (formValues.lastName.length > 50) {
-      errorMessages.lastName = "Last name cannot exceed 50 characters";
-    } else {
-      errorMessages.lastName = "";
-    }
-
-    if (!formValues.userAddress.trim()) {
-      errorMessages.userAddress = "Home address is required";
-    } else if (formValues.userAddress.length > 200) {
-      errorMessages.userAddress = "Address cannot exceed 200 characters";
-    } else {
-      errorMessages.userAddress = "";
-    }
-
-    if (!formValues.dob) {
-      errorMessages.dob = "Date of birth is required";
-    } else if (formValues.dob > currentDate) {
-      errorMessages.dob = "Date of birth is not valid";
-    } else {
-      errorMessages.dob = "";
-    }
-
-    if (!formValues.sex) {
-      errorMessages.sex = "Gender is required";
-    } else {
-      errorMessages.sex = "";
-    }
-
-    if (!formValues.email) {
-      errorMessages.email = "Email is required";
-    } else if (!emailRegex.test(formValues.email)) {
-      errorMessages.email = "Email is not valid";
-    } else {
-      errorMessages.email = "";
-    }
-
-    if (!formValues.phoneNumber) {
-      errorMessages.phoneNumber = "Phone number is required";
-    } else if (!phoneNumberRegex.test(formValues.phoneNumber)) {
-      errorMessages.phoneNumber = "Phone number is not valid";
-    } else {
-      errorMessages.phoneNumber = "";
-    }
-
-    setErrors(errorMessages);
-
-    let formValid = true;
-    for (let propName in errorMessages) {
-      if (errorMessages[propName].length > 0) {
-        formValid = false;
-      }
-    }
-
-    if (formValid) {
-      setIsLoading(true);
-      CompanyService.registerCompanyRequest(formValues)
-        .then((res) => {
-          alert(res.data.message);
-        })
-        .catch((err) => {
-          console.log(err);
-          alert(err.response.data.message);
-        })
-        .finally(() => {
-          setIsLoading(false);
-        });
-    }
-  };
-
-  console.log(formValues);
 
   return (
     <div className="sm:w-3/4 md:w-3/4 mt-10 mb-10">
@@ -166,10 +59,15 @@ function RegisterCompanyPage(props) {
               name="companyName"
               fullWidth
               size="large"
-              value={formValues.companyName}
-              onChange={handleInputChange}
-              error={errors.companyName}
-              helperText={errors.companyName}
+              {...register("companyName", {
+                required: "Company name is required",
+                maxLength: {
+                  value: 50,
+                  message: "Company name cannot exceed 50 characters"
+                }
+              })}
+              error={!!errors.companyName}
+              helperText={errors.companyName?.message}
             ></TextField>
           </div>
           <div className="flex flex-col gap-2 md:flex-row mb-4">
@@ -180,10 +78,15 @@ function RegisterCompanyPage(props) {
               size="large"
               multiline
               maxRows={3}
-              value={formValues.companyAddress}
-              onChange={handleInputChange}
-              error={errors.companyAddress}
-              helperText={errors.companyAddress}
+              {...register("companyAddress", {
+                required: "Company address is required",
+                maxLength: {
+                  value: 200,
+                  message: "Company address cannot exceed 200 characters"
+                }
+              })}
+              error={!!errors.companyAddress}
+              helperText={errors.companyAddress?.message}
             ></TextField>
           </div>
           <div className="text-lg mb-3 underline text-gray-700">
@@ -195,20 +98,30 @@ function RegisterCompanyPage(props) {
               name="firstName"
               fullWidth
               size="large"
-              value={formValues.firstName}
-              onChange={handleInputChange}
-              error={errors.firstName}
-              helperText={errors.firstName}
+              {...register("firstName", {
+                required: "First name is required",
+                maxLength: {
+                  value: 50,
+                  message: "First name cannot exceed 50 characters"
+                }
+              })}
+              error={!!errors.firstName}
+              helperText={errors.firstName?.message}
             ></TextField>
             <TextField
               label="Last Name"
               name="lastName"
               fullWidth
               size="large"
-              value={formValues.lastName}
-              onChange={handleInputChange}
-              error={errors.lastName}
-              helperText={errors.lastName}
+              {...register("lastName", {
+                required: "Last name is required",
+                maxLength: {
+                  value: 50,
+                  message: "Last name cannot exceed 50 characters"
+                }
+              })}
+              error={!!errors.lastName}
+              helperText={errors.lastName?.message}
             ></TextField>
             <TextField
               label="Email Address"
@@ -216,10 +129,15 @@ function RegisterCompanyPage(props) {
               fullWidth
               size="large"
               placeholder="email@example.com"
-              value={formValues.email}
-              onChange={handleInputChange}
-              error={errors.email}
-              helperText={errors.email}
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /\S+@\S+\.\S+/,
+                  message: "Email is not valid"
+                }
+              })}
+              error={!!errors.email}
+              helperText={errors.email?.message}
             ></TextField>
             <TextField
               label="Phone Number"
@@ -227,10 +145,15 @@ function RegisterCompanyPage(props) {
               fullWidth
               size="large"
               placeholder="08XXXXXXXX"
-              value={formValues.phoneNumber}
-              onChange={handleInputChange}
-              error={errors.phoneNumber}
-              helperText={errors.phoneNumber}
+              {...register("phoneNumber", {
+                required: "Phone number is required",
+                pattern: {
+                  value: /^(0)8[1-9][0-9]{6,9}$/,
+                  message: "Phone number is not valid"
+                }
+              })}
+              error={!!errors.phoneNumber}
+              helperText={errors.phoneNumber?.message}
             ></TextField>
           </div>
           <div className="flex flex-col gap-2 md:flex-row mb-4">
@@ -241,10 +164,15 @@ function RegisterCompanyPage(props) {
               size="large"
               multiline
               maxRows={3}
-              value={formValues.userAddress}
-              onChange={handleInputChange}
-              error={errors.userAddress}
-              helperText={errors.userAddress}
+              {...register("userAddress", {
+                required: "Home address is required",
+                maxLength: {
+                  value: 200,
+                  message: "Home address cannot exceed 200 characters"
+                }
+              })}
+              error={!!errors.userAddress}
+              helperText={errors.userAddress?.message}
             ></TextField>
           </div>
           <div className="grid grid-cols-2 gap-2 mb-4">
@@ -254,18 +182,26 @@ function RegisterCompanyPage(props) {
               fullWidth
               size="large"
               type="date"
-              value={formValues.dob}
-              onChange={handleInputChange}
-              error={errors.dob}
-              helperText={errors.dob}
+              {...register("dob", {
+                required: "Date of birth is required",
+                validate: {
+                  isValidDate: (value) => {
+                    const currentDate = new Date().toISOString().slice(0, 10);
+                    return value < currentDate || "Date of birth is not valid";
+                  }
+                }
+              })}
+              error={!!errors.dob}
+              helperText={errors.dob?.message}
             ></TextField>
             <FormControl error={errors.sex}>
               <FormLabel id="gender-radio-group-label">Gender</FormLabel>
               <RadioGroup
                 aria-labelledby="gender-radio-buttons-group-label"
                 name="sex"
-                value={formValues.sex}
-                onChange={handleInputChange}
+                {...register("sex", {
+                  required: "Gender is required"
+                })}
                 sx={{ color: "#374151" }}
               >
                 <FormControlLabel
@@ -279,14 +215,16 @@ function RegisterCompanyPage(props) {
                   label="Female"
                 />
               </RadioGroup>
-              <FormHelperText>{errors.sex}</FormHelperText>
+              <FormHelperText>{errors.sex?.message}</FormHelperText>
             </FormControl>
           </div>
           <div className="flex flex-col gap-2 items-center justify-center">
             <Button
               variant="contained"
               sx={{ width: "80%", backgroundColor: "#1f2937" }}
-              onClick={handleFormSubmit}
+              onClick={handleSubmit((data) => {
+                handleFormSubmit(data);
+              })}
             >
               {isLoading ? "Submiting Registration Request..." : "Register"}
             </Button>

@@ -4,12 +4,10 @@ import UserService from "../services/userService";
 import { useQuery } from "@tanstack/react-query";
 import PersonIcon from "@mui/icons-material/Person";
 import { useNavigate } from 'react-router-dom';
-import { useSelector } from "react-redux";
 import CloseIcon from "@mui/icons-material/Close";
 import AuthService from "../services/auth.service";
 
 const ProfilePage = () => {
-  const { user: currentUser } = useSelector((state) => state.auth);
   const navigate = useNavigate();
   
   const [openModal, setOpenModal] = useState(false);
@@ -184,7 +182,7 @@ const ProfilePage = () => {
             </ul>
           </div>
           {/* Company Name */}
-          {!currentUser.roles.includes("Applicant") &&
+          {companyName &&
             <div>
               <Typography
                 variant="h6"
