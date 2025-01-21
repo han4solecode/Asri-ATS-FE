@@ -200,7 +200,6 @@ const ApplicantDashboard = () => {
             <Table>
               <TableHead>
                 <TableRow>
-                  <TableCell className="font-bold">Application ID</TableCell>
                   <TableCell className="font-bold">Applicant Name</TableCell>
                   <TableCell className="font-bold">Job Title</TableCell>
                   <TableCell className="font-bold">Status</TableCell>
@@ -212,7 +211,6 @@ const ApplicantDashboard = () => {
               <TableBody>
                 {notification.map((note) => (
                   <TableRow key={note.applicationId}>
-                    <TableCell>{note.applicationId}</TableCell>
                     <TableCell>{note.applicantName}</TableCell>
                     <TableCell>{note.jobTitle}</TableCell>
                     <TableCell>

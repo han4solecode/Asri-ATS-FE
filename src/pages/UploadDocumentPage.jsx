@@ -4,6 +4,7 @@ import { Delete, Add } from "@mui/icons-material";
 import UploadDocumentForm from "./UploadDocumentForm";
 import UserService from "../services/userService";
 import ApplicationJobService from "../services/applicationJob.service";
+import { toast } from "react-toastify";
 
 const UploadDocumentPage = () => {
   const [documents, setDocuments] = useState([]);
@@ -17,8 +18,9 @@ const UploadDocumentPage = () => {
     try {
       const response = await ApplicationJobService.getDocument();
       setDocuments(response.data.documents);
+      toast.success("Documents fetched successfully!");
     } catch (error) {
-      setMessage("Failed to fetch documents.");
+      toast.error("Failed to fetch documents.");
     } finally {
       setIsLoading(false);
     }
@@ -32,9 +34,10 @@ const UploadDocumentPage = () => {
       setIsLoading(true);
       await UserService.deleteDocument(id);
       setDocuments((prevDocs) => prevDocs.filter((doc) => doc.id !== id));
-      setMessage("Document deleted successfully.");
+      toast.success("Document deleted successfully!");
+      fetchDocuments();
     } catch (error) {
-      setMessage("Failed to delete document.");
+      toast.error("Failed to delete document.");
     } finally {
       setIsLoading(false);
     }
@@ -65,7 +68,7 @@ const UploadDocumentPage = () => {
       {/* Upload Document Form */}
       {showUploadForm && (
         <div className="bg-gray-100 p-4 rounded-lg shadow-md mb-8">
-          <UploadDocumentForm />
+          <UploadDocumentForm onUploadSuccess={fetchDocuments}/>
         </div>
       )}
 

@@ -207,7 +207,6 @@ const RecruiterDashboard = () => {
             <Table>
               <TableHead className="bg-gray-50">
                 <TableRow>
-                  <TableCell className="font-bold">Application ID</TableCell>
                   <TableCell className="font-bold">Applicant Name</TableCell>
                   <TableCell className="font-bold">Job Title</TableCell>
                   <TableCell className="font-bold">Status</TableCell>
@@ -219,7 +218,6 @@ const RecruiterDashboard = () => {
               <TableBody>
                 {taskReminders.map((task) => (
                   <TableRow key={task.applicationId}>
-                    <TableCell>{task.applicationId}</TableCell>
                     <TableCell>{task.applicantName}</TableCell>
                     <TableCell>{task.jobTitle}</TableCell>
                     <TableCell>{task.status}</TableCell>

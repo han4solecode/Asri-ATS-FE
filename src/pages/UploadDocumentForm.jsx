@@ -1,10 +1,9 @@
 import React, { useState } from "react";
-import axios from "axios";
 import { Button, CircularProgress, TextField } from "@mui/material";
 import { CloudUpload } from "@mui/icons-material";
 import AxiosInstance from "../services/api";
 
-const UploadDocumentForm = () => {
+const UploadDocumentForm = ({ onUploadSuccess }) => {
   const [selectedFile, setSelectedFile] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [message, setMessage] = useState("");
@@ -36,6 +35,10 @@ const UploadDocumentForm = () => {
 
       setMessage(response.data.message);
       setError(response.data.status === "Error");
+
+      if (response.data.status !== "Error" && onUploadSuccess) {
+        onUploadSuccess(); // Notify parent component to re-fetch documents
+      }
     } catch (err) {
       setMessage("An error occurred while uploading the document.");
       setError(true);

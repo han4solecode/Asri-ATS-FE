@@ -16,6 +16,7 @@ import {
 import DeleteIcon from "@mui/icons-material/Delete";
 import AxiosInstance from "../services/api";
 import ApplicationJobService from "../services/applicationJob.service";
+import { toast } from "react-toastify";
 
 const SubmitApplicationJob = () => {
   const { jobPostId } = useParams();
@@ -46,6 +47,7 @@ const SubmitApplicationJob = () => {
           setDocumentOptions([]);
         }
       } catch (error) {
+        toast.error("Error fetching documents. Please try again.");
         console.error("Error fetching documents:", error);
         setDocumentOptions([]);
       } finally {
@@ -84,6 +86,7 @@ const SubmitApplicationJob = () => {
     const validationErrors = validateForm();
     if (Object.keys(validationErrors).length > 0) {
       setErrors(validationErrors);
+      toast.error("Please fill in all required fields.");
       return;
     }
   
@@ -107,10 +110,10 @@ const SubmitApplicationJob = () => {
         "/api/ApplicationJob/SubmitApplication",
         applicationData
       );
-      alert(response.data.message);
+      toast.success(response.data.message || "Application submitted successfully!");
       navigate(`/jobpost/${jobPostId}`); // Redirect to the job post page
     } catch (error) {
-      alert(error.response?.data?.message || "An error occurred");
+      toast.error(error.response?.data?.message || "An error occurred while submitting the application.");
     } finally {
       setLoading(false); // Reset loading to false
     }

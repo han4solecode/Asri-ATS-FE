@@ -12,6 +12,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import { useParams } from "react-router-dom";
 import ApplicationJobService from "../services/applicationJob.service";
 import AxiosInstance from "../services/api";
+import { toast } from "react-toastify";
 
 const EditApplicationJobPage = () => {
   const { processId, applicationJobId } = useParams();
@@ -42,6 +43,7 @@ const EditApplicationJobPage = () => {
         });
         setExistingDocuments(data.supportingDocuments || []);
       } catch (error) {
+        toast.error("Error fetching documents. Please try again.");
         console.error("Error fetching application details:", error);
       } finally {
         setIsLoading(false);
@@ -108,14 +110,14 @@ const EditApplicationJobPage = () => {
     try {
       const response = await AxiosInstance.apiNew.put("/api/ApplicationJob/Update", formData);
       if (response.data.status === "Success") {
-        alert("Application job updated successfully!");
+        toast.success(response.data.message || "Application updated successfully!");
         setSupportingDocuments([]);
       } else {
-        alert(response.data.message || "Update failed.");
+        toast.error(response?.data?.message || "An error occurred while submitting the application.");
       }
     } catch (error) {
       console.error("Error updating application job:", error);
-      alert("An error occurred while updating the application job.");
+      toast.error("An error occurred while updating the application job.");
     } finally {
       setIsSubmitting(false);
     }

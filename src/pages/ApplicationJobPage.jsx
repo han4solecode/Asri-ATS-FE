@@ -128,7 +128,6 @@ const ApplicationJobPage = () => {
         <Table>
           <TableHead>
             <TableRow>
-              <TableCell className="font-bold">Application ID</TableCell>
               <TableCell className="font-bold">Applicant Name</TableCell>
               <TableCell className="font-bold">Job Title</TableCell>
               <TableCell className="font-bold">Status</TableCell>
@@ -140,7 +139,6 @@ const ApplicationJobPage = () => {
           <TableBody>
             {applicationStatuses.map((status) => (
               <TableRow key={status.applicationId}>
-                <TableCell>{status.applicationId}</TableCell>
                 <TableCell>{status.applicantName}</TableCell>
                 <TableCell>{status.jobTitle}</TableCell>
                 <TableCell>
