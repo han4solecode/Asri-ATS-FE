@@ -26,6 +26,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import JobPostTemplateService from "../services/jobPostTemplateService";
 import ReactPaginate from "react-paginate";
 import { useForm } from "react-hook-form";
+import CryptoJS from "crypto-js"; 
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -55,6 +56,19 @@ function a11yProps(index) {
         'aria-controls': `simple-tabpanel-${index}`,
     };
 }
+
+const SECRET_KEY = "your-secure-key";
+
+const encodeProcessId = (id) => {
+  try {
+    if (!id) throw new Error("Invalid process ID");
+    const encrypted = CryptoJS.AES.encrypt(String(id), SECRET_KEY).toString();
+    return encodeURIComponent(encrypted); // Encode the encrypted string for URL safety
+  } catch (error) {
+    console.error("Error encoding process ID:", error);
+    return null;
+  }
+};
 
 const JobPostRequestFormPage = () => {
     const navigate = useNavigate();
@@ -406,11 +420,14 @@ const JobPostRequestFormPage = () => {
                                                                 backgroundColor: "#1565c0",
                                                             },
                                                         }}
-                                                        onClick={() =>
-                                                            navigate(
-                                                                `/job-post-template/${request.jobPostTemplateId}`
-                                                            )
-                                                        }
+                                                        onClick={() => {
+                                                            const encodedId = encodeProcessId(request.jobPostTemplateId);
+                                                            if (encodedId) {
+                                                              navigate(`/job-post-template/${encodedId}`);
+                                                            } else {
+                                                              console.error("Failed to encode process ID, navigation aborted.");
+                                                            }
+                                                          }}
                                                     >
                                                         View Details
                                                     </Button>

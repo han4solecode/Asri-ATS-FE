@@ -31,7 +31,6 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import ScheduleIcon from '@mui/icons-material/Schedule';
 import DescriptionIcon from '@mui/icons-material/Description';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
-import JobPostTemplateRequestService from "../services/jobPostTemplateRequestService";
 import JobPostTemplateService from "../services/jobPostTemplateService";
 
 const SECRET_KEY = "your-secure-key";

@@ -1,11 +1,14 @@
 import React, { useState } from "react";
-import { Button, CircularProgress, Divider, Typography, Modal, Box, TextField, IconButton } from "@mui/material";
+import { Button, CircularProgress, Divider, Typography, Modal, Box, TextField, IconButton, InputAdornment } from "@mui/material";
 import UserService from "../services/userService";
 import { useQuery } from "@tanstack/react-query";
 import PersonIcon from "@mui/icons-material/Person";
 import { useNavigate } from 'react-router-dom';
 import CloseIcon from "@mui/icons-material/Close";
 import AuthService from "../services/auth.service";
+import Visibility from "@mui/icons-material/Visibility";
+import VisibilityOff from "@mui/icons-material/VisibilityOff";
+import { toast } from "react-toastify";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
@@ -14,6 +17,8 @@ const ProfilePage = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [isChangingPassword, setIsChangingPassword] = useState(false);
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
 
   const fetchUserProfile = async () => {
     const response = await UserService.details();
@@ -27,7 +32,7 @@ const ProfilePage = () => {
   
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
-      alert("Passwords do not match!");
+      toast.error("Passwords do not match!");
       return;
     }
   
@@ -38,15 +43,15 @@ const ProfilePage = () => {
   
       // Check response status and handle cases where data is a plain string
       if (response.status === 200 && typeof response.data === "string" && response.data.includes("successfully")) {
-        alert(response.data); // Display the success message from the API
+        toast.success(response.data);
         setOpenModal(false); // Close the modal
       } else {
         // Display API-specific failure message, if available
-        alert(response.data.message || "Failed to change password.");
+        toast.error(response.data.message || "Failed to change password.");
       }
     } catch (error) {
       console.error("Error during password change:", error);
-      alert("An error occurred. Please try again later.");
+      toast.error("An error occurred. Please try again later.");
     } finally {
       setIsChangingPassword(false);
     }
@@ -218,21 +223,41 @@ const ProfilePage = () => {
               <CloseIcon />
             </IconButton>
           </div>
+          {/* New Password Field */}
           <TextField
             fullWidth
             label="New Password"
-            type="password"
+            type={showPassword ? "text" : "password"}
             value={newPassword}
             onChange={(e) => setNewPassword(e.target.value)}
             margin="normal"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowPassword((prev) => !prev)} edge="end">
+                    {showPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
+          {/* Confirm Password Field */}
           <TextField
             fullWidth
             label="Confirm Password"
-            type="password"
+            type={showConfirmPassword ? "text" : "password"}
             value={confirmPassword}
             onChange={(e) => setConfirmPassword(e.target.value)}
             margin="normal"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => setShowConfirmPassword((prev) => !prev)} edge="end">
+                    {showConfirmPassword ? <Visibility /> : <VisibilityOff />}
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
           />
           <Button
             fullWidth
