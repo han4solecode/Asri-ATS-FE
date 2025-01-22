@@ -17,9 +17,26 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import AxiosInstance from "../services/api";
 import ApplicationJobService from "../services/applicationJob.service";
 import { toast } from "react-toastify";
+import CryptoJS from "crypto-js";
+
+const SECRET_KEY = "your-secure-key";
+
+const decodeJobPostId = (encryptedId) => {
+  try {
+    const decoded = decodeURIComponent(encryptedId);
+    const bytes = CryptoJS.AES.decrypt(decoded, SECRET_KEY);
+    const originalId = bytes.toString(CryptoJS.enc.Utf8);
+    if (!originalId) throw new Error("Decryption failed or returned empty string");
+    return originalId;
+  } catch (error) {
+    console.error("Error decoding jobPostId:", error);
+    return null; // Ensure it returns null on failure
+  }
+};
 
 const SubmitApplicationJob = () => {
-  const { jobPostId } = useParams();
+  const { jobPostId: encryptedJobPostId } = useParams();
+  const jobPostId = decodeJobPostId(encryptedJobPostId);
   const [formData, setFormData] = useState({
     workExperience: "",
     education: "",
@@ -111,7 +128,10 @@ const SubmitApplicationJob = () => {
         applicationData
       );
       toast.success(response.data.message || "Application submitted successfully!");
-      navigate(`/jobpost/${jobPostId}`); // Redirect to the job post page
+      const encodedJobPostId = encodeURIComponent(
+        CryptoJS.AES.encrypt(jobPostId, SECRET_KEY).toString()
+      );
+      navigate(`/jobpost/${encodedJobPostId}`); // Redirect to the job post page
     } catch (error) {
       toast.error(error.response?.data?.message || "An error occurred while submitting the application.");
     } finally {

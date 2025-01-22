@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { CircularProgress, Card, CardContent, Typography, Button, Grid, Box, Container } from '@mui/material';
 import { useParams, useNavigate } from 'react-router-dom';
 import JobPostService from '../services/jobPost.service';
+import CryptoJS from 'crypto-js';
 
 // Material UI Icons
 import BusinessIcon from '@mui/icons-material/Business';
@@ -17,8 +18,36 @@ const fetchJobPostDetails = async (jobPostId) => {
     return response.data;
 };
 
+const SECRET_KEY = "your-secure-key";
+
+const decodeJobPostId = (encryptedId) => {
+  try {
+    const decoded = decodeURIComponent(encryptedId); // Decode the URL-safe string
+    const bytes = CryptoJS.AES.decrypt(decoded, SECRET_KEY);
+    const originalId = bytes.toString(CryptoJS.enc.Utf8);
+    if (!originalId) throw new Error("Decryption failed or returned empty string");
+    return originalId;
+  } catch (error) {
+    console.error("Error decoding process ID:", error);
+    return null;
+  }
+};
+
+const encodeJobPostId = (id) => {
+  try {
+    if (!id) throw new Error("Invalid process ID");
+    const encrypted = CryptoJS.AES.encrypt(String(id), SECRET_KEY).toString();
+    return encodeURIComponent(encrypted); // Encode the encrypted string for URL safety
+  } catch (error) {
+    console.error("Error encoding process ID:", error);
+    return null;
+  }
+};
+
+
 const JobPostDetailPage = () => {
-    const { jobPostId } = useParams();
+    const { jobPostId: encryptedJobPostId } = useParams();
+    const jobPostId = decodeJobPostId(encryptedJobPostId);
     const navigate = useNavigate();
 
     const { data, isLoading, isError } = useQuery({
@@ -123,7 +152,14 @@ const JobPostDetailPage = () => {
                         <Button
                             variant="contained"
                             color="primary"
-                            onClick={() => navigate(`/jobpost/application/${jobPostId}`)} // Navigate to application form
+                            onClick={() => {
+                                const encodedId = encodeJobPostId(jobPostId);
+                                if (encodedId) {
+                                window.location.href = `/jobpost/application/${encodedId}`;
+                                } else {
+                                console.error("Failed to encode job post ID, navigation aborted.");
+                                }
+                            }}
                         >
                             Apply
                         </Button>

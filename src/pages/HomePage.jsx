@@ -21,8 +21,8 @@ import AttachMoneyIcon from '@mui/icons-material/AttachMoney';
 import WorkIcon from '@mui/icons-material/Work';
 import CalendarTodayIcon from '@mui/icons-material/CalendarToday';
 import "../App.css"
-import { Link } from 'react-router-dom';
 import JobPostService from '../services/jobPost.service';
+import CryptoJS from 'crypto-js';
 
 // Fetch job posts with filters and pagination
 const fetchJobPosts = async ({ page, pageSize, searchQuery, jobTitle, location, companyName, employmentType, sortField, sortOrder }) => {
@@ -38,7 +38,20 @@ const fetchJobPosts = async ({ page, pageSize, searchQuery, jobTitle, location, 
         SortOrder: sortOrder,
     });
     return data;
-};  
+};
+
+const SECRET_KEY = "your-secure-key";
+
+const encodeProcessId = (id) => {
+  try {
+    if (!id) throw new Error("Invalid process ID");
+    const encrypted = CryptoJS.AES.encrypt(String(id), SECRET_KEY).toString();
+    return encodeURIComponent(encrypted); // Encode the encrypted string for URL safety
+  } catch (error) {
+    console.error("Error encoding process ID:", error);
+    return null;
+  }
+};
 
 const HomePage = () => {
   const [page, setPage] = useState(1);
@@ -203,9 +216,20 @@ const HomePage = () => {
                                     </Typography>
                                 </CardContent>
                                 <div className="p-2 text-right">
-                                    <Button variant="contained" color="primary" component={Link} to={`/jobpost/${job.jobPostId}`}>
-                                        Apply Now
-                                    </Button>
+                                <Button
+                                    variant="contained"
+                                    color="primary"
+                                    onClick={() => {
+                                        const encodedId = encodeProcessId(job.jobPostId);
+                                        if (encodedId) {
+                                        window.location.href = `/jobpost/${encodedId}`;
+                                        } else {
+                                        console.error("Failed to encode job post ID, navigation aborted.");
+                                        }
+                                    }}
+                                    >
+                                    Apply Now
+                                </Button>
                                 </div>
                             </Card>
                         </Grid>

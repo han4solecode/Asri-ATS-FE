@@ -26,20 +26,49 @@ const UploadDocumentPage = () => {
   };
 
   // Delete a document
-  const handleDelete = async (id) => {
-    if (!window.confirm("Are you sure you want to delete this document?")) return;
-
-    try {
-      setIsLoading(true);
-      await UserService.deleteDocument(id);
-      setDocuments((prevDocs) => prevDocs.filter((doc) => doc.id !== id));
-      toast.success("Document deleted successfully!");
-      fetchDocuments();
-    } catch (error) {
-      toast.error("Failed to delete document.");
-    } finally {
-      setIsLoading(false);
-    }
+  const handleDelete = (id) => {
+    toast(
+      ({ closeToast }) => (
+        <div>
+          <p>Are you sure you want to delete this document?</p>
+          <div className="flex gap-2 justify-end">
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={async () => {
+                try {
+                  setIsLoading(true);
+                  await UserService.deleteDocument(id);
+                  setDocuments((prevDocs) => prevDocs.filter((doc) => doc.id !== id));
+                  toast.success("Document deleted successfully!");
+                  fetchDocuments();
+                } catch (error) {
+                  toast.error("Failed to delete document.");
+                } finally {
+                  setIsLoading(false);
+                  closeToast();
+                }
+              }}
+            >
+              Yes
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              size="small"
+              onClick={closeToast}
+            >
+              No
+            </Button>
+          </div>
+        </div>
+      ),
+      {
+        closeOnClick: false,
+        autoClose: false, // Prevent auto-closing to allow user interaction
+      }
+    );
   };
 
   useEffect(() => {
