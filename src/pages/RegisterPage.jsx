@@ -16,10 +16,10 @@ import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { registerApplicant, reset } from "../slices/authSlice";
-import { useForm } from "react-hook-form"
+import { Controller, useForm } from "react-hook-form"
 
 function RegisterPage(props) {
-  const {} = props;
+  const { } = props;
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
@@ -31,6 +31,7 @@ function RegisterPage(props) {
     register,
     handleSubmit,
     formState: { errors },
+    control
   } = useForm();
 
   const [showPassword, setShowPassword] = useState(false);
@@ -51,8 +52,8 @@ function RegisterPage(props) {
   }, [isError, isSuccess, message, navigate, dispatch]);
 
   const handleFormSubmit = (data) => {
-      // create new applicant account
-      dispatch(registerApplicant(data));
+    // create new applicant account
+    dispatch(registerApplicant(data));
   };
 
   return (
@@ -73,12 +74,13 @@ function RegisterPage(props) {
               name="username"
               fullWidth
               size="large"
-              {...register("username",{
-                required:"Username is required", 
-                maxLength:{
-                value:50,
-                message:"Username cannot exceed 50 characters"
-              }})}
+              {...register("username", {
+                required: "Username is required",
+                maxLength: {
+                  value: 50,
+                  message: "Username cannot exceed 50 characters"
+                }
+              })}
               error={!!errors.username}
               helperText={errors.username?.message}
             ></TextField>
@@ -89,15 +91,15 @@ function RegisterPage(props) {
               size="large"
               type={showPassword ? "text" : "password"}
               autoComplete="current-password"
-              {...register("password",{
-                required:"Password is required",
-                minLength:{
-                  value:8,
-                  message:"Password must be atleast 8 character long"
+              {...register("password", {
+                required: "Password is required",
+                minLength: {
+                  value: 8,
+                  message: "Password must be atleast 8 character long"
                 },
-                pattern:{
+                pattern: {
                   value: /^(?=.*[a-z])(?=.*[A-Z]).*$/,
-                  message:"Password must contain uppercase and lowercase letter"
+                  message: "Password must contain uppercase and lowercase letter"
                 }
               })}
               error={!!errors.password}
@@ -127,12 +129,13 @@ function RegisterPage(props) {
               name="firstName"
               fullWidth
               size="large"
-              {...register("firstName",{
-                required:"First name is required", 
-                maxLength:{
-                value:50,
-                message:"First name cannot exceed 50 characters"
-              }})}
+              {...register("firstName", {
+                required: "First name is required",
+                maxLength: {
+                  value: 50,
+                  message: "First name cannot exceed 50 characters"
+                }
+              })}
               error={!!errors.firstName}
               helperText={errors.firstName?.message}
             ></TextField>
@@ -141,12 +144,13 @@ function RegisterPage(props) {
               name="lastName"
               fullWidth
               size="large"
-              {...register("lastName",{
-                required:"Last name is required", 
-                maxLength:{
-                value:50,
-                message:"Last name cannot exceed 50 characters"
-              }})}
+              {...register("lastName", {
+                required: "Last name is required",
+                maxLength: {
+                  value: 50,
+                  message: "Last name cannot exceed 50 characters"
+                }
+              })}
               error={!!errors.lastName}
               helperText={errors.lastName?.message}
             ></TextField>
@@ -156,12 +160,13 @@ function RegisterPage(props) {
               fullWidth
               size="large"
               placeholder="email@example.com"
-              {...register("email",{
-                required:"Email is required", 
-                pattern:{
-                value: /\S+@\S+\.\S+/,
-                message:"Email is not valid"
-              }})}
+              {...register("email", {
+                required: "Email is required",
+                pattern: {
+                  value: /\S+@\S+\.\S+/,
+                  message: "Email is not valid"
+                }
+              })}
               error={!!errors.email}
               helperText={errors.email?.message}
             ></TextField>
@@ -171,12 +176,13 @@ function RegisterPage(props) {
               fullWidth
               size="large"
               placeholder="08XXXXXXXX"
-              {...register("phoneNumber",{
-                required:"Phone number is required", 
-                pattern:{
-                value: /^(0)8[1-9][0-9]{6,9}$/,
-                message:"Phone number is not valid"
-              }})}
+              {...register("phoneNumber", {
+                required: "Phone number is required",
+                pattern: {
+                  value: /^(0)8[1-9][0-9]{6,9}$/,
+                  message: "Phone number is not valid"
+                }
+              })}
               error={!!errors.phoneNumber}
               helperText={errors.phoneNumber?.message}
             ></TextField>
@@ -189,12 +195,13 @@ function RegisterPage(props) {
               size="large"
               multiline
               maxRows={3}
-              {...register("address",{
-                required:"Address is required", 
-                maxLength:{
-                value:200,
-                message:"Address cannot exceed 200 characters"
-              }})}
+              {...register("address", {
+                required: "Address is required",
+                maxLength: {
+                  value: 200,
+                  message: "Address cannot exceed 200 characters"
+                }
+              })}
               error={!!errors.address}
               helperText={errors.address?.message}
             ></TextField>
@@ -206,38 +213,36 @@ function RegisterPage(props) {
               fullWidth
               size="large"
               type="date"
-              {...register("dob",{
-                required:"Date of birth is required", 
-                validate:{
-                  isValidDate:(value) => {
+              {...register("dob", {
+                required: "Date of birth is required",
+                validate: {
+                  isValidDate: (value) => {
                     const currentDate = new Date().toISOString().slice(0, 10);
                     return value < currentDate || "Date of birth is not valid";
                   }
-                }})}
+                }
+              })}
               error={!!errors.dob}
               helperText={errors.dob?.message}
             ></TextField>
             <FormControl error={!!errors.sex}>
               <FormLabel id="gender-radio-group-label">Gender</FormLabel>
-              <RadioGroup
-                aria-labelledby="gender-radio-buttons-group-label"
+              <Controller
                 name="sex"
-                {...register("sex",{
-                  required:"Gender is required"
-                })}
-                sx={{ color: "#374151" }}
-              >
-                <FormControlLabel
-                  value="Male"
-                  control={<Radio />}
-                  label="Male"
-                />
-                <FormControlLabel
-                  value="Female"
-                  control={<Radio />}
-                  label="Female"
-                />
-              </RadioGroup>
+                control={control} // Menyambungkan control dari useForm
+                rules={{ required: "Gender is required" }} // Menambahkan validasi
+                defaultValue="" // Menetapkan nilai default untuk RadioGroup
+                render={({ field }) => (
+                  <RadioGroup
+                    {...field}
+                    aria-labelledby="gender-radio-buttons-group-label"
+                    sx={{ color: "#374151" }}
+                  >
+                    <FormControlLabel value="Male" control={<Radio />} label="Male" />
+                    <FormControlLabel value="Female" control={<Radio />} label="Female" />
+                  </RadioGroup>
+                )}
+              />
               <FormHelperText>{errors.sex?.message}</FormHelperText>
             </FormControl>
           </div>

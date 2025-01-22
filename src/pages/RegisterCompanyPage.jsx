@@ -13,7 +13,7 @@ import {
 import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import CompanyService from "../services/company.service";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
 
 function RegisterCompanyPage(props) {
   const { } = props;
@@ -22,6 +22,8 @@ function RegisterCompanyPage(props) {
     register,
     handleSubmit,
     formState: { errors },
+    control,
+    reset
   } = useForm();
 
   const [isLoading, setIsLoading] = useState(false);
@@ -31,6 +33,7 @@ function RegisterCompanyPage(props) {
     CompanyService.registerCompanyRequest(data)
       .then((res) => {
         alert(res.data.message);
+        reset();
       })
       .catch((err) => {
         console.log(err);
@@ -194,27 +197,24 @@ function RegisterCompanyPage(props) {
               error={!!errors.dob}
               helperText={errors.dob?.message}
             ></TextField>
-            <FormControl error={errors.sex}>
+            <FormControl error={!!errors.sex}>
               <FormLabel id="gender-radio-group-label">Gender</FormLabel>
-              <RadioGroup
-                aria-labelledby="gender-radio-buttons-group-label"
+              <Controller
                 name="sex"
-                {...register("sex", {
-                  required: "Gender is required"
-                })}
-                sx={{ color: "#374151" }}
-              >
-                <FormControlLabel
-                  value="Male"
-                  control={<Radio />}
-                  label="Male"
-                />
-                <FormControlLabel
-                  value="Female"
-                  control={<Radio />}
-                  label="Female"
-                />
-              </RadioGroup>
+                control={control} // Menyambungkan control dari useForm
+                rules={{ required: "Gender is required" }} // Menambahkan validasi
+                defaultValue="" // Menetapkan nilai default untuk RadioGroup
+                render={({ field }) => (
+                  <RadioGroup
+                    {...field}
+                    aria-labelledby="gender-radio-buttons-group-label"
+                    sx={{ color: "#374151" }}
+                  >
+                    <FormControlLabel value="Male" control={<Radio />} label="Male" />
+                    <FormControlLabel value="Female" control={<Radio />} label="Female" />
+                  </RadioGroup>
+                )}
+              />
               <FormHelperText>{errors.sex?.message}</FormHelperText>
             </FormControl>
           </div>
