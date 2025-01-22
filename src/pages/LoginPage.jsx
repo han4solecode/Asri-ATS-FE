@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { login, reset } from "../slices/authSlice";
 import { useForm } from "react-hook-form"
+import { toast } from "react-toastify";
 
 function LoginPage(props) {
   const {} = props;
@@ -25,11 +26,11 @@ function LoginPage(props) {
 
   useEffect(() => {
     if (isError) {
-      alert(message);
+      toast.error(message);
     }
 
     if (isSuccess) {
-      alert("You have successfully logged in!");
+      toast.success("You have successfully logged in!");
       navigate("/");
     }
 

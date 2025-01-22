@@ -27,6 +27,7 @@ import JobPostTemplateService from "../services/jobPostTemplateService";
 import ReactPaginate from "react-paginate";
 import { useForm } from "react-hook-form";
 import CryptoJS from "crypto-js";
+import { toast } from "react-toastify";
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -147,14 +148,14 @@ const JobPostRequestFormPage = () => {
         try {
             const response = await JobPostRequestService.jobPostRequest(data);
             if (response.data.status === "Success") {
-                alert("Job post created successful!");
+                toast.success("Job post created successful!");
                 reset();
             } else {
-                alert("Job post created failed!");
+                toast.error("Job post created failed!");
             }
         } catch (error) {
             console.error("Error during registration:", error);
-            alert("An error occurred during job post creation.");
+            toast.error("An error occurred during job post creation.");
         } finally {
             setIsSubmitting(false);
         }

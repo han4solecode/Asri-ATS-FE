@@ -33,6 +33,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import { useSelector } from "react-redux";
 import JobPostTemplateRequestService from "../services/jobPostTemplateRequestService";
+import { toast } from "react-toastify";
 
 const SECRET_KEY = "your-secure-key";
 
@@ -103,13 +104,13 @@ const JobPostTemplateRequestDetailPage = () => {
       const response = await JobPostTemplateRequestService.reviewJobPostTemplateRequest(userData);
 
       if (response.data.status === "Success") {
-        alert("Job post template request reviewed successful!");
+        toast.success("Job post template request reviewed successful!");
         setOpenReviewModal(false);
         setAction("");
         setErrors(null);
         navigate("/job-post-template-request"); // Navigate back to the list after successful review
       } else {
-        alert("Job post template request reviewed failed!");
+        toast.error("Job post template request reviewed failed!");
       }
     } catch (error) {
       console.error(error.response?.data?.message || "An error occurred"); // Log API errors

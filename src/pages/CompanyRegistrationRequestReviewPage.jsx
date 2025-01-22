@@ -3,6 +3,7 @@ import { useNavigate, useParams } from "react-router-dom";
 import CompanyService from "../services/company.service";
 import { CircularProgress, Button } from "@mui/material";
 import CryptoJS from "crypto-js";
+import { toast } from "react-toastify";
 
 const SECRET_KEY = "your-secure-key";
 
@@ -59,13 +60,13 @@ function CompanyRegistrationRequestReviewPage(props) {
         action: action,
       })
         .then((res) => {
-          alert(res.data.message);
+          toast.success(res.data.message);
           navigate(-1);
         })
         .catch((err) => {
           console.log(err);
 
-          alert(err.response.data.message);
+          toast.error(err.response.data.message);
         })
         .finally(() => {
           setProcessing(false);

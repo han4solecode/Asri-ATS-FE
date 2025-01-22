@@ -14,6 +14,7 @@ import { useEffect, useState } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import CompanyService from "../services/company.service";
 import { Controller, useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 function RegisterCompanyPage(props) {
   const { } = props;
@@ -32,12 +33,12 @@ function RegisterCompanyPage(props) {
     setIsLoading(true);
     CompanyService.registerCompanyRequest(data)
       .then((res) => {
-        alert(res.data.message);
+        toast.success(res.data.message);
         reset();
       })
       .catch((err) => {
         console.log(err);
-        alert(err.response.data.message);
+        toast.error(err.response.data.message);
       })
       .finally(() => {
         setIsLoading(false);

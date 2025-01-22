@@ -8,6 +8,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import JobPostTemplateRequestService from "../services/jobPostTemplateRequestService";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 const JobPostTemplateRequestFormPage = () => {
     const navigate = useNavigate();
@@ -26,14 +27,14 @@ const JobPostTemplateRequestFormPage = () => {
         try {
             const response = await JobPostTemplateRequestService.jobPostTemplateRequest(data);
             if (response.data.status === "Success") {
-                alert("Job post template request created successful!");
+                toast.success("Job post template request created successful!");
                 reset();
             } else {
-                alert("Job post template request created failed!");
+                toast.error("Job post template request created failed!");
             }
         } catch (error) {
             console.error("Error during registration:", error);
-            alert("An error occurred during job post creation.");
+            toast.error("An error occurred during job post creation.");
         } finally {
             setIsSubmitting(false);
         }

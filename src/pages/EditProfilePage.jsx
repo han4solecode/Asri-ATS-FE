@@ -14,6 +14,7 @@ import { useNavigate } from "react-router-dom";
 import UserService from "../services/userService";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
 
 function EditProfilePage(props) {
   const { } = props;
@@ -56,10 +57,10 @@ function EditProfilePage(props) {
       let editedApplicant = { ...editedProfileData, userName: data.userName };
       setLoading(true);
       await UserService.updateProfile(editedApplicant);
-      alert("Your profile has been updated!");
+      toast.success("Your profile has been updated!");
       navigate("/profile");
     } catch (error) {
-      alert(error.response.data.message);
+      toast.error(error.response.data.message);
     } finally {
       setLoading(false);
     }

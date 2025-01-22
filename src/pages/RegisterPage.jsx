@@ -17,6 +17,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { useNavigate, Link } from "react-router-dom";
 import { registerApplicant, reset } from "../slices/authSlice";
 import { Controller, useForm } from "react-hook-form"
+import { toast } from "react-toastify";
 
 function RegisterPage(props) {
   const { } = props;
@@ -38,11 +39,11 @@ function RegisterPage(props) {
 
   useEffect(() => {
     if (isError) {
-      alert(message);
+      toast.error(message);
     }
 
     if (isSuccess) {
-      alert(
+      toast.success(
         "Your account has been created! Please log in with your newly created account"
       );
       navigate("/login");

@@ -17,6 +17,7 @@ import { useForm, Controller } from "react-hook-form";
 import RecruiterRegisterService from "../services/recruiterRegister.service";
 import CompanyService from "../services/company.service";
 import { Link } from "react-router-dom";
+import { toast } from "react-toastify";
 
 const RecruiterRegistrationPage = () => {
   const [companies, setCompanies] = useState([]);
@@ -96,14 +97,14 @@ const RecruiterRegistrationPage = () => {
     try {
       const response = await RecruiterRegisterService.recruiterRequest(data);
       if (response.data.status === "Success") {
-        alert("Registration successful!");
+        toast.success("Registration successful!");
         reset(); // Clear all form fields
       } else {
-        alert("Registration failed!");
+        toast.error("Registration failed!");
       }
     } catch (error) {
       console.error("Error during registration:", error);
-      alert("An error occurred during registration.");
+      toast.error("An error occurred during registration.");
     } finally {
       setIsSubmitting(false);
     }

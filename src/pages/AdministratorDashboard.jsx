@@ -22,6 +22,7 @@ import {
   Button,
 } from "@mui/material";
 import CryptoJS from "crypto-js";
+import { toast } from "react-toastify";
 
 const SECRET_KEY = "your-secure-key";
 
@@ -152,10 +153,10 @@ function AdministratorDashboard(props) {
     if (confirm(`Are you sure you want to delete this (${userName}) user? `)) {
       UserService.deleteUser(userName)
         .then((res) => {
-          alert(res.data.message);
+          toast.success(res.data.message)
         })
         .catch((err) => {
-          alert(err.response.data.message || "Failed to delete user.");
+          toast.error(err.response.data.message || "Failed to delete user.");
         })
         .finally(() => {
           navigate(0);

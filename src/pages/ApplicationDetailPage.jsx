@@ -26,6 +26,7 @@ import { useSelector } from "react-redux";
 import CryptoJS from "crypto-js";
 import ApplicationJobService from "../services/applicationJob.service";
 import InterviewScheduleService from "../services/interviewScheduleService";
+import { toast } from "react-toastify";
 
 const SECRET_KEY = "your-secure-key";
 
@@ -213,7 +214,7 @@ const ApplicationDetailPage = () => {
       }
       
       if (response.data.status === "Success") {
-        alert("Interview Schedule Time created successful!");
+        toast.success("Interview Schedule Time created successful!");
         setOpenModal(false);
         setFormValues({
           interviewTime: "",
@@ -224,11 +225,11 @@ const ApplicationDetailPage = () => {
           comment: "",
         });
       } else {
-        alert("Interview Schedule Time created failed!");
+        toast.error("Interview Schedule Time created failed!");
       }
     } catch (error) {
       console.error("Error during registration:", error);
-      alert("An error occurred during interview schedule time creation.");
+      toast.error("An error occurred during interview schedule time creation.");
     } finally {
       setSubmitting(false);
     }
@@ -248,13 +249,13 @@ const ApplicationDetailPage = () => {
       );
 
       if (response.data.status === "Success") {
-        alert("Review submitted successfully.");
+        toast.success("Review submitted successfully.");
         setOpenModal(false);
       } else {
-        alert(response.data.message);
+        toast.error(response.data.message);
       }
     } catch (err) {
-      alert("Failed to submit review. Please try again.");
+      toast.error("Failed to submit review. Please try again.");
     } finally {
       setSubmitting(false);
     }
@@ -346,13 +347,13 @@ const ApplicationDetailPage = () => {
       }
 
       if (response.data.status === "Success") {
-        alert("Review submitted successfully.");
+        toast.success("Review submitted successfully.");
         setOpenModal(false);
       } else {
-        alert(response.data.message);
+        toast.error(response.data.message);
       }
     } catch (err) {
-      alert("Failed to submit review. Please try again.");
+      toast.error("Failed to submit review. Please try again.");
     } finally {
       setSubmitting(false);
     }

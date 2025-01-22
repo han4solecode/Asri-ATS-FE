@@ -10,6 +10,7 @@ import JobPostRequestService from "../services/jobPostRequestService";
 import { useNavigate, useParams } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import CryptoJS from "crypto-js";
+import { toast } from "react-toastify";
 
 const EditJobPostRequestPage = () => {
     const { id } = useParams();
@@ -79,7 +80,7 @@ const EditJobPostRequestPage = () => {
             let editedJobPostRequest = { ...data, processId: +id }
             const response = await JobPostRequestService.updateJobPostRequest(editedJobPostRequest);
             if (response.data.status === "Success") {
-                alert("Job post edited successful!");
+                toast.success("Job post edited successful!");
                 reset();
                 const encodedId = encodeProcessId(data.processId);
                 if (encodedId) {
@@ -88,12 +89,12 @@ const EditJobPostRequestPage = () => {
                     console.error("Failed to encode process ID, navigation aborted.");
                 }
             } else {
-                alert("Job post edited failed!");
+                toast.error("Job post edited failed!");
             }
         } catch (error) {
             console.error("Error during registration:", error);
             console.log(error)
-            alert("An error occurred during job post editing.");
+            toast.error("An error occurred during job post editing.");
         } finally {
             setIsSubmitting(false);
         }
