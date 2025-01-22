@@ -515,6 +515,10 @@ const ApplicationDetailPage = () => {
         </Table>
       </TableContainer>
 
+      <Box sx={{ display: 'flex', justifyContent: 'space-between', padding: 3 }}>
+      <Button variant="contained" color="secondary" onClick={() => navigate(-1)}>
+          Back
+      </Button>
       {/* Role-Based Buttons */}
       <Box className="flex justify-end space-x-4">
         {/* Applicant Actions */}
@@ -603,6 +607,7 @@ const ApplicationDetailPage = () => {
               Review Interview Result
             </Button>
           ))}
+      </Box>
       </Box>
 
       {/* Review Modal */}

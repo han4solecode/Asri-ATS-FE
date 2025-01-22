@@ -449,7 +449,6 @@ function AdministratorDashboard(props) {
                   <TableCell className="font-bold">Company</TableCell>
                   <TableCell className="font-bold">Current Role</TableCell>
                   <TableCell className="font-bold">Requested Role</TableCell>
-                  <TableCell className="font-bold">Action</TableCell>
                 </TableRow>
               </TableHead>
               <TableBody>
@@ -469,19 +468,6 @@ function AdministratorDashboard(props) {
                         <TableCell>{rcr.companyName}</TableCell>
                         <TableCell>{rcr.currentRole}</TableCell>
                         <TableCell>{rcr.requestedRole}</TableCell>
-                        <TableCell>
-                          <Button
-                            variant="contained"
-                            size="small"
-                            sx={{
-                              backgroundColor: "#1f2937",
-                              color: "white",
-                            }}
-                            onClick={() => navigate()}
-                          >
-                            View Details
-                          </Button>
-                        </TableCell>
                       </TableRow>
                     ))
                 ) : (
