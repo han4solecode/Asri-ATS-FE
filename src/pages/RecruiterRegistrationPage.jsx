@@ -11,6 +11,7 @@ import {
   CircularProgress,
   Typography,
   Box,
+  FormHelperText
 } from "@mui/material";
 import { useForm, Controller } from "react-hook-form";
 import RecruiterRegisterService from "../services/recruiterRegister.service";
@@ -183,6 +184,9 @@ const RecruiterRegistrationPage = () => {
                 <FormControlLabel value="Male" control={<Radio />} label="Male" />
                 <FormControlLabel value="Female" control={<Radio />} label="Female" />
               </RadioGroup>
+              {errors.sex && (
+                <FormHelperText>{errors.sex.message}</FormHelperText>
+              )}
             </FormControl>
           )}
         />
