@@ -228,7 +228,6 @@ const InterviewPage = () => {
                                     <Table sx={{ minWidth: 650, }}>
                                         <TableHead sx={{ backgroundColor: "#1976d2" }}>
                                             <TableRow>
-                                                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Process Id</TableCell>
                                                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                                                     Applicant Name
                                                 </TableCell>
@@ -254,7 +253,6 @@ const InterviewPage = () => {
                                                         "&:hover": { backgroundColor: "#f5f5f5" },
                                                     }}
                                                 >
-                                                    <TableCell>{interviewSchedule.processId}</TableCell>
                                                     <TableCell>{interviewSchedule.applicantName}</TableCell>
                                                     <TableCell>{interviewSchedule.jobTitle}</TableCell>
                                                     <TableCell>{formatDateWithOrdinal(interviewSchedule.interviewTime)}</TableCell>
@@ -322,7 +320,6 @@ const InterviewPage = () => {
                                     <Table sx={{ minWidth: 650, }}>
                                         <TableHead sx={{ backgroundColor: "#1976d2" }}>
                                             <TableRow>
-                                                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Process Id</TableCell>
                                                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                                                     Applicant Name
                                                 </TableCell>
@@ -348,7 +345,6 @@ const InterviewPage = () => {
                                                         "&:hover": { backgroundColor: "#f5f5f5" },
                                                     }}
                                                 >
-                                                    <TableCell>{interviewSchedule.processId}</TableCell>
                                                     <TableCell>{interviewSchedule.applicantName}</TableCell>
                                                     <TableCell>{interviewSchedule.jobTitle}</TableCell>
                                                     <TableCell>{formatDateWithOrdinal(interviewSchedule.interviewTime)}</TableCell>
@@ -416,7 +412,6 @@ const InterviewPage = () => {
                                     <Table sx={{ minWidth: 650, }}>
                                         <TableHead sx={{ backgroundColor: "#1976d2" }}>
                                             <TableRow>
-                                                <TableCell sx={{ color: "white", fontWeight: "bold" }}>Process Id</TableCell>
                                                 <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                                                     Applicant Name
                                                 </TableCell>
@@ -442,7 +437,6 @@ const InterviewPage = () => {
                                                         "&:hover": { backgroundColor: "#f5f5f5" },
                                                     }}
                                                 >
-                                                    <TableCell>{interviewSchedule.processId}</TableCell>
                                                     <TableCell>{interviewSchedule.applicantName}</TableCell>
                                                     <TableCell>{interviewSchedule.jobTitle}</TableCell>
                                                     <TableCell>{formatDateWithOrdinal(interviewSchedule.interviewTime)}</TableCell>

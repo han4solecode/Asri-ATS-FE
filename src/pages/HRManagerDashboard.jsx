@@ -19,7 +19,7 @@ import Tab from '@mui/material/Tab';
 import { useNavigate } from "react-router-dom";
 import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import DashboardService from "../services/dashboard.service";
-import { Cell, Pie, PieChart, ResponsiveContainer } from "recharts";
+import { Cell, Legend, Pie, PieChart, ResponsiveContainer } from "recharts";
 import CryptoJS from "crypto-js";
 
 const SECRET_KEY = "your-secure-key";
@@ -112,7 +112,18 @@ const HRManagerDashboardPage = () => {
     return `${month} ${day}${ordinal}, ${year}   ${hour}:${minute}`;
   };
 
-  const COLORS = ["#4caf50", "#2196f3", "#ff9800", "#f44336"];
+  const COLORS = [
+    "#4caf50", // Submit Job Application (Hijau terang)
+    "#8bc34a", // Recruiter Reviews Job Application (Hijau sedang)
+    "#cddc39", // Applicant Updates Job Application (Hijau kekuningan)
+    "#2196f3", // HR Manager Set Interview Schedule (Biru terang)
+    "#ffc107", // Applicant Reviews Interview Schedule (Kuning keemasan)
+    "#ff9800", // HR Manager Update Interview Schedule (Oranye terang)
+    "#ff5722", // Interview Process (Oranye kemerahan)
+    "#f44336", // HR Manager Review Interview Result (Merah terang)
+    "#9c27b0", // Offer (Ungu)
+    "#607d8b", // Rejected (Abu-abu)
+  ];
 
   if (isError) return <div className="text-center py-10">Error loading data.</div>;
 
@@ -353,7 +364,7 @@ const HRManagerDashboardPage = () => {
             </CustomTabPanel>
             {/* tab Recruiter Request selected section */}
             <CustomTabPanel value={value} index={2}>
-              <ResponsiveContainer width="100%" height={300}>
+              <ResponsiveContainer width="100%" height={400}>
                 <PieChart>
                   <Pie
                     data={data.recruitmentFunnel}
@@ -361,18 +372,26 @@ const HRManagerDashboardPage = () => {
                     nameKey="stageName"
                     cx="50%"
                     cy="50%"
-                    outerRadius={100}
+                    outerRadius={150}
                     fill="#8884d8"
-                    label={({ stageName, count }) => `${stageName} (${count})`}
                   >
                     {data.recruitmentFunnel.map((entry, index) => (
                       <Cell
                         key={`cell-${index}`}
-                        fill={COLORS[index % COLORS.length]}
+                        fill={COLORS[index % COLORS.length]} // Gunakan warna dari array COLORS
                       />
                     ))}
                   </Pie>
                   <Tooltip />
+                  <Legend
+                    layout="vertical" // Susun legend secara vertikal
+                    align="right" // Tempatkan di kanan Pie Chart
+                    verticalAlign="middle" // Tempatkan legend sejajar dengan tengah Pie Chart
+                    formatter={(value, entry, index) => {
+                      const { count } = data.recruitmentFunnel[index]; // Ambil jumlah dari data
+                      return `${value} (${count})`; // Format legenda: Nama tahap (jumlah)
+                    }}
+                  />
                 </PieChart>
               </ResponsiveContainer>
             </CustomTabPanel>
