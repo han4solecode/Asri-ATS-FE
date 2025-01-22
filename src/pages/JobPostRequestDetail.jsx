@@ -438,7 +438,7 @@ const JobPostRequestDetailPage = () => {
           <Button
             variant="contained"
             color="secondary"
-            onClick={() => navigate(-1)}
+            onClick={() => navigate("/job-post-request")}
           >
             Back
           </Button>
