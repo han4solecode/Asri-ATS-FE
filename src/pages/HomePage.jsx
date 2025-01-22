@@ -184,7 +184,16 @@ const HomePage = () => {
                                         <LocationOnIcon fontSize="small" /> {job.location}
                                     </Typography>
                                     <Typography variant="body2" className="mb-1">
-                                        <AttachMoneyIcon fontSize="small" /> {job.minSalary.toLocaleString()} - {job.maxSalary.toLocaleString()}
+                                        <AttachMoneyIcon fontSize="small" />{" "}
+                                        {new Intl.NumberFormat("id-ID", {
+                                            style: "currency",
+                                            currency: "IDR",
+                                        }).format(job.minSalary)}{" "}
+                                        -{" "}
+                                        {new Intl.NumberFormat("id-ID", {
+                                            style: "currency",
+                                            currency: "IDR",
+                                        }).format(job.maxSalary)}
                                     </Typography>
                                     <Typography variant="body2" className="mb-1">
                                         <WorkIcon fontSize="small" /> {job.employmentType}

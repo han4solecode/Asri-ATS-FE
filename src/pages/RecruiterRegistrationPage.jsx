@@ -9,10 +9,10 @@ import {
   RadioGroup,
   MenuItem,
   CircularProgress,
-  FormHelperText,
   Typography,
   Box,
 } from "@mui/material";
+import { useForm, Controller } from "react-hook-form";
 import RecruiterRegisterService from "../services/recruiterRegister.service";
 import CompanyService from "../services/company.service";
 import { Link } from "react-router-dom";
@@ -20,118 +20,83 @@ import { Link } from "react-router-dom";
 const RecruiterRegistrationPage = () => {
   const [companies, setCompanies] = useState([]);
   const [loading, setLoading] = useState(false);
-  const [formValues, setFormValues] = useState({
-    firstName: "",
-    lastName: "",
-    dob: "",
-    sex: "",
-    email: "",
-    phoneNumber: "",
-    address: "",
-    companyId: "",
-  });
-  const [errors, setErrors] = useState({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  // Fetch companies from the backend
+  const {
+    control,
+    handleSubmit,
+    setError,
+    clearErrors,
+    reset, // Add reset for clearing form fields
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      firstName: "",
+      lastName: "",
+      dob: "",
+      sex: "",
+      email: "",
+      phoneNumber: "",
+      address: "",
+      companyId: "",
+    },
+  });
+
   useEffect(() => {
     const fetchCompanies = async () => {
       try {
         setLoading(true);
         const response = await CompanyService.getCompany();
         setCompanies(response.data);
-        setLoading(false);
       } catch (error) {
-        setLoading(false);
         console.error("Error fetching companies:", error);
+      } finally {
+        setLoading(false);
       }
     };
 
     fetchCompanies();
   }, []);
 
-  // Handle input change
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setFormValues({ ...formValues, [name]: value });
-  };
-
-  // Validate inputs
-  const validate = () => {
+  const validateFields = (data) => {
     const phoneNumberRegex = /^(0)8[1-9][0-9]{6,9}$/;
     const emailRegex = /\S+@\S+\.\S+/;
     const currentDate = new Date().toISOString().slice(0, 10);
-
-    let validationErrors = {};
-
-    if (!formValues.firstName.trim()) {
-      validationErrors.firstName = "First name is required.";
-    } else if (formValues.firstName.length > 50) {
-      validationErrors.firstName = "First name cannot exceed 50 characters.";
+    let isValid = true; // Track validation state
+  
+    if (!data.dob || data.dob > currentDate) {
+      setError("dob", { type: "manual", message: "Date of birth must be in the past." });
+      isValid = false;
     }
-
-    if (!formValues.lastName.trim()) {
-      validationErrors.lastName = "Last name is required.";
-    } else if (formValues.lastName.length > 50) {
-      validationErrors.lastName = "Last name cannot exceed 50 characters.";
+  
+    if (!phoneNumberRegex.test(data.phoneNumber)) {
+      setError("phoneNumber", { type: "manual", message: "Phone number is not valid." });
+      isValid = false;
     }
-
-    if (!formValues.dob) {
-      validationErrors.dob = "Date of birth is required.";
-    } else if (formValues.dob > currentDate) {
-      validationErrors.dob = "Date of birth must be in the past.";
+  
+    if (!emailRegex.test(data.email)) {
+      setError("email", { type: "manual", message: "Email is not valid." });
+      isValid = false;
     }
-
-    if (!formValues.sex) {
-      validationErrors.sex = "Gender is required.";
-    }
-
-    if (!formValues.email) {
-      validationErrors.email = "Email is required.";
-    } else if (!emailRegex.test(formValues.email)) {
-      validationErrors.email = "Email is not valid.";
-    }
-
-    if (!formValues.phoneNumber) {
-      validationErrors.phoneNumber = "Phone number is required.";
-    } else if (!phoneNumberRegex.test(formValues.phoneNumber)) {
-      validationErrors.phoneNumber = "Phone number is not valid.";
-    }
-
-    if (!formValues.address.trim()) {
-      validationErrors.address = "Address is required.";
-    } else if (formValues.address.length > 200) {
-      validationErrors.address = "Address cannot exceed 200 characters.";
-    }
-
-    if (!formValues.companyId) {
-      validationErrors.companyId = "Please select a company.";
-    }
-
-    setErrors(validationErrors);
-    return Object.keys(validationErrors).length === 0;
+  
+    return isValid;
   };
 
-  // Handle form submission
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (!validate()) return;
-
+  const onSubmit = async (data) => {
+    clearErrors();
+    const isValid = validateFields(data); // Validate fields
+  
+    if (!isValid) {
+      // Halt submission if validation fails
+      return;
+    }
+  
     setIsSubmitting(true);
     try {
-      const response = await RecruiterRegisterService.recruiterRequest(formValues);
+      const response = await RecruiterRegisterService.recruiterRequest(data);
       if (response.data.status === "Success") {
         alert("Registration successful!");
-        setFormValues({
-          firstName: "",
-          lastName: "",
-          dob: "",
-          sex: "",
-          email: "",
-          phoneNumber: "",
-          address: "",
-          companyId: "",
-        });
+        reset(); // Clear all form fields
       } else {
         alert("Registration failed!");
       }
@@ -146,142 +111,182 @@ const RecruiterRegistrationPage = () => {
   return (
     <Box
       component="form"
-      onSubmit={handleSubmit}
+      onSubmit={handleSubmit(onSubmit)}
       className="sm:w-3/4 md:w-3/4 mt-10 mb-10 border rounded shadow-lg p-4"
     >
       <Typography variant="h5" className="mb-5 font-semibold text-gray-700">
         Recruiter Registration
       </Typography>
 
-      {/* Personal Information */}
       <Typography variant="h6" className="mb-3 underline text-gray-700">
         Personal Information
       </Typography>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <TextField
-          label="First Name"
+        <Controller
           name="firstName"
-          value={formValues.firstName}
-          onChange={handleInputChange}
-          error={!!errors.firstName}
-          helperText={errors.firstName}
-          fullWidth
+          control={control}
+          rules={{
+            required: "First name is required.",
+            maxLength: { value: 50, message: "First name cannot exceed 50 characters." },
+          }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="First Name"
+              error={!!errors.firstName}
+              helperText={errors.firstName?.message}
+              fullWidth
+            />
+          )}
         />
-        <TextField
-          label="Last Name"
+        <Controller
           name="lastName"
-          value={formValues.lastName}
-          onChange={handleInputChange}
-          error={!!errors.lastName}
-          helperText={errors.lastName}
-          fullWidth
+          control={control}
+          rules={{
+            required: "Last name is required.",
+            maxLength: { value: 50, message: "Last name cannot exceed 50 characters." },
+          }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Last Name"
+              error={!!errors.lastName}
+              helperText={errors.lastName?.message}
+              fullWidth
+            />
+          )}
         />
-        <TextField
-          label="Date of Birth"
+        <Controller
           name="dob"
-          type="date"
-          value={formValues.dob}
-          onChange={handleInputChange}
-          error={!!errors.dob}
-          helperText={errors.dob}
-          InputLabelProps={{ shrink: true }}
-          fullWidth
+          control={control}
+          rules={{ required: "Date of birth is required." }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Date of Birth"
+              type="date"
+              InputLabelProps={{ shrink: true }}
+              error={!!errors.dob}
+              helperText={errors.dob?.message}
+              fullWidth
+            />
+          )}
         />
-        <FormControl error={!!errors.sex} fullWidth>
-          <FormLabel>Gender</FormLabel>
-          <RadioGroup
-            name="sex"
-            value={formValues.sex}
-            onChange={handleInputChange}
-          >
-            <FormControlLabel value="Male" control={<Radio />} label="Male" />
-            <FormControlLabel value="Female" control={<Radio />} label="Female" />
-          </RadioGroup>
-          <FormHelperText>{errors.sex}</FormHelperText>
-        </FormControl>
+        <Controller
+          name="sex"
+          control={control}
+          rules={{ required: "Gender is required." }}
+          render={({ field }) => (
+            <FormControl error={!!errors.sex} fullWidth>
+              <FormLabel>Gender</FormLabel>
+              <RadioGroup {...field}>
+                <FormControlLabel value="Male" control={<Radio />} label="Male" />
+                <FormControlLabel value="Female" control={<Radio />} label="Female" />
+              </RadioGroup>
+            </FormControl>
+          )}
+        />
       </div>
 
-      <TextField
-        label="Address"
+      <Controller
         name="address"
-        value={formValues.address}
-        onChange={handleInputChange}
-        error={!!errors.address}
-        helperText={errors.address}
-        fullWidth
-        multiline
-        rows={3}
-        className="mb-4"
+        control={control}
+        rules={{
+          required: "Address is required.",
+          maxLength: { value: 200, message: "Address cannot exceed 200 characters." },
+        }}
+        render={({ field }) => (
+          <TextField
+            {...field}
+            label="Address"
+            multiline
+            rows={3}
+            error={!!errors.address}
+            helperText={errors.address?.message}
+            fullWidth
+          />
+        )}
       />
 
-      {/* Contact Information */}
       <Typography variant="h6" className="mb-3 underline text-gray-700">
         Contact Information
       </Typography>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-        <TextField
-          label="Email"
+        <Controller
           name="email"
-          value={formValues.email}
-          onChange={handleInputChange}
-          error={!!errors.email}
-          helperText={errors.email}
-          fullWidth
+          control={control}
+          rules={{ required: "Email is required." }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Email"
+              error={!!errors.email}
+              helperText={errors.email?.message}
+              fullWidth
+            />
+          )}
         />
-        <TextField
-          label="Phone Number"
+        <Controller
           name="phoneNumber"
-          value={formValues.phoneNumber}
-          onChange={handleInputChange}
-          error={!!errors.phoneNumber}
-          helperText={errors.phoneNumber}
-          fullWidth
+          control={control}
+          rules={{ required: "Phone number is required." }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              label="Phone Number"
+              error={!!errors.phoneNumber}
+              helperText={errors.phoneNumber?.message}
+              fullWidth
+            />
+          )}
         />
       </div>
 
-      {/* Company Information */}
       <Typography variant="h6" className="mb-3 underline text-gray-700">
         Company Information
       </Typography>
       {loading ? (
         <CircularProgress />
       ) : (
-        <TextField
-          select
-          label="Company"
+        <Controller
           name="companyId"
-          value={formValues.companyId}
-          onChange={handleInputChange}
-          error={!!errors.companyId}
-          helperText={errors.companyId}
-          fullWidth
-          className="pb-2"
-        >
-          {companies.map((company) => (
-            <MenuItem key={company.companyId} value={company.companyId}>
-              {company.name}
-            </MenuItem>
-          ))}
-        </TextField>
+          control={control}
+          rules={{ required: "Please select a company." }}
+          render={({ field }) => (
+            <TextField
+              {...field}
+              select
+              label="Company"
+              error={!!errors.companyId}
+              helperText={errors.companyId?.message}
+              fullWidth
+            >
+              {companies.map((company) => (
+                <MenuItem key={company.companyId} value={company.companyId}>
+                  {company.name}
+                </MenuItem>
+              ))}
+            </TextField>
+          )}
+        />
       )}
 
-      {/* Submit Button */}
       <div className="flex flex-col gap-2 items-center justify-center pt-2">
-      
-      <Button
-        type="submit"
-        variant="contained"
-        className="w-full mt-6"
-        sx={{ width: "80%", backgroundColor: "#1f2937" }}
-      >
-        {isSubmitting ? "Submitting..." : "Register"}
-      </Button>
-      <span className="text-sm text-gray-700">
-        Already Have an Account?{" "}
-        <Link to="/login" className="text-blue-700 hover:underline">
-          Log In
-        </Link>
-      </span>
+        <Button
+          type="submit"
+          variant="contained"
+          className="w-full mt-6"
+          sx={{ width: "80%", backgroundColor: "#1f2937" }}
+          disabled={isSubmitting}
+        >
+          {isSubmitting ? "Submitting..." : "Register"}
+        </Button>
+        <span className="text-sm text-gray-700">
+          Already Have an Account?{" "}
+          <Link to="/login" className="text-blue-700 hover:underline">
+            Log In
+          </Link>
+        </span>
       </div>
     </Box>
   );

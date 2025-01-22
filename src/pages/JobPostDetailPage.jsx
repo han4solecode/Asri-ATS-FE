@@ -62,25 +62,36 @@ const JobPostDetailPage = () => {
                             <Grid item xs={12} md={6}>
                                 <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center' }}>
                                     <BusinessIcon color="primary" sx={{ marginRight: 1 }} />
-                                    <strong>Company:</strong> {companyName}
+                                    <strong>Company : </strong> {companyName}
                                 </Typography>
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center' }}>
                                     <LocationOnIcon color="primary" sx={{ marginRight: 1 }} />
-                                    <strong>Location:</strong> {location}
+                                    <strong>Location : </strong> {location}
                                 </Typography>
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center' }}>
                                     <AttachMoneyIcon color="primary" sx={{ marginRight: 1 }} />
-                                    <strong>Salary:</strong> {minSalary} - {maxSalary}
+                                    <strong>Salary : </strong>{" "}
+                                    {new Intl.NumberFormat("id-ID", {
+                                    style: "currency",
+                                    currency: "IDR",
+                                    minimumFractionDigits: 0,
+                                    }).format(minSalary)}{" "}
+                                    -{" "}
+                                    {new Intl.NumberFormat("id-ID", {
+                                    style: "currency",
+                                    currency: "IDR",
+                                    minimumFractionDigits: 0,
+                                    }).format(maxSalary)}
                                 </Typography>
                             </Grid>
                             <Grid item xs={12} md={6}>
                                 <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center' }}>
                                     <ScheduleIcon color="primary" sx={{ marginRight: 1 }} />
-                                    <strong>Employment Type:</strong> {employmentType}
+                                    <strong>Employment Type : </strong> {employmentType}
                                 </Typography>
                             </Grid>
                         </Grid>

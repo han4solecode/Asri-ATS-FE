@@ -18,7 +18,6 @@ const UploadDocumentPage = () => {
     try {
       const response = await ApplicationJobService.getDocument();
       setDocuments(response.data.documents);
-      toast.success("Documents fetched successfully!");
     } catch (error) {
       toast.error("Failed to fetch documents.");
     } finally {
