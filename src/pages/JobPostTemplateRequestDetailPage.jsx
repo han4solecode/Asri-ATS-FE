@@ -83,7 +83,7 @@ const JobPostTemplateRequestDetailPage = () => {
     try {
       let userData = {
         Action: action,
-        JobTemplateRequestId:requestDetails.jobTemplateRequestId
+        JobTemplateRequestId: requestDetails.jobTemplateRequestId
       }
 
       // validation
@@ -165,7 +165,17 @@ const JobPostTemplateRequestDetailPage = () => {
                 <Grid item xs={12} md={6}>
                   <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center' }}>
                     <AttachMoneyIcon color="primary" sx={{ marginRight: 1 }} />
-                    <strong>Salary:</strong> {requestDetails.minSalary} - {requestDetails.maxSalary}
+                    <strong>Salary:</strong> {new Intl.NumberFormat("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                      minimumFractionDigits: 0,
+                    }).format(requestDetails.minSalary)}{" "}
+                    -{" "}
+                    {new Intl.NumberFormat("id-ID", {
+                      style: "currency",
+                      currency: "IDR",
+                      minimumFractionDigits: 0,
+                    }).format(requestDetails.maxSalary)}
                   </Typography>
                 </Grid>
                 <Grid item xs={12} md={6}>
@@ -347,7 +357,7 @@ const JobPostTemplateRequestDetailPage = () => {
                 },
               }}
               onClick={() => {
-                  setOpenReviewModal(true);
+                setOpenReviewModal(true);
               }}
             >
               Review

@@ -36,16 +36,16 @@ import JobPostTemplateService from "../services/jobPostTemplateService";
 const SECRET_KEY = "your-secure-key";
 
 const decodeId = (encryptedId) => {
-  try {
-    const decoded = decodeURIComponent(encryptedId); // Decode the URL-safe string
-    const bytes = CryptoJS.AES.decrypt(decoded, SECRET_KEY);
-    const originalId = bytes.toString(CryptoJS.enc.Utf8);
-    if (!originalId) throw new Error("Decryption failed or returned empty string");
-    return originalId;
-  } catch (error) {
-    console.error("Error decoding process ID:", error);
-    return null;
-  }
+    try {
+        const decoded = decodeURIComponent(encryptedId); // Decode the URL-safe string
+        const bytes = CryptoJS.AES.decrypt(decoded, SECRET_KEY);
+        const originalId = bytes.toString(CryptoJS.enc.Utf8);
+        if (!originalId) throw new Error("Decryption failed or returned empty string");
+        return originalId;
+    } catch (error) {
+        console.error("Error decoding process ID:", error);
+        return null;
+    }
 };
 
 const JobPostTemplateDetailPage = () => {
@@ -119,7 +119,17 @@ const JobPostTemplateDetailPage = () => {
                                 <Grid item xs={12} md={6}>
                                     <Typography variant="body1" sx={{ display: 'flex', alignItems: 'center' }}>
                                         <AttachMoneyIcon color="primary" sx={{ marginRight: 1 }} />
-                                        <strong>Salary:</strong> {requestDetails.minSalary} - {requestDetails.maxSalary}
+                                        <strong>Salary:</strong> {new Intl.NumberFormat("id-ID", {
+                                            style: "currency",
+                                            currency: "IDR",
+                                            minimumFractionDigits: 0,
+                                        }).format(requestDetails.minSalary)}{" "}
+                                        -{" "}
+                                        {new Intl.NumberFormat("id-ID", {
+                                            style: "currency",
+                                            currency: "IDR",
+                                            minimumFractionDigits: 0,
+                                        }).format(requestDetails.maxSalary)}
                                     </Typography>
                                 </Grid>
                                 <Grid item xs={12} md={6}>
