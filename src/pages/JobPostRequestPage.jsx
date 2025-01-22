@@ -337,7 +337,6 @@ const JobPostRequestPage = () => {
                   <Table sx={{ minWidth: 650, }}>
                     <TableHead sx={{ backgroundColor: "#1976d2" }}>
                       <TableRow>
-                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>Process Id</TableCell>
                         <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                           Request Date
                         </TableCell>
@@ -375,13 +374,20 @@ const JobPostRequestPage = () => {
                             "&:hover": { backgroundColor: "#f5f5f5" },
                           }}
                         >
-                          <TableCell>{request.processId}</TableCell>
                           <TableCell>{formatDateWithOrdinal(request.requestDate)}</TableCell>
                           <TableCell>{request.requester}</TableCell>
                           <TableCell>{request.jobTitle}</TableCell>
                           <TableCell>{request.location}</TableCell>
-                          <TableCell>{request.minSalary}</TableCell>
-                          <TableCell>{request.maxSalary}</TableCell>
+                          <TableCell>{new Intl.NumberFormat("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                            minimumFractionDigits: 0,
+                          }).format(request.minSalary)}{" "}</TableCell>
+                          <TableCell>{new Intl.NumberFormat("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                            minimumFractionDigits: 0,
+                          }).format(request.maxSalary)}{" "}</TableCell>
                           <TableCell>{request.employmentType}</TableCell>
                           <TableCell>{request.status}</TableCell>
                           <TableCell>
@@ -530,7 +536,6 @@ const JobPostRequestPage = () => {
                   <Table sx={{ minWidth: 650, }}>
                     <TableHead sx={{ backgroundColor: "#1976d2" }}>
                       <TableRow>
-                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>Process Id</TableCell>
                         <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                           Request Date
                         </TableCell>
@@ -568,13 +573,20 @@ const JobPostRequestPage = () => {
                             "&:hover": { backgroundColor: "#f5f5f5" },
                           }}
                         >
-                          <TableCell>{request.processId}</TableCell>
                           <TableCell>{formatDateWithOrdinal(request.requestDate)}</TableCell>
                           <TableCell>{request.requester}</TableCell>
                           <TableCell>{request.jobTitle}</TableCell>
                           <TableCell>{request.location}</TableCell>
-                          <TableCell>{request.minSalary}</TableCell>
-                          <TableCell>{request.maxSalary}</TableCell>
+                          <TableCell>{new Intl.NumberFormat("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                            minimumFractionDigits: 0,
+                          }).format(request.minSalary)}{" "}</TableCell>
+                          <TableCell>{new Intl.NumberFormat("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                            minimumFractionDigits: 0,
+                          }).format(request.maxSalary)}{" "}</TableCell>
                           <TableCell>{request.employmentType}</TableCell>
                           <TableCell>{request.status}</TableCell>
                           <TableCell>
@@ -797,7 +809,6 @@ const JobPostRequestPage = () => {
                 <Table sx={{ minWidth: 650 }}>
                   <TableHead sx={{ backgroundColor: "#1976d2" }}>
                     <TableRow>
-                      <TableCell sx={{ color: "white", fontWeight: "bold" }}>Process Id</TableCell>
                       <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                         Request Date
                       </TableCell>
@@ -835,13 +846,20 @@ const JobPostRequestPage = () => {
                           "&:hover": { backgroundColor: "#f5f5f5" },
                         }}
                       >
-                        <TableCell>{request.processId}</TableCell>
                         <TableCell>{formatDateWithOrdinal(request.requestDate)}</TableCell>
                         <TableCell>{request.requester}</TableCell>
                         <TableCell>{request.jobTitle}</TableCell>
                         <TableCell>{request.location}</TableCell>
-                        <TableCell>{request.minSalary}</TableCell>
-                        <TableCell>{request.maxSalary}</TableCell>
+                        <TableCell>{new Intl.NumberFormat("id-ID", {
+                          style: "currency",
+                          currency: "IDR",
+                          minimumFractionDigits: 0,
+                        }).format(request.minSalary)}{" "}</TableCell>
+                        <TableCell>{new Intl.NumberFormat("id-ID", {
+                          style: "currency",
+                          currency: "IDR",
+                          minimumFractionDigits: 0,
+                        }).format(request.maxSalary)}{" "}</TableCell>
                         <TableCell>{request.employmentType}</TableCell>
                         <TableCell>{request.status}</TableCell>
                         <TableCell>

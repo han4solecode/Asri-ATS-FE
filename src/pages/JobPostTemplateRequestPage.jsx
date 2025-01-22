@@ -90,7 +90,7 @@ const JobPostTemplateRequestPage = () => {
 
   // Fetch job post requests with search and pagination
   const fetchJobPostTemplateRequests = async ({ page, pageSize, searchQuery, jobPostTemplateRequestStatus, value }) => {
-    
+
     if (currentUser.roles.includes("HR Manager")) {
       if (value === 0) {
         setJobPostRequestStatus("Review HR Manager")
@@ -102,7 +102,7 @@ const JobPostTemplateRequestPage = () => {
         setJobPostRequestStatus("Rejected")
       }
     }
-    
+
     const response = await JobPostTemplateRequestService.jobPostTemplateRequestList({
       PageNumber: page,
       PageSize: pageSize,
@@ -266,7 +266,6 @@ const JobPostTemplateRequestPage = () => {
                   <Table sx={{ minWidth: 650, }}>
                     <TableHead sx={{ backgroundColor: "#1976d2" }}>
                       <TableRow>
-                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>Id</TableCell>
                         <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                           Requester
                         </TableCell>
@@ -301,12 +300,19 @@ const JobPostTemplateRequestPage = () => {
                             "&:hover": { backgroundColor: "#f5f5f5" },
                           }}
                         >
-                          <TableCell>{request.jobPostTemplateRequestId}</TableCell>
                           <TableCell>{request.requester}</TableCell>
                           <TableCell>{request.jobTitle}</TableCell>
                           <TableCell>{request.location}</TableCell>
-                          <TableCell>{request.minSalary}</TableCell>
-                          <TableCell>{request.maxSalary}</TableCell>
+                          <TableCell>{new Intl.NumberFormat("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                            minimumFractionDigits: 0,
+                          }).format(request.minSalary)}{" "}</TableCell>
+                          <TableCell>{new Intl.NumberFormat("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                            minimumFractionDigits: 0,
+                          }).format(request.maxSalary)}{" "}</TableCell>
                           <TableCell>{request.employmentType}</TableCell>
                           <TableCell>{request.status}</TableCell>
                           <TableCell>
@@ -410,7 +416,6 @@ const JobPostTemplateRequestPage = () => {
                   <Table sx={{ minWidth: 650, }}>
                     <TableHead sx={{ backgroundColor: "#1976d2" }}>
                       <TableRow>
-                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>Id</TableCell>
                         <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                           Requester
                         </TableCell>
@@ -445,12 +450,19 @@ const JobPostTemplateRequestPage = () => {
                             "&:hover": { backgroundColor: "#f5f5f5" },
                           }}
                         >
-                          <TableCell>{request.jobPostTemplateRequestId}</TableCell>
                           <TableCell>{request.requester}</TableCell>
                           <TableCell>{request.jobTitle}</TableCell>
                           <TableCell>{request.location}</TableCell>
-                          <TableCell>{request.minSalary}</TableCell>
-                          <TableCell>{request.maxSalary}</TableCell>
+                          <TableCell>{new Intl.NumberFormat("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                            minimumFractionDigits: 0,
+                          }).format(request.minSalary)}{" "}</TableCell>
+                          <TableCell>{new Intl.NumberFormat("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                            minimumFractionDigits: 0,
+                          }).format(request.maxSalary)}{" "}</TableCell>
                           <TableCell>{request.employmentType}</TableCell>
                           <TableCell>{request.status}</TableCell>
                           <TableCell>
@@ -554,7 +566,6 @@ const JobPostTemplateRequestPage = () => {
                   <Table sx={{ minWidth: 650, }}>
                     <TableHead sx={{ backgroundColor: "#1976d2" }}>
                       <TableRow>
-                        <TableCell sx={{ color: "white", fontWeight: "bold" }}>Id</TableCell>
                         <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                           Requester
                         </TableCell>
@@ -589,12 +600,19 @@ const JobPostTemplateRequestPage = () => {
                             "&:hover": { backgroundColor: "#f5f5f5" },
                           }}
                         >
-                          <TableCell>{request.jobPostTemplateRequestId}</TableCell>
                           <TableCell>{request.requester}</TableCell>
                           <TableCell>{request.jobTitle}</TableCell>
                           <TableCell>{request.location}</TableCell>
-                          <TableCell>{request.minSalary}</TableCell>
-                          <TableCell>{request.maxSalary}</TableCell>
+                          <TableCell>{new Intl.NumberFormat("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                            minimumFractionDigits: 0,
+                          }).format(request.minSalary)}{" "}</TableCell>
+                          <TableCell>{new Intl.NumberFormat("id-ID", {
+                            style: "currency",
+                            currency: "IDR",
+                            minimumFractionDigits: 0,
+                          }).format(request.maxSalary)}{" "}</TableCell>
                           <TableCell>{request.employmentType}</TableCell>
                           <TableCell>{request.status}</TableCell>
                           <TableCell>
@@ -820,12 +838,19 @@ const JobPostTemplateRequestPage = () => {
                           "&:hover": { backgroundColor: "#f5f5f5" },
                         }}
                       >
-                        <TableCell>{request.jobPostTemplateRequestId}</TableCell>
                         <TableCell>{request.requester}</TableCell>
                         <TableCell>{request.jobTitle}</TableCell>
                         <TableCell>{request.location}</TableCell>
-                        <TableCell>{request.minSalary}</TableCell>
-                        <TableCell>{request.maxSalary}</TableCell>
+                        <TableCell>{new Intl.NumberFormat("id-ID", {
+                          style: "currency",
+                          currency: "IDR",
+                          minimumFractionDigits: 0,
+                        }).format(request.minSalary)}{" "}</TableCell>
+                        <TableCell>{new Intl.NumberFormat("id-ID", {
+                          style: "currency",
+                          currency: "IDR",
+                          minimumFractionDigits: 0,
+                        }).format(request.maxSalary)}{" "}</TableCell>
                         <TableCell>{request.employmentType}</TableCell>
                         <TableCell>{request.status}</TableCell>
                         <TableCell>

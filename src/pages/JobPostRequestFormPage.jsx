@@ -26,7 +26,7 @@ import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import JobPostTemplateService from "../services/jobPostTemplateService";
 import ReactPaginate from "react-paginate";
 import { useForm } from "react-hook-form";
-import CryptoJS from "crypto-js"; 
+import CryptoJS from "crypto-js";
 
 function CustomTabPanel(props) {
     const { children, value, index, ...other } = props;
@@ -60,14 +60,14 @@ function a11yProps(index) {
 const SECRET_KEY = "your-secure-key";
 
 const encodeProcessId = (id) => {
-  try {
-    if (!id) throw new Error("Invalid process ID");
-    const encrypted = CryptoJS.AES.encrypt(String(id), SECRET_KEY).toString();
-    return encodeURIComponent(encrypted); // Encode the encrypted string for URL safety
-  } catch (error) {
-    console.error("Error encoding process ID:", error);
-    return null;
-  }
+    try {
+        if (!id) throw new Error("Invalid process ID");
+        const encrypted = CryptoJS.AES.encrypt(String(id), SECRET_KEY).toString();
+        return encodeURIComponent(encrypted); // Encode the encrypted string for URL safety
+    } catch (error) {
+        console.error("Error encoding process ID:", error);
+        return null;
+    }
 };
 
 const JobPostRequestFormPage = () => {
@@ -374,7 +374,6 @@ const JobPostRequestFormPage = () => {
                                 <Table sx={{ minWidth: 650, }}>
                                     <TableHead sx={{ backgroundColor: "#1976d2" }}>
                                         <TableRow>
-                                            <TableCell sx={{ color: "white", fontWeight: "bold" }}>Id</TableCell>
                                             <TableCell sx={{ color: "white", fontWeight: "bold" }}>
                                                 Job Title
                                             </TableCell>
@@ -403,11 +402,18 @@ const JobPostRequestFormPage = () => {
                                                     "&:hover": { backgroundColor: "#f5f5f5" },
                                                 }}
                                             >
-                                                <TableCell>{request.jobPostTemplateId}</TableCell>
                                                 <TableCell>{request.jobTitle}</TableCell>
                                                 <TableCell>{request.location}</TableCell>
-                                                <TableCell>{request.minSalary}</TableCell>
-                                                <TableCell>{request.maxSalary}</TableCell>
+                                                <TableCell>{new Intl.NumberFormat("id-ID", {
+                                                    style: "currency",
+                                                    currency: "IDR",
+                                                    minimumFractionDigits: 0,
+                                                }).format(request.minSalary)}{" "}</TableCell>
+                                                <TableCell>{new Intl.NumberFormat("id-ID", {
+                                                    style: "currency",
+                                                    currency: "IDR",
+                                                    minimumFractionDigits: 0,
+                                                }).format(request.maxSalary)}{" "}</TableCell>
                                                 <TableCell>{request.employmentType}</TableCell>
                                                 <TableCell>
                                                     <Button
@@ -423,11 +429,11 @@ const JobPostRequestFormPage = () => {
                                                         onClick={() => {
                                                             const encodedId = encodeProcessId(request.jobPostTemplateId);
                                                             if (encodedId) {
-                                                              navigate(`/job-post-template/${encodedId}`);
+                                                                navigate(`/job-post-template/${encodedId}`);
                                                             } else {
-                                                              console.error("Failed to encode process ID, navigation aborted.");
+                                                                console.error("Failed to encode process ID, navigation aborted.");
                                                             }
-                                                          }}
+                                                        }}
                                                     >
                                                         View Details
                                                     </Button>
