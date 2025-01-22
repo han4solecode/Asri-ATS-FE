@@ -33,6 +33,7 @@ import DescriptionIcon from '@mui/icons-material/Description';
 import AssignmentTurnedInIcon from '@mui/icons-material/AssignmentTurnedIn';
 import JobPostRequestService from "../services/jobPostRequestService";
 import { useSelector } from "react-redux";
+import { toast } from "react-toastify";
 
 const SECRET_KEY = "your-secure-key";
 
@@ -112,11 +113,14 @@ const JobPostRequestDetailPage = () => {
         setComment("");
         setAction("");
         setErrors(null);
+        toast.success("Review Job Post Success")
         navigate("/job-post-request"); // Navigate back to the list after successful review
       } else {
+        toast.error("Review Job Post Failed")
         console.error(response.data.message); // Show error message
       }
     } catch (error) {
+      toast.error("An error occurred")
       console.error(error.response?.data?.message || "An error occurred"); // Log API errors
     } finally {
       setProcessing(false);

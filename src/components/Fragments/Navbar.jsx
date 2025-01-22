@@ -139,7 +139,7 @@ const Navbar = ({ isDrawerOpen, setIsDrawerOpen }) => {
           }}
         >
           {/* Logo or Drawer Toggle */}
-          <Typography
+          <Box
             variant="h6"
             sx={{
               fontWeight: "bold",
@@ -149,8 +149,12 @@ const Navbar = ({ isDrawerOpen, setIsDrawerOpen }) => {
             }}
             onClick={handleDrawerToggle} // Always toggle the drawer
           >
-            Logo
-          </Typography>
+            <img
+              src="../../../public/assets/Logo.webp"
+              alt="Logo"
+              style={{ height: "80px", cursor: "pointer" }}
+            />
+          </Box>
         </Toolbar>
       </AppBar>
 
@@ -169,18 +173,16 @@ const Navbar = ({ isDrawerOpen, setIsDrawerOpen }) => {
         }}
       >
         <Box sx={{ display: "flex", flexDirection: "column", height: "100%" }}>
-          <Typography
-            variant="h6"
+          <Box
+            component="img"
+            src="../../../public/assets/Logo.webp"
+            alt="Logo"
             sx={{
-              fontWeight: "bold",
-              padding: "1rem",
-              textAlign: "center",
+              height: 150,
               cursor: "pointer",
             }}
-            onClick={handleDrawerToggle}
-          >
-            Logo
-          </Typography>
+            onClick={handleDrawerToggle} // Jika perlu aksi klik
+          />
           <Divider sx={{ backgroundColor: "#374151" }} />
 
           {/* Profile Section */}
