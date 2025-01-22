@@ -78,7 +78,7 @@ const JobPostTemplateRequestPage = () => {
   const [page, setPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const pageSizes = [5, 10, 15, 20];
-  const [jobPostTemplateRequestStatus, setJobPostRequestStatus] = useState(`${currentUser.roles.includes("Recruiter")} ? "All Types" : "Review HR Manager`);
+  const [jobPostTemplateRequestStatus, setJobPostRequestStatus] = useState("All Types");
   const [searchQuery, setSearchQuery] = useState('');
 
   const { data, isLoading, isError } = useQuery({
