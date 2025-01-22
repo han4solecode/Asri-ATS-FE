@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { Button, CircularProgress, Divider, Typography, Modal, Box, TextField, IconButton, InputAdornment } from "@mui/material";
+import { Button, CircularProgress, Divider, Typography, Modal, Box, TextField, IconButton, InputAdornment, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper } from "@mui/material";
 import UserService from "../services/userService";
 import { useQuery } from "@tanstack/react-query";
 import PersonIcon from "@mui/icons-material/Person";
@@ -29,6 +29,21 @@ const ProfilePage = () => {
     queryKey: ["userProfile"],
     queryFn: () => fetchUserProfile(),
   });
+
+  // Fetch company details based on the company name
+  const fetchCompanyData = async () => {
+    if (data && data.companyName) {
+      const response = await UserService.getUserInSameCompany()
+      return response.data; // Return company-related data
+    }
+    return null;
+  };
+
+  const { data: companyData, isLoading: isLoadingCompany, isError: isErrorCompany } = useQuery({
+    queryKey: ["companyData"],
+    queryFn: () => fetchCompanyData(),
+    enabled: !!data?.companyName, // Only fetch company data if companyName exists
+  });
   
   const handleChangePassword = async () => {
     if (newPassword !== confirmPassword) {
@@ -56,6 +71,14 @@ const ProfilePage = () => {
       setIsChangingPassword(false);
     }
   };
+
+  if (isLoading || isLoadingCompany) {
+    return (
+      <div className="flex justify-center py-10">
+        <CircularProgress />
+      </div>
+    );
+  }
 
   if (isLoading) {
     return (
@@ -187,7 +210,7 @@ const ProfilePage = () => {
             </ul>
           </div>
           {/* Company Name */}
-          {companyName &&
+          {companyName && (
             <div>
               <Typography
                 variant="h6"
@@ -199,7 +222,38 @@ const ProfilePage = () => {
                 <li>{companyName}</li>
               </ul>
             </div>
-          }
+          )}
+
+          {/* Company Data Table */}
+          {companyName && companyData && (
+            <div className="mt-4">
+            <Typography variant="h6" className="font-semibold text-gray-800 mb-4">
+              Company Employees
+            </Typography>
+            <TableContainer component={Paper} className="shadow-lg">
+              <Table className="min-w-full" aria-label="Company Employees Table">
+                <TableHead className="bg-gray-100">
+                  <TableRow>
+                    <TableCell className="font-bold">Name</TableCell>
+                    <TableCell className="font-bold">Email</TableCell>
+                    <TableCell className="font-bold">Phone Number</TableCell>
+                    <TableCell className="font-bold">Roles</TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {companyData.map((employee) => (
+                    <TableRow key={employee.userId} className="hover:bg-gray-50">
+                      <TableCell className="break-words">{employee.firstName} {employee.lastName}</TableCell>
+                      <TableCell className="break-words">{employee.email}</TableCell>
+                      <TableCell className="break-words">{employee.phoneNumber}</TableCell>
+                      <TableCell className="break-words">{employee.roles}</TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+            </TableContainer>
+          </div>
+          )}
         </div>
       </div>
 

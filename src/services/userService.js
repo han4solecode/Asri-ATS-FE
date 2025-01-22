@@ -25,12 +25,18 @@ const deleteUser = async (username) => {
   return res
 }
 
+const getUserInSameCompany = async () => {
+  const res = await AxiosInstance.api.get(`/api/User/company`);
+  return res;
+};
+
 const UserService = {
   details,
   updateProfile,
   uploadDocument,
   deleteDocument,
-  deleteUser
+  deleteUser,
+  getUserInSameCompany,
 };
 
 export default UserService;

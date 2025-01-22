@@ -227,6 +227,7 @@ const RecruiterRegistrationPage = () => {
               error={!!errors.email}
               helperText={errors.email?.message}
               fullWidth
+              placeholder="email@example.com"
             />
           )}
         />
@@ -241,6 +242,7 @@ const RecruiterRegistrationPage = () => {
               error={!!errors.phoneNumber}
               helperText={errors.phoneNumber?.message}
               fullWidth
+              placeholder="08XXXXXXXX"
             />
           )}
         />
