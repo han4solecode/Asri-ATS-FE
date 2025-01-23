@@ -53,27 +53,51 @@ function CompanyRegistrationRequestReviewPage(props) {
   console.log(request);
 
   const handleReviewButtonClick = (action) => {
-    if (confirm(`Confirm review company registration request (ID: ${id})?`)) {
-      setProcessing(true);
-      CompanyService.reviewRegisterCompanyRequest({
-        companyRequestId: Number(id),
-        action: action,
-      })
-        .then((res) => {
-          toast.success(res.data.message);
-          navigate(-1);
-        })
-        .catch((err) => {
-          console.log(err);
-
-          toast.error(err.response.data.message);
-        })
-        .finally(() => {
-          setProcessing(false);
-        });
-    } else {
-      return;
-    }
+    toast(
+      ({ closeToast }) => (
+        <div>
+          <p>Confirm review company registration request ?</p>
+          <div className="flex gap-2 justify-end">
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={async () => {
+                try {
+                  setProcessing(true);
+                  await CompanyService.reviewRegisterCompanyRequest({
+                    companyRequestId: Number(id),
+                    action: action,
+                  });
+                  toast.success("Request reviewed successfully!");
+                  navigate(-1);
+                } catch (error) {
+                  console.log(error);
+                  toast.error("Failed to review the request.");
+                } finally {
+                  setProcessing(false);
+                  closeToast();
+                }
+              }}
+            >
+              Yes
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              size="small"
+              onClick={closeToast}
+            >
+              No
+            </Button>
+          </div>
+        </div>
+      ),
+      {
+        closeOnClick: false,
+        autoClose: false, // Prevent auto-closing to allow user interaction
+      }
+    );
   };
 
   if (isError) {
