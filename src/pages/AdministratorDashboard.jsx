@@ -150,20 +150,45 @@ function AdministratorDashboard(props) {
   };
 
   const handleDeleteUser = (userName) => {
-    if (confirm(`Are you sure you want to delete this (${userName}) user? `)) {
-      UserService.deleteUser(userName)
-        .then((res) => {
-          toast.success(res.data.message)
-        })
-        .catch((err) => {
-          toast.error(err.response.data.message || "Failed to delete user.");
-        })
-        .finally(() => {
-          navigate(0);
-        });
-    } else {
-      return;
-    }
+    toast(
+      ({ closeToast }) => (
+        <div>
+          <p>Are you sure you want to delete this user ({userName})?</p>
+          <div className="flex gap-2 justify-end">
+            <Button
+              variant="contained"
+              color="primary"
+              size="small"
+              onClick={async () => {
+                try {
+                  await UserService.deleteUser(userName);
+                  toast.success("User deleted successfully!");
+                } catch (error) {
+                  toast.error(error.response?.data?.message || "Failed to delete user.");
+                } finally {
+                  closeToast(); // Close the confirmation toast
+                  navigate(0); // Reload the page
+                }
+              }}
+            >
+              Yes
+            </Button>
+            <Button
+              variant="outlined"
+              color="error"
+              size="small"
+              onClick={closeToast} // Close the toast when clicking No
+            >
+              No
+            </Button>
+          </div>
+        </div>
+      ),
+      {
+        closeOnClick: false,
+        autoClose: false, // Prevent auto-closing for user interaction
+      }
+    );
   };
 
   return (
