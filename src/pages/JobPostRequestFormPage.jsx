@@ -164,214 +164,227 @@ const JobPostRequestFormPage = () => {
     if (isError) return <div className="text-center py-10">Error loading data.</div>;
 
     return (
-        <>
+        <Box
+            // className="mx-auto bg-white rounded-lg shadow-md"
+            sx={{
+                margin: "2rem auto", // Adds consistent spacing with navbar
+                padding: { xs: "1rem", sm: "1.5rem", md: "2rem" }, // Responsive padding
+                boxSizing: "border-box",
+                width: "100%",
+                maxWidth: { xs: "100%", lg: "90%" }
+            }}
+        >
             <Typography variant="h6"
                 sx={{
                     fontWeight: "bold",
                     fontSize: { xs: "1.25rem", sm: "1.5rem" },
                     textAlign: 'center',
-                    marginTop: 8
                 }}>
                 Job Post Request Form
             </Typography>
-            <div className="mt-5 mb-10 flex items-center justify-center">
-                <Box
-                    component="form"
-                    onSubmit={handleSubmit((data) => {
-                        handleFormSubmit(data);
-                    })}
-                    className="sm:w-3/4 md:w-3/4 mt-10 mb-10 border rounded shadow-lg p-4"
-                >
-                    <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
-                        <Tabs variant="scrollable" value={value} onChange={handleChange} aria-label="basic tabs example">
-                            <Tab label="Add Job Post Request" {...a11yProps(0)} />
-                            <Tab label="Job Post Templates" {...a11yProps(1)} />
-                        </Tabs>
-                    </Box>
-                    <CustomTabPanel value={value} index={0}>
-                        {/* Personal Information */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
-                            <TextField
-                                label="Job Title"
-                                name="jobTitle"
-                                {...register("jobTitle", {
-                                    required: "Job Title is required",
-                                    maxLength: {
-                                        value: 50,
-                                        message: "Job Title cannot exceed 50 characters"
+            <TableContainer
+                component={Paper}
+                sx={{
+                    border: "1px solid rgba(0, 0, 0, 0.12)",
+                    borderRadius: "8px",
+                    marginTop: 5,
+                    overflowX: "auto", // Makes table scrollable on small screens
+                }}
+            >
+                <Box sx={{ borderBottom: 1, borderColor: 'divider' }}>
+                    <Tabs variant="scrollable" value={value} onChange={handleChange} aria-label="basic tabs example">
+                        <Tab label="Add Job Post Request" {...a11yProps(0)} />
+                        <Tab label="Job Post Templates" {...a11yProps(1)} />
+                    </Tabs>
+                </Box>
+                <CustomTabPanel value={value} index={0}>
+                    {/* Personal Information */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4 px-6">
+                        <TextField
+                            label="Job Title"
+                            name="jobTitle"
+                            {...register("jobTitle", {
+                                required: "Job Title is required",
+                                maxLength: {
+                                    value: 50,
+                                    message: "Job Title cannot exceed 50 characters"
+                                }
+                            })}
+                            error={!!errors.jobTitle}
+                            helperText={errors.jobTitle?.message}
+                            fullWidth
+                        />
+                        <TextField
+                            label="Location"
+                            name="location"
+                            {...register("location", {
+                                required: "Location is required",
+                                maxLength: {
+                                    value: 200,
+                                    message: "Location cannot exceed 200 characters"
+                                }
+                            })}
+                            error={!!errors.location}
+                            helperText={errors.location?.message}
+                            fullWidth
+                        />
+                        <TextField
+                            label="Description"
+                            name="description"
+                            multiline
+                            rows={4}
+                            {...register("description", {
+                                required: "Description is required"
+                            })}
+                            error={!!errors.description}
+                            helperText={errors.description?.message}
+                            fullWidth
+                        />
+                        <TextField
+                            label="Requirements"
+                            name="requirements"
+                            multiline
+                            rows={4}
+                            {...register("requirements", {
+                                required: "Requirements is required."
+                            })}
+                            error={!!errors.requirements}
+                            helperText={errors.requirements?.message}
+                            fullWidth
+                        />
+                        <TextField
+                            label="Min Salary"
+                            name="minSalary"
+                            type="number"
+                            {...register("minSalary", {
+                                required: "Min salary is required",
+                                validate: {
+                                    isValidDate: (value) => {
+                                        const minSalary = +value;
+                                        const maxSalary = +getValues("maxSalary");
+                                        return minSalary < maxSalary || "Min salary should not be more than max salary";
                                     }
-                                })}
-                                error={!!errors.jobTitle}
-                                helperText={errors.jobTitle?.message}
-                                fullWidth
-                            />
-                            <TextField
-                                label="Location"
-                                name="location"
-                                {...register("location", {
-                                    required: "Location is required",
-                                    maxLength: {
-                                        value: 200,
-                                        message: "Location cannot exceed 200 characters"
-                                    }
-                                })}
-                                error={!!errors.location}
-                                helperText={errors.location?.message}
-                                fullWidth
-                            />
-                            <TextField
-                                label="Description"
-                                name="description"
-                                multiline
-                                rows={4}
-                                {...register("description", {
-                                    required: "Description is required"
-                                })}
-                                error={!!errors.description}
-                                helperText={errors.description?.message}
-                                fullWidth
-                            />
-                            <TextField
-                                label="Requirements"
-                                name="requirements"
-                                multiline
-                                rows={4}
-                                {...register("requirements", {
-                                    required: "Requirements is required."
-                                })}
-                                error={!!errors.requirements}
-                                helperText={errors.requirements?.message}
-                                fullWidth
-                            />
-                            <TextField
-                                label="Min Salary"
-                                name="minSalary"
-                                type="number"
-                                {...register("minSalary", {
-                                    required: "Min salary is required",
-                                    validate: {
-                                        isValidDate: (value) => {
-                                            const minSalary = +value;
-                                            const maxSalary = +getValues("maxSalary");
-                                            return minSalary < maxSalary || "Min salary should not be more than max salary";
-                                        }
-                                    }
-                                })}
-                                error={!!errors.minSalary}
-                                helperText={errors.minSalary?.message}
-                                fullWidth
-                            />
-                            <TextField
-                                label="Max Salary"
-                                name="maxSalary"
-                                type="number"
-                                {...register("maxSalary", {
-                                    required: "Max salary is required"
-                                })}
-                                error={!!errors.maxSalary}
-                                helperText={errors.maxSalary?.message}
-                                fullWidth
-                            />
-                            <TextField
-                                label="Employment Type"
-                                name="employmentType"
-                                {...register("employmentType", {
-                                    required: "Employment type is required"
-                                })}
-                                error={!!errors.employmentType}
-                                helperText={errors.employmentType?.message}
-                                fullWidth
-                            />
-                            <TextField
-                                label="Comments"
-                                name="comments"
-                                {...register("comments", {
-                                    required: " Comments is required"
-                                })}
-                                error={!!errors.comments}
-                                helperText={errors.comments?.message}
-                                fullWidth
-                            />
-                        </div>
+                                }
+                            })}
+                            error={!!errors.minSalary}
+                            helperText={errors.minSalary?.message}
+                            fullWidth
+                        />
+                        <TextField
+                            label="Max Salary"
+                            name="maxSalary"
+                            type="number"
+                            {...register("maxSalary", {
+                                required: "Max salary is required"
+                            })}
+                            error={!!errors.maxSalary}
+                            helperText={errors.maxSalary?.message}
+                            fullWidth
+                        />
+                        <TextField
+                            label="Employment Type"
+                            name="employmentType"
+                            {...register("employmentType", {
+                                required: "Employment type is required"
+                            })}
+                            error={!!errors.employmentType}
+                            helperText={errors.employmentType?.message}
+                            fullWidth
+                        />
+                        <TextField
+                            label="Comments"
+                            name="comments"
+                            {...register("comments", {
+                                required: " Comments is required"
+                            })}
+                            error={!!errors.comments}
+                            helperText={errors.comments?.message}
+                            fullWidth
+                        />
+                    </div>
 
-                        {/* Submit Button */}
-                        <div className="flex items-center justify-between pt-2 w-full">
-                            <Button
-                                variant="contained"
-                                color="secondary"
-                                onClick={() => navigate(-1)}
-                            >
-                                Back
-                            </Button>
-                            <Button
-                                type="submit"
-                                variant="contained"
-                                className="mt-6"
-                                sx={{ backgroundColor: "#1f2937" }} // Adjust width if necessary
-                            >
-                                {isSubmitting ? "Submitting..." : "Submit"}
-                            </Button>
-                        </div>
-                    </CustomTabPanel>
-                    <CustomTabPanel value={value} index={1}>
-                        {isLoading ? (
-                            <Box
-                                sx={{
-                                    display: "flex",
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    height: "200px",
-                                }}
-                            >
-                                <CircularProgress />
-                            </Box>
-                        ) : data.data.length === 0 ? (
-                            <Typography
-                                variant="body1"
-                                textAlign="center"
-                                sx={{
-                                    color: "gray",
-                                    fontSize: { xs: "1rem", sm: "1.25rem" },
-                                }}
-                            >
-                                No Templates found.
-                            </Typography>
-                        ) : (
-                            <>
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 items-center">
-                                    <TextField
-                                        label="Search Jobs"
-                                        variant="outlined"
-                                        value={searchQuery}
-                                        onChange={handleSearchChange}
-                                        fullWidth
-                                        sx={{
-                                            fontWeight: 'bold',
-                                            backgroundColor: '#f7f9fc',
-                                            borderRadius: 2,
-                                            boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
-                                            '& .MuiInputBase-root': {
-                                                fontSize: '1.2rem',
-                                            },
-                                        }}
-                                    />
-                                    <FormControl variant="outlined">
-                                        <InputLabel id="page-size-label">Items per Page</InputLabel>
-                                        <Select
-                                            label="Items per Pages"
-                                            labelId="page-size-label"
-                                            value={pageSize}
-                                            onChange={handlePageSizeChange}
-                                            sx={{ fontSize: '0.9rem' }}
-                                        >
-                                            {pageSizes.map((size) => (
-                                                <MenuItem key={size} value={size}>
-                                                    {size}
-                                                </MenuItem>
-                                            ))}
-                                        </Select>
-                                    </FormControl>
-                                </div>
+                    {/* Submit Button */}
+                    <div className="flex items-center justify-between pt-2 w-full px-6">
+                        <Button
+                            variant="contained"
+                            color="secondary"
+                            onClick={() => navigate(-1)}
+                        >
+                            Back
+                        </Button>
+                        <Button
+                            type="submit"
+                            variant="contained"
+                            className="mt-6"
+                            sx={{ backgroundColor: "#1f2937" }} // Adjust width if necessary
+                            onClick={handleSubmit((data) => {
+                                handleFormSubmit(data);
+                            })}
+                        >
+                            {isSubmitting ? "Submitting..." : "Submit"}
+                        </Button>
+                    </div>
+                </CustomTabPanel>
+                <CustomTabPanel value={value} index={1}>
+                    {isLoading ? (
+                        <Box
+                            sx={{
+                                display: "flex",
+                                justifyContent: "center",
+                                alignItems: "center",
+                                height: "200px",
+                            }}
+                        >
+                            <CircularProgress />
+                        </Box>
+                    ) : data.data.length === 0 ? (
+                        <Typography
+                            variant="body1"
+                            textAlign="center"
+                            sx={{
+                                color: "gray",
+                                fontSize: { xs: "1rem", sm: "1.25rem" },
+                            }}
+                        >
+                            No Templates found.
+                        </Typography>
+                    ) : (
+                        <>
+                            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-6 items-center">
+                                <TextField
+                                    label="Search Jobs"
+                                    variant="outlined"
+                                    value={searchQuery}
+                                    onChange={handleSearchChange}
+                                    fullWidth
+                                    sx={{
+                                        fontWeight: 'bold',
+                                        backgroundColor: '#f7f9fc',
+                                        borderRadius: 2,
+                                        boxShadow: '0 2px 4px rgba(0, 0, 0, 0.1)',
+                                        '& .MuiInputBase-root': {
+                                            fontSize: '1.2rem',
+                                        },
+                                    }}
+                                />
+                                <FormControl variant="outlined">
+                                    <InputLabel id="page-size-label">Items per Page</InputLabel>
+                                    <Select
+                                        label="Items per Pages"
+                                        labelId="page-size-label"
+                                        value={pageSize}
+                                        onChange={handlePageSizeChange}
+                                        sx={{ fontSize: '0.9rem' }}
+                                    >
+                                        {pageSizes.map((size) => (
+                                            <MenuItem key={size} value={size}>
+                                                {size}
+                                            </MenuItem>
+                                        ))}
+                                    </Select>
+                                </FormControl>
+                            </div>
+                            <div style={{ overflowX: "auto" }}>
                                 <Table sx={{ minWidth: 650, }}>
                                     <TableHead sx={{ backgroundColor: "#1976d2" }}>
                                         <TableRow>
@@ -443,33 +456,31 @@ const JobPostRequestFormPage = () => {
                                         ))}
                                     </TableBody>
                                 </Table>
-                                {/* Pagination */}
-                                <ReactPaginate
-                                    previousLabel="Previous"
-                                    nextLabel="Next"
-                                    breakLabel="..."
-                                    pageCount={data?.totalPages}
-                                    onPageChange={handlePageClick}
-                                    containerClassName="flex justify-center items-center space-x-3 mt-4" // Container with spacing and centering
-                                    activeClassName="bg-blue-500 text-white px-4 py-2 rounded-md" // Active page styling with larger text and a background color
-                                    pageClassName="px-4 py-2 border border-gray-300 rounded-md cursor-pointer hover:bg-blue-200 transition duration-200" // Page buttons styling
-                                    breakClassName="text-gray-600 px-2 py-2" // Styling for the break dots
-                                    previousClassName={`${page === 1 ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer hover:bg-blue-200'} px-4 py-2 border border-gray-300 rounded-md transition duration-200 `} // Previous button styling
-                                    nextClassName={`${page === data?.totalPages ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer hover:bg-blue-200'} px-4 py-2 border border-gray-300 rounded-md transition duration-200 `} // Next button styling
-                                    previousLinkClassName={`${page === 1 ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer'} text-gray-700`} // Previous button text color
-                                    nextLinkClassName={`${page === data?.totalPages ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer'} text-gray-700`} // Next button text color
-                                    disabledClassName="cursor-not-allowed text-gray-400" // Disabled button styling
-                                    selectedClassName="bg-blue-500 text-white" // Selected page button styling
-                                />
+                            </div>
 
-                            </>
-                        )}
-                    </CustomTabPanel>
-                </Box>
-            </div>
-        </>
-
-
+                            {/* Pagination */}
+                            <ReactPaginate
+                                previousLabel="Previous"
+                                nextLabel="Next"
+                                breakLabel="..."
+                                pageCount={data?.totalPages}
+                                onPageChange={handlePageClick}
+                                containerClassName="flex justify-center items-center space-x-3 mt-4" // Container with spacing and centering
+                                activeClassName="bg-blue-500 text-white px-4 py-2 rounded-md" // Active page styling with larger text and a background color
+                                pageClassName="px-4 py-2 border border-gray-300 rounded-md cursor-pointer hover:bg-blue-200 transition duration-200" // Page buttons styling
+                                breakClassName="text-gray-600 px-2 py-2" // Styling for the break dots
+                                previousClassName={`${page === 1 ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer hover:bg-blue-200'} px-4 py-2 border border-gray-300 rounded-md transition duration-200 `} // Previous button styling
+                                nextClassName={`${page === data?.totalPages ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer hover:bg-blue-200'} px-4 py-2 border border-gray-300 rounded-md transition duration-200 `} // Next button styling
+                                previousLinkClassName={`${page === 1 ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer'} text-gray-700`} // Previous button text color
+                                nextLinkClassName={`${page === data?.totalPages ? 'bg-gray-300 cursor-not-allowed' : 'cursor-pointer'} text-gray-700`} // Next button text color
+                                disabledClassName="cursor-not-allowed text-gray-400" // Disabled button styling
+                                selectedClassName="bg-blue-500 text-white" // Selected page button styling
+                            />
+                        </>
+                    )}
+                </CustomTabPanel>
+            </TableContainer>
+        </Box>
     );
 };
 

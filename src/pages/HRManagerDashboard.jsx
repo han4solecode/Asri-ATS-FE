@@ -366,6 +366,15 @@ const HRManagerDashboardPage = () => {
             <CustomTabPanel value={value} index={2}>
               <ResponsiveContainer width="100%" height={400}>
                 <PieChart>
+                  <text
+                    x="75.5%" // Atur posisi horizontal
+                    y="40"  // Atur posisi vertikal
+                    textAnchor="middle"
+                    dominantBaseline="middle"
+                    style={{ fontSize: '16px', fontWeight: 'bold' }} // Tambahkan styling
+                  >
+                    Recruitment Funnel Overview
+                  </text>
                   <Pie
                     data={data.recruitmentFunnel}
                     dataKey="count"
@@ -389,7 +398,7 @@ const HRManagerDashboardPage = () => {
                     verticalAlign="middle" // Tempatkan legend sejajar dengan tengah Pie Chart
                     formatter={(value, entry, index) => {
                       const { count } = data.recruitmentFunnel[index]; // Ambil jumlah dari data
-                      return `${value} (${count})`; // Format legenda: Nama tahap (jumlah)
+                      return `${value}: ${count} Applicants`; // Format legenda: Nama tahap (jumlah)
                     }}
                   />
                 </PieChart>
